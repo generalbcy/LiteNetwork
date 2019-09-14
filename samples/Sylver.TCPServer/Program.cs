@@ -11,6 +11,7 @@ namespace Sylver.TCPServer
 
     public class Server : NetServer<Client>
     {
+        
     }
 
     class Program

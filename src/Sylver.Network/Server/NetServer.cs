@@ -1,8 +1,11 @@
 ﻿using Sylver.Network.Common;
+using Sylver.Network.Server.Internal;
 using System;
 using System.Collections.Concurrent;
 using System.Net.Sockets;
+using System.Runtime.CompilerServices;
 
+[assembly: InternalsVisibleTo("Sylver.Network.Tests")]
 namespace Sylver.Network.Server
 {
     /// <summary>
@@ -13,8 +16,18 @@ namespace Sylver.Network.Server
         where TUser : class, INetServerClient
     {
         private readonly ConcurrentDictionary<Guid, TUser> _clients;
+        private readonly NetServerAcceptor<TUser> _acceptor;
 
+        /// <inheritdoc />
         public bool IsRunning { get; private set; }
+
+        /// <summary>
+        /// Creates a new <see cref="NetServer{TUser}"/> instance.
+        /// </summary>
+        public NetServer()
+        {
+            this._acceptor = new NetServerAcceptor<TUser>(this);
+        }
 
         /// <inheritdoc />
         public void Start()
@@ -34,71 +47,12 @@ namespace Sylver.Network.Server
             this.Socket.Listen(50);
 
             this.IsRunning = true;
-            this.StartAccept();
+            this._acceptor.StartAccept();
         }
 
         /// <inheritdoc />
         public void Stop()
         {
-        }
-
-        // Accept
-
-        private void StartAccept()
-        {
-            var socketAcceptorAsync = new SocketAsyncEventArgs();
-            socketAcceptorAsync.Completed += this.OnSocketCompleted;
-
-            this.Accept(socketAcceptorAsync);
-        }
-
-        private void OnSocketCompleted(object sender, SocketAsyncEventArgs e)
-        {
-            if (sender == null)
-                throw new ArgumentNullException(nameof(sender));
-            try
-            {
-                switch (e.LastOperation)
-                {
-                    case SocketAsyncOperation.Accept:
-                        this.ProcessAccept(e);
-                        //this._acceptor.ProcessAccept(e);
-                        break;
-                    case SocketAsyncOperation.Receive:
-                        //this._receiver.Receive(e);
-                        break;
-                    case SocketAsyncOperation.Send:
-                        //this._sender.SendOperationCompleted(e);
-                        break;
-                    default: throw new InvalidOperationException("Unexpected SocketAsyncOperation.");
-                }
-            }
-            catch (Exception)
-            {
-                //this.OnError(exception);
-            }
-        }
-
-        private void Accept(SocketAsyncEventArgs e)
-        {
-            if (e.AcceptSocket != null)
-                e.AcceptSocket = null;
-
-            if (!this.Socket.AcceptAsync(e))
-                this.ProcessAccept(e);
-        }
-
-        /// <summary>
-        /// Process the accept connection async operation.
-        /// </summary>
-        /// <param name="e"></param>
-        public void ProcessAccept(SocketAsyncEventArgs e)
-        {
-            if (e.SocketError == SocketError.Success)
-            {
-                this.CreateClient(e);
-                this.Accept(e);
-            }
         }
 
         internal void CreateClient(SocketAsyncEventArgs acceptedSocketEvent)
