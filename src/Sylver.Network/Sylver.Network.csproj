@@ -9,10 +9,15 @@
     <RepositoryType>git</RepositoryType>
     <PackageLicenseFile>LICENSE</PackageLicenseFile>
     <PackageTags />
+    <PackageIconUrl>https://github.com/Eastrall/Sylver.Network/blob/master/src/Sylver.Network/Resources/icon.png?raw=true</PackageIconUrl>
   </PropertyGroup>
 
   <ItemGroup>
     <Folder Include="Resources\" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <PackageReference Include="System.IO.Pipelines" Version="4.5.3" />
   </ItemGroup>
 
 </Project>
