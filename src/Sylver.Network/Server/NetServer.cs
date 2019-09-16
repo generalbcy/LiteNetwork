@@ -59,9 +59,14 @@ namespace Sylver.Network.Server
         {
         }
 
+        /// <summary>
+        /// Fired when a client is accepted to the server.
+        /// </summary>
+        /// <param name="sender">Sender.</param>
+        /// <param name="e">Accepted client socket async event arguments.</param>
         private void OnClientAccepted(object sender, SocketAsyncEventArgs e)
         {
-            var newClient = this._clientFactory.CreateClient<TUser>(e);
+            var newClient = this._clientFactory.CreateClient<TUser>(e.AcceptSocket, null);
 
             if (!this._clients.TryAdd(newClient.Id, newClient))
             {

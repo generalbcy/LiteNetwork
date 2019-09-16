@@ -10,9 +10,10 @@ namespace Sylver.Network.Server.Internal
         /// Creates a new client.
         /// </summary>
         /// <typeparam name="TUser">Client type.</typeparam>
+        /// <param name="acceptSocket">Accepted socket.</param>
         /// <param name="socketAsyncEvent">Socket async event arguments.</param>
         /// <returns>New client.</returns>
-        public TUser CreateClient<TUser>(SocketAsyncEventArgs socketAsyncEvent)
+        public TUser CreateClient<TUser>(Socket acceptSocket, SocketAsyncEventArgs socketAsyncEvent)
             where TUser : class, INetServerClient
         {
             return default;
