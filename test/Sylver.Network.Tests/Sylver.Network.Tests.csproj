@@ -25,4 +25,8 @@
     <ProjectReference Include="..\..\src\Sylver.Network\Sylver.Network.csproj" />
   </ItemGroup>
 
+  <ItemGroup>
+    <Folder Include="Server\" />
+  </ItemGroup>
+
 </Project>

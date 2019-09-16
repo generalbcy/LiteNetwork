@@ -17,6 +17,7 @@ namespace Sylver.Network.Server
     {
         private readonly ConcurrentDictionary<Guid, TUser> _clients;
         private readonly NetServerAcceptor<TUser> _acceptor;
+        private readonly NetServerClientFactory _clientFactory;
 
         /// <inheritdoc />
         public bool IsRunning { get; private set; }
@@ -27,6 +28,9 @@ namespace Sylver.Network.Server
         public NetServer()
         {
             this._acceptor = new NetServerAcceptor<TUser>(this);
+            this._acceptor.OnClientAccepted += this.OnClientAccepted;
+
+            this._clientFactory = new NetServerClientFactory();
         }
 
         /// <inheritdoc />
@@ -55,28 +59,16 @@ namespace Sylver.Network.Server
         {
         }
 
-        internal void CreateClient(SocketAsyncEventArgs acceptedSocketEvent)
+        private void OnClientAccepted(object sender, SocketAsyncEventArgs e)
         {
+            var newClient = this._clientFactory.CreateClient<TUser>(e);
 
-            //SocketAsyncEventArgs readSocket = (this._receiver as NetServerReceiver).ReadPool.Pop();
+            if (!this._clients.TryAdd(newClient.Id, newClient))
+            {
+                // TODO: send error.
+            }
 
-            //if (readSocket == null)
-            //    return;
-
-            //var client = Activator.CreateInstance(typeof(T), acceptedSocketEvent.AcceptSocket) as T;
-
-            //if (client is NetServerClient netServerClient)
-            //    netServerClient.Server = this;
-
-            //if (this._clients.ContainsKey(client.Id))
-            //    throw new InvalidProgramException($"Client {client.Id} already exists in client list.");
-
-            //this._clients.TryAdd(client.Id, client);
-            //this.OnClientConnected(client);
-
-            //readSocket.UserToken = client;
-            //if (!acceptedSocketEvent.AcceptSocket.ReceiveAsync(readSocket))
-            //    this._receiver.Receive(readSocket);
+            // TODO: start receiveing
         }
     }
 }

@@ -1,7 +1,6 @@
 ﻿using Sylver.Network.Common;
 using Sylver.Network.Server;
 using System;
-using System.Net.Sockets;
 
 namespace Sylver.TCPServer
 {
@@ -18,11 +17,12 @@ namespace Sylver.TCPServer
     {
         public static void Main()
         {
-            var server = new Server();
+            using (var server = new Server())
+            {
+                server.Start();
 
-            server.Start();
-
-            Console.ReadKey();
+                Console.ReadKey();
+            }
         }
     }
 }
