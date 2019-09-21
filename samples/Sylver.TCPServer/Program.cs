@@ -10,14 +10,19 @@ namespace Sylver.TCPServer
 
     public class Server : NetServer<Client>
     {
-        
+        public Server(NetServerConfiguration configuration)
+            : base(configuration)
+        {
+        }
     }
 
     class Program
     {
         public static void Main()
         {
-            using (var server = new Server())
+            var configuration = new NetServerConfiguration("127.0.0.1", 4444);
+
+            using (var server = new Server(configuration))
             {
                 server.Start();
 

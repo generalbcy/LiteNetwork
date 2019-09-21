@@ -4,7 +4,7 @@ using System.Net;
 using System.Net.Sockets;
 using System.Runtime.CompilerServices;
 
-[assembly:InternalsVisibleTo("Sylver.Network.Tests")]
+[assembly: InternalsVisibleTo("Sylver.Network.Tests")]
 namespace Sylver.Network.Common
 {
     /// <summary>

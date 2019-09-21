@@ -11,13 +11,17 @@ namespace Sylver.Network.Server
     /// <summary>
     /// Provides an abstraction to manage a TCP server.
     /// </summary>
-    /// <typeparam name="TUser">The user type that the server will manage.</typeparam>
-    public abstract class NetServer<TUser> : NetConnection, INetServer
-        where TUser : class, INetServerClient
+    /// <typeparam name="TClient">The client type that the server will manage.</typeparam>
+    public class NetServer<TClient> : NetConnection, INetServer
+        where TClient : class, INetServerClient
     {
-        private readonly ConcurrentDictionary<Guid, TUser> _clients;
-        private readonly NetServerAcceptor<TUser> _acceptor;
-        private readonly NetServerClientFactory _clientFactory;
+        private readonly NetServerConfiguration _configuration;
+        private readonly BufferManager _bufferManager;
+        private readonly ConcurrentDictionary<Guid, TClient> _clients;
+        private readonly NetServerClientFactory<TClient> _clientFactory;
+        private readonly NetServerAcceptor<TClient> _acceptor;
+        private readonly NetServerReceiver<TClient> _receiver;
+
 
         /// <inheritdoc />
         public bool IsRunning { get; private set; }
@@ -25,12 +29,16 @@ namespace Sylver.Network.Server
         /// <summary>
         /// Creates a new <see cref="NetServer{TUser}"/> instance.
         /// </summary>
-        public NetServer()
+        public NetServer(NetServerConfiguration configuration)
         {
-            this._acceptor = new NetServerAcceptor<TUser>(this);
+            this._configuration = configuration;
+            this._bufferManager = new BufferManager(this._configuration.MaximumNumberOfConnections * this._configuration.ClientBufferSize * 2, this._configuration.ClientBufferSize);
+            this._acceptor = new NetServerAcceptor<TClient>(this);
             this._acceptor.OnClientAccepted += this.OnClientAccepted;
 
-            this._clientFactory = new NetServerClientFactory();
+            this._receiver = new NetServerReceiver<TClient>(this._bufferManager, this._configuration.MaximumNumberOfConnections);
+
+            this._clientFactory = new NetServerClientFactory<TClient>();
         }
 
         /// <inheritdoc />
@@ -47,8 +55,8 @@ namespace Sylver.Network.Server
 
             this.Socket = new Socket(AddressFamily.InterNetwork, SocketType.Stream, ProtocolType.Tcp);
             this.Socket.SetSocketOption(SocketOptionLevel.Socket, SocketOptionName.ReuseAddress, 1);
-            this.Socket.Bind(NetHelper.CreateIpEndPoint("127.0.0.1", 4444));
-            this.Socket.Listen(50);
+            this.Socket.Bind(NetHelper.CreateIpEndPoint(this._configuration.Host, this._configuration.Port));
+            this.Socket.Listen(this._configuration.Backlog);
 
             this.IsRunning = true;
             this._acceptor.StartAccept();
@@ -57,6 +65,7 @@ namespace Sylver.Network.Server
         /// <inheritdoc />
         public void Stop()
         {
+            // TODO: stop the server.
         }
 
         /// <summary>
@@ -66,14 +75,14 @@ namespace Sylver.Network.Server
         /// <param name="e">Accepted client socket async event arguments.</param>
         private void OnClientAccepted(object sender, SocketAsyncEventArgs e)
         {
-            var newClient = this._clientFactory.CreateClient<TUser>(e.AcceptSocket, null);
+            TClient newClient = this._clientFactory.CreateClient(e.AcceptSocket, null);
 
             if (!this._clients.TryAdd(newClient.Id, newClient))
             {
                 // TODO: send error.
             }
 
-            // TODO: start receiveing
+            this._receiver.InitializeClientAndStartReceiving(newClient);
         }
     }
 }

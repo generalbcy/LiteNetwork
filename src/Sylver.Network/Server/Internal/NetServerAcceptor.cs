@@ -76,7 +76,7 @@ namespace Sylver.Network.Server.Internal
             }
             else
             {
-                throw new InvalidOperationException("Unknown socket operation in accecptor.");
+                throw new InvalidOperationException($"Unknown '{e.LastOperation}' socket operation in accecptor.");
             }
         }
     }

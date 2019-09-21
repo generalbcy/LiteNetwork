@@ -1,22 +1,36 @@
-﻿using System.Net.Sockets;
+﻿using Microsoft.Extensions.DependencyInjection;
+using System;
+using System.Net.Sockets;
 using System.Runtime.CompilerServices;
 
 [assembly: InternalsVisibleTo("Sylver.Network.Tests")]
 namespace Sylver.Network.Server.Internal
 {
-    internal sealed class NetServerClientFactory
+    internal sealed class NetServerClientFactory<TClient>
+        where TClient : class, INetServerClient
     {
+        private readonly ObjectFactory _clientFactory;
+        private readonly IServiceProvider _serviceProvider;
+
+        /// <summary>
+        /// Creates a new <see cref="NetServerClientFactory{TClient}"/> instance.
+        /// </summary>
+        public NetServerClientFactory()
+        {
+            this._clientFactory = ActivatorUtilities.CreateFactory(typeof(TClient), new[] { typeof(Socket) });
+        }
+
         /// <summary>
         /// Creates a new client.
         /// </summary>
-        /// <typeparam name="TUser">Client type.</typeparam>
         /// <param name="acceptSocket">Accepted socket.</param>
         /// <param name="socketAsyncEvent">Socket async event arguments.</param>
         /// <returns>New client.</returns>
-        public TUser CreateClient<TUser>(Socket acceptSocket, SocketAsyncEventArgs socketAsyncEvent)
-            where TUser : class, INetServerClient
+        public TClient CreateClient(Socket acceptSocket, SocketAsyncEventArgs socketAsyncEvent)
         {
-            return default;
+            var newClient = this._clientFactory(this._serviceProvider, new[] { acceptSocket }) as TClient;
+
+            return newClient;
         }
     }
 }
