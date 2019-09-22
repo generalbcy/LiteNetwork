@@ -13,6 +13,6 @@ namespace Sylver.Network.Common
         /// <summary>
         /// Gets the user's connection socket.
         /// </summary>
-        Socket Socket { get; }
+        INetSocket Socket { get; }
     }
 }

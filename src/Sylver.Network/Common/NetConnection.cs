@@ -11,7 +11,7 @@ namespace Sylver.Network.Common
         public Guid Id { get; }
 
         /// <inheritdoc />
-        public Socket Socket { get; protected set; }
+        public INetSocket Socket { get; protected set; }
 
         /// <summary>
         /// Creates a new <see cref="NetConnection"/> instance.
@@ -28,7 +28,9 @@ namespace Sylver.Network.Common
         protected NetConnection(Socket socketConnection)
         {
             this.Id = Guid.NewGuid();
-            this.Socket = socketConnection;
+            
+            if (socketConnection != null)
+                this.Socket = new NetSocket(socketConnection);
         }
 
         /// <inheritdoc />

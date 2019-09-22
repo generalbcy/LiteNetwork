@@ -21,7 +21,7 @@ namespace Sylver.Network.Tests.Server
 
             Assert.NotNull(newClient);
             Assert.IsType<CustomClient>(newClient);
-            Assert.Equal(socket, newClient.Socket);
+            Assert.Equal(socket, newClient.Socket.GetSocket());
         }
     }
 }
