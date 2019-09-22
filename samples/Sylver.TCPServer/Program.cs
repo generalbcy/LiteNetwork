@@ -1,11 +1,16 @@
 ﻿using Sylver.Network.Common;
 using Sylver.Network.Server;
 using System;
+using System.Net.Sockets;
 
 namespace Sylver.TCPServer
 {
     public class Client : NetConnection, INetServerClient
     {
+        public Client(Socket socketConnection) 
+            : base(socketConnection)
+        {
+        }
     }
 
     public class Server : NetServer<Client>

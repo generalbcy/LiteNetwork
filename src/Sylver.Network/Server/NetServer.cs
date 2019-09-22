@@ -22,7 +22,6 @@ namespace Sylver.Network.Server
         private readonly NetServerAcceptor<TClient> _acceptor;
         private readonly NetServerReceiver<TClient> _receiver;
 
-
         /// <inheritdoc />
         public bool IsRunning { get; private set; }
 
@@ -33,12 +32,12 @@ namespace Sylver.Network.Server
         {
             this._configuration = configuration;
             this._bufferManager = new BufferManager(this._configuration.MaximumNumberOfConnections * this._configuration.ClientBufferSize * 2, this._configuration.ClientBufferSize);
+            this._clientFactory = new NetServerClientFactory<TClient>();
+            this._clients = new ConcurrentDictionary<Guid, TClient>();
             this._acceptor = new NetServerAcceptor<TClient>(this);
             this._acceptor.OnClientAccepted += this.OnClientAccepted;
 
             this._receiver = new NetServerReceiver<TClient>(this._bufferManager, this._configuration.MaximumNumberOfConnections);
-
-            this._clientFactory = new NetServerClientFactory<TClient>();
         }
 
         /// <inheritdoc />
@@ -75,7 +74,7 @@ namespace Sylver.Network.Server
         /// <param name="e">Accepted client socket async event arguments.</param>
         private void OnClientAccepted(object sender, SocketAsyncEventArgs e)
         {
-            TClient newClient = this._clientFactory.CreateClient(e.AcceptSocket, null);
+            TClient newClient = this._clientFactory.CreateClient(e.AcceptSocket);
 
             if (!this._clients.TryAdd(newClient.Id, newClient))
             {

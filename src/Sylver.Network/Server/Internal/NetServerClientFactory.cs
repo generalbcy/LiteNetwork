@@ -24,9 +24,8 @@ namespace Sylver.Network.Server.Internal
         /// Creates a new client.
         /// </summary>
         /// <param name="acceptSocket">Accepted socket.</param>
-        /// <param name="socketAsyncEvent">Socket async event arguments.</param>
         /// <returns>New client.</returns>
-        public TClient CreateClient(Socket acceptSocket, SocketAsyncEventArgs socketAsyncEvent)
+        public TClient CreateClient(Socket acceptSocket)
         {
             var newClient = this._clientFactory(this._serviceProvider, new[] { acceptSocket }) as TClient;
 

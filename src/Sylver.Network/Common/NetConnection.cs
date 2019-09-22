@@ -16,7 +16,7 @@ namespace Sylver.Network.Common
         /// <summary>
         /// Creates a new <see cref="NetConnection"/> instance.
         /// </summary>
-        protected NetConnection()
+        protected internal NetConnection()
             : this(null)
         {
         }
