@@ -2,6 +2,7 @@
 using Sylver.Network.Common;
 using Sylver.Network.Server;
 using Sylver.Network.Tests.Mocks;
+using System;
 using System.Net.Sockets;
 using Xunit;
 
@@ -24,10 +25,7 @@ namespace Sylver.Network.Tests.Server
         [Fact]
         public void StartServerTest()
         {
-            Assert.False(this._server.Object.IsRunning);
-
             this._server.Object.Start();
-
             Assert.True(this._server.Object.IsRunning);
             this._socketMock.VerifySetSocketOptions(SocketOptionLevel.Socket, SocketOptionName.ReuseAddress, 1);
             this._socketMock.VerifyBind(NetHelper.CreateIpEndPoint(this._serverConfiguration.Host, this._serverConfiguration.Port));
@@ -35,9 +33,16 @@ namespace Sylver.Network.Tests.Server
         }
 
         [Fact]
+        public void StartServerTwiceTest()
+        {
+            this._server.Object.Start();
+            Assert.True(this._server.Object.IsRunning);
+            Assert.Throws<InvalidOperationException>(() => this._server.Object.Start());
+        }
+
+        [Fact]
         public void StopServerTest()
         {
-            Assert.False(this._server.Object.IsRunning);
             this._server.Object.Start();
             Assert.True(this._server.Object.IsRunning);
             this._server.Object.Stop();
