@@ -46,12 +46,6 @@ namespace Sylver.Network.Server
             if (this.IsRunning)
                 throw new InvalidOperationException("Server is already running.");
 
-            if (this.Socket != null)
-            {
-                this.Socket.Dispose();
-                this.Socket = null;
-            }
-
             this.Socket = new NetSocket(new Socket(AddressFamily.InterNetwork, SocketType.Stream, ProtocolType.Tcp));
             this.Socket.SetSocketOption(SocketOptionLevel.Socket, SocketOptionName.ReuseAddress, 1);
             this.Socket.Bind(NetHelper.CreateIpEndPoint(this._configuration.Host, this._configuration.Port));
@@ -64,7 +58,13 @@ namespace Sylver.Network.Server
         /// <inheritdoc />
         public void Stop()
         {
-            // TODO: stop the server.
+            if (this.Socket != null)
+            {
+                this.Socket.Dispose();
+                this.Socket = null;
+            }
+
+            this.IsRunning = false;
         }
 
         /// <summary>
