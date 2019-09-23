@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Diagnostics.CodeAnalysis;
 using System.Net.Sockets;
 
 namespace Sylver.Network.Server.Internal
@@ -47,7 +48,7 @@ namespace Sylver.Network.Server.Internal
         /// Process a new connected client.
         /// </summary>
         /// <param name="socketAsyncEvent">Socket async event arguments.</param>
-        private void ProcessAccept(SocketAsyncEventArgs socketAsyncEvent)
+        public void ProcessAccept(SocketAsyncEventArgs socketAsyncEvent)
         {
             if (socketAsyncEvent.SocketError == SocketError.Success)
             {
@@ -61,6 +62,7 @@ namespace Sylver.Network.Server.Internal
         /// </summary>
         /// <param name="sender">Sender.</param>
         /// <param name="e">Socket async event arguments.</param>
+        [ExcludeFromCodeCoverage]
         private void OnSocketCompleted(object sender, SocketAsyncEventArgs e)
         {
             if (sender == null)
