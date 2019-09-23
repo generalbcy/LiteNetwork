@@ -1,7 +1,4 @@
-﻿using System.Runtime.CompilerServices;
-
-[assembly: InternalsVisibleTo("Sylver.Network.Tests")]
-namespace Sylver.Network.Common
+﻿namespace Sylver.Network.Common
 {
     internal sealed class NetToken<TUser> where TUser : INetConnection
     {

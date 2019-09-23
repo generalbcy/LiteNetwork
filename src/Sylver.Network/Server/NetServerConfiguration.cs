@@ -1,7 +1,4 @@
-﻿using System.Runtime.CompilerServices;
-
-[assembly: InternalsVisibleTo("Sylver.Network.Tests")]
-namespace Sylver.Network.Server
+﻿namespace Sylver.Network.Server
 {
     /// <summary>
     /// Provides properties to configure a new <see cref="NetServer{T}"/> instance.

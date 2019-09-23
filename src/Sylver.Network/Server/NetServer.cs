@@ -3,9 +3,7 @@ using Sylver.Network.Server.Internal;
 using System;
 using System.Collections.Concurrent;
 using System.Net.Sockets;
-using System.Runtime.CompilerServices;
 
-[assembly: InternalsVisibleTo("Sylver.Network.Tests")]
 namespace Sylver.Network.Server
 {
     /// <summary>

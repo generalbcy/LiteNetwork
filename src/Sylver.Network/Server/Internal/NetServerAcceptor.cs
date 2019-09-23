@@ -1,8 +1,6 @@
 ﻿using System;
 using System.Net.Sockets;
-using System.Runtime.CompilerServices;
 
-[assembly: InternalsVisibleTo("Sylver.Network.Tests")]
 namespace Sylver.Network.Server.Internal
 {
     /// <summary>

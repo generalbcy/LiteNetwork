@@ -9,11 +9,14 @@ namespace Sylver.Network.Tests.Mocks
     {
         private readonly Mock<INetSocket> _socketMock;
 
-        public SocketMock(bool acceptAsyncResult, bool receiveAsyncResult)
+        public SocketMock()
         {
             this._socketMock = new Mock<INetSocket>();
-            this._socketMock.Setup(x => x.AcceptAsync(It.IsAny<SocketAsyncEventArgs>())).Returns<SocketAsyncEventArgs>(x => acceptAsyncResult);
-            this._socketMock.Setup(x => x.ReceiveAsync(It.IsAny<SocketAsyncEventArgs>())).Returns<SocketAsyncEventArgs>(x => receiveAsyncResult);
+        }
+
+        public void ConfigureAcceptResult(bool result)
+        {
+            this._socketMock.Setup(x => x.AcceptAsync(It.IsAny<SocketAsyncEventArgs>())).Returns<SocketAsyncEventArgs>(x => result);
         }
 
         public bool AcceptAsync(SocketAsyncEventArgs socketAsyncEvent)
@@ -39,6 +42,11 @@ namespace Sylver.Network.Tests.Mocks
         public void Listen(int backlog)
         {
             this._socketMock.Object.Listen(backlog);
+        }
+
+        public void ConfigureReceiveResult(bool result)
+        {
+            this._socketMock.Setup(x => x.ReceiveAsync(It.IsAny<SocketAsyncEventArgs>())).Returns<SocketAsyncEventArgs>(x => result);
         }
 
         public bool ReceiveAsync(SocketAsyncEventArgs socketAsyncEvent)
