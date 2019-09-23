@@ -12,13 +12,13 @@ namespace Sylver.Network.Tests.Server
     {
         private readonly SocketMock _socketMock;
         private readonly NetServerConfiguration _serverConfiguration;
-        private readonly Mock<NetServer<CustomClient>> _server;
+        private readonly NetServerMock<CustomClient> _server;
 
         public NetServerTests()
         {
             this._socketMock = new SocketMock();
             this._serverConfiguration = new NetServerConfiguration("127.0.0.1", 4444, 50, 100, 128);
-            this._server = new Mock<NetServer<CustomClient>>(this._serverConfiguration);
+            this._server = new NetServerMock<CustomClient>(this._serverConfiguration);
             this._server.SetupGet(x => x.Socket).Returns(this._socketMock);
             this._socketMock.ConfigureAcceptResult(true);
         }
