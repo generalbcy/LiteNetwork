@@ -1,4 +1,5 @@
 ﻿using Sylver.Network.Common;
+using Sylver.Network.Data;
 using Sylver.Network.Server.Internal;
 using System;
 using System.Collections.Concurrent;
@@ -14,14 +15,27 @@ namespace Sylver.Network.Server
         where TClient : class, INetServerClient
     {
         private readonly NetServerConfiguration _configuration;
-        private readonly BufferManager _bufferManager;
         private readonly ConcurrentDictionary<Guid, TClient> _clients;
         private readonly NetServerClientFactory<TClient> _clientFactory;
         private readonly NetServerAcceptor<TClient> _acceptor;
         private readonly NetServerReceiver<TClient> _receiver;
 
+        private IPacketProcessor _packetProcessor;
+
         /// <inheritdoc />
         public bool IsRunning { get; private set; }
+
+        /// <inheritdoc />
+        public IPacketProcessor PacketProcessor
+        {
+            get => this._packetProcessor;
+            set
+            {
+                if (this.IsRunning)
+                    throw new InvalidOperationException("Cannot update packet processor when server is running.");
+                this._packetProcessor = value;
+            }
+        }
 
         /// <summary>
         /// Creates a new <see cref="NetServer{TUser}"/> instance.
@@ -29,13 +43,14 @@ namespace Sylver.Network.Server
         public NetServer(NetServerConfiguration configuration)
         {
             this._configuration = configuration;
-            this._bufferManager = new BufferManager(this._configuration.MaximumNumberOfConnections * this._configuration.ClientBufferSize * 2, this._configuration.ClientBufferSize);
             this._clientFactory = new NetServerClientFactory<TClient>();
             this._clients = new ConcurrentDictionary<Guid, TClient>();
             this._acceptor = new NetServerAcceptor<TClient>(this);
             this._acceptor.OnClientAccepted += this.OnClientAccepted;
 
-            this._receiver = new NetServerReceiver<TClient>(this._bufferManager, this._configuration.MaximumNumberOfConnections);
+            this._receiver = new NetServerReceiver<TClient>(this);
+
+            this._packetProcessor = new NetPacketProcessor();
         }
 
         /// <inheritdoc />
@@ -79,7 +94,7 @@ namespace Sylver.Network.Server
                 // TODO: send error.
             }
 
-            this._receiver.InitializeClientAndStartReceiving(newClient);
+            this._receiver.StartReceiving(newClient);
         }
     }
 }

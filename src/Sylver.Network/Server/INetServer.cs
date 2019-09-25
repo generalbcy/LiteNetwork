@@ -1,4 +1,5 @@
 ﻿using Sylver.Network.Common;
+using Sylver.Network.Data;
 using System;
 
 namespace Sylver.Network.Server
@@ -13,8 +14,20 @@ namespace Sylver.Network.Server
         /// </summary>
         bool IsRunning { get; }
 
+        /// <summary>
+        /// Gets or sest the server's packet processor.
+        /// </summary>
+        /// <exception cref="InvalidOperationException"></exception>
+        IPacketProcessor PacketProcessor { get; set; }
+
+        /// <summary>
+        /// Starts the server.
+        /// </summary>
         void Start();
 
+        /// <summary>
+        /// Stops the server.
+        /// </summary>
         void Stop();
     }
 }

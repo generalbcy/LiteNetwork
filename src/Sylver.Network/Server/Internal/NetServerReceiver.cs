@@ -1,58 +1,41 @@
-﻿using Sylver.Network.Common;
+﻿using Microsoft.Extensions.ObjectPool;
+using Sylver.Network.Common;
+using Sylver.Network.Data;
 using System;
+using System.Buffers;
 using System.Net.Sockets;
 
 namespace Sylver.Network.Server.Internal
 {
-    internal sealed class NetServerReceiver<TClient> : IDisposable
+    internal sealed class NetServerReceiver<TClient>
         where TClient : class, INetServerClient
     {
         private readonly ObjectPool<SocketAsyncEventArgs> _readPool;
+        private readonly NetServer<TClient> _server;
 
         /// <summary>
         /// Creates a new <see cref="NetServerReceiver{TClient}"/> instance.
         /// </summary>
-        /// <param name="bufferManager">Buffer manager.</param>
-        /// <param name="maxClients">Maximum amount of clients.</param>
-        public NetServerReceiver(BufferManager bufferManager, int maxClients)
+        public NetServerReceiver(NetServer<TClient> server)
         {
-            this._readPool = new ObjectPool<SocketAsyncEventArgs>();
-
-            for (int i = 0; i < maxClients; i++)
-            {
-                var socketEvent = new SocketAsyncEventArgs();
-                socketEvent.Completed += this.OnCompleted;
-
-                bufferManager.SetBuffer(socketEvent);
-
-                this._readPool.Push(socketEvent);
-            }
+            this._readPool = ObjectPool.Create<SocketAsyncEventArgs>();
+            this._server = server;
         }
 
         /// <summary>
         /// Initialize the client and starts receving data.
         /// </summary>
         /// <param name="client">Client to initialize.</param>
-        public void InitializeClientAndStartReceiving(TClient client)
+        public void StartReceiving(TClient client)
         {
             var token = new NetToken<TClient>(client);
-            SocketAsyncEventArgs socketEvent = this._readPool.Pop();
+            SocketAsyncEventArgs socketAsyncEvent = this.GetSocketEventFromPool();
 
-            socketEvent.UserToken = token;
+            socketAsyncEvent.UserToken = token;
 
-            this.StartReceiving(token, socketEvent);
-        }
-
-        /// <summary>
-        /// Starts receving data.
-        /// </summary>
-        /// <param name="clientToken">Client token.</param>
-        /// <param name="socketAsyncEvent">Socket async event arguments.</param>
-        private void StartReceiving(NetToken<TClient> clientToken, SocketAsyncEventArgs socketAsyncEvent)
-        {
-            if (!clientToken.Client.Socket.ReceiveAsync(socketAsyncEvent))
+            if (!client.Socket.ReceiveAsync(socketAsyncEvent))
             {
-                this.ProcessReceive(clientToken, socketAsyncEvent);
+                this.ProcessReceive(token, socketAsyncEvent);
             }
         }
 
@@ -70,20 +53,21 @@ namespace Sylver.Network.Server.Internal
 
             if (socketAsyncEvent.SocketError == SocketError.Success && socketAsyncEvent.BytesTransferred > 0)
             {
-                // TODO: execute framing algorithm
+                byte[] message = this.Receive(clientToken, socketAsyncEvent, this._server.PacketProcessor);
+
+                this.ReturnSocketEvent(socketAsyncEvent);
+
+                if (message != null)
+                {
+                    // TODO: dispatch messages to client.
+                }
+
+                this.StartReceiving(clientToken.Client);
             }
             else
             {
                 // TODO: close connection
             }
-        }
-
-        /// <summary>
-        /// Disposes the receiver resources.
-        /// </summary>
-        public void Dispose()
-        {
-            this._readPool.Dispose();
         }
 
         /// <summary>
@@ -104,6 +88,35 @@ namespace Sylver.Network.Server.Internal
             {
                 throw new InvalidOperationException($"Unknown '{e.LastOperation}' socket operation in receiver.");
             }
+        }
+
+        /// <summary>
+        /// Gets a socket event from the event pool.
+        /// </summary>
+        /// <returns>Available <see cref="SocketAsyncEventArgs"/>.</returns>
+        private SocketAsyncEventArgs GetSocketEventFromPool()
+        {
+            SocketAsyncEventArgs socketAsyncEvent = this._readPool.Get();
+
+            byte[] buffer = ArrayPool<byte>.Shared.Rent(32);
+            socketAsyncEvent.SetBuffer(buffer, 0, buffer.Length);
+
+            return socketAsyncEvent;
+        }
+
+        /// <summary>
+        /// Returns the socket event into the event pool.
+        /// </summary>
+        /// <param name="socketAsyncEvent">Socket async event to return.</param>
+        private void ReturnSocketEvent(SocketAsyncEventArgs socketAsyncEvent)
+        {
+            ArrayPool<byte>.Shared.Return(socketAsyncEvent.Buffer);
+            this._readPool.Return(socketAsyncEvent);
+        }
+
+        private byte[] Receive(NetToken<TClient> token, SocketAsyncEventArgs socketAsyncEvent, IPacketProcessor packetProcessor)
+        {
+            return null;
         }
     }
 }
