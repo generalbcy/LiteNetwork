@@ -16,6 +16,9 @@ namespace Sylver.Network.Common
             this._socket = socket;
         }
 
+        /// <inheritidoc />
+        public int GetAvailable() => this._socket.Available;
+
         /// <inheritdoc />
         public Socket GetSocket() => this._socket;
 

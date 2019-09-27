@@ -3,6 +3,7 @@ using Sylver.Network.Common;
 using Sylver.Network.Data;
 using System;
 using System.Buffers;
+using System.Linq;
 using System.Net.Sockets;
 
 namespace Sylver.Network.Server.Internal
@@ -26,16 +27,19 @@ namespace Sylver.Network.Server.Internal
         /// Initialize the client and starts receving data.
         /// </summary>
         /// <param name="client">Client to initialize.</param>
-        public void StartReceiving(TClient client)
+        public void StartReceivingData(TClient client, NetToken<TClient> existingToken = null)
         {
-            var token = new NetToken<TClient>(client);
             SocketAsyncEventArgs socketAsyncEvent = this.GetSocketEventFromPool();
+            socketAsyncEvent.UserToken = existingToken ?? new NetToken<TClient>(client);
 
-            socketAsyncEvent.UserToken = token;
+            this.ReceiveData(client, socketAsyncEvent);
+        }
 
+        private void ReceiveData(TClient client, SocketAsyncEventArgs socketAsyncEvent)
+        {
             if (!client.Socket.ReceiveAsync(socketAsyncEvent))
             {
-                this.ProcessReceive(token, socketAsyncEvent);
+                this.ProcessReceive(socketAsyncEvent.UserToken as NetToken<TClient>, socketAsyncEvent);
             }
         }
 
@@ -53,16 +57,7 @@ namespace Sylver.Network.Server.Internal
 
             if (socketAsyncEvent.SocketError == SocketError.Success && socketAsyncEvent.BytesTransferred > 0)
             {
-                byte[] message = this.Receive(clientToken, socketAsyncEvent, this._server.PacketProcessor);
-
-                this.ReturnSocketEvent(socketAsyncEvent);
-
-                if (message != null)
-                {
-                    // TODO: dispatch messages to client.
-                }
-
-                this.StartReceiving(clientToken.Client);
+                // TODO: receive data
             }
             else
             {
@@ -100,6 +95,7 @@ namespace Sylver.Network.Server.Internal
 
             byte[] buffer = ArrayPool<byte>.Shared.Rent(32);
             socketAsyncEvent.SetBuffer(buffer, 0, buffer.Length);
+            socketAsyncEvent.Completed += this.OnCompleted;
 
             return socketAsyncEvent;
         }
@@ -110,13 +106,12 @@ namespace Sylver.Network.Server.Internal
         /// <param name="socketAsyncEvent">Socket async event to return.</param>
         private void ReturnSocketEvent(SocketAsyncEventArgs socketAsyncEvent)
         {
-            ArrayPool<byte>.Shared.Return(socketAsyncEvent.Buffer);
+            ArrayPool<byte>.Shared.Return(socketAsyncEvent.Buffer, true);
             this._readPool.Return(socketAsyncEvent);
         }
 
-        private byte[] Receive(NetToken<TClient> token, SocketAsyncEventArgs socketAsyncEvent, IPacketProcessor packetProcessor)
+        private void ParseIncomingData(NetToken<TClient> token, SocketAsyncEventArgs socketAsyncEvent, IPacketProcessor packetProcessor)
         {
-            return null;
         }
     }
 }

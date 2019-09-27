@@ -10,6 +10,12 @@ namespace Sylver.Network.Common
     public interface INetSocket : IDisposable
     {
         /// <summary>
+        /// Gets the number of bytes available.
+        /// </summary>
+        /// <returns></returns>
+        int GetAvailable();
+
+        /// <summary>
         /// Gets the underlaying socket instance.
         /// </summary>
         /// <returns>.NET Socket.</returns>

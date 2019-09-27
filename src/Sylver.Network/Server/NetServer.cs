@@ -94,7 +94,7 @@ namespace Sylver.Network.Server
                 // TODO: send error.
             }
 
-            this._receiver.StartReceiving(newClient);
+            this._receiver.StartReceivingData(newClient);
         }
     }
 }
