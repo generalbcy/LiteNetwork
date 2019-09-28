@@ -34,6 +34,11 @@ namespace Sylver.Network.Tests.Mocks
             this.SocketMock.Object.Dispose();
         }
 
+        public int GetAvailable()
+        {
+            return this.SocketMock.Object.GetAvailable();
+        }
+
         public Socket GetSocket()
         {
             return this.SocketMock.Object.GetSocket();
@@ -77,6 +82,11 @@ namespace Sylver.Network.Tests.Mocks
         public void VerifyGetSocket()
         {
             this.SocketMock.Verify(x => x.GetSocket(), Times.Once);
+        }
+
+        public void VerifyGetAvailable()
+        {
+            this.SocketMock.Verify(x => x.GetAvailable(), Times.Once);
         }
 
         public void VerifyListen(int backlog)

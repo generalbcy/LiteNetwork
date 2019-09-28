@@ -80,6 +80,19 @@ namespace Sylver.Network.Server
             this.IsRunning = false;
         }
 
+        /// <inheritdoc />
+        public void DisconnectClient(Guid clientId)
+        {
+            if (!this._clients.TryRemove(clientId, out TClient client))
+            {
+                // TODO: error; cannot find client by id.
+                return;
+            }
+
+            // TODO: raise event; on client disconnected
+            client.Dispose();
+        }
+
         /// <summary>
         /// Fired when a client is accepted to the server.
         /// </summary>
@@ -93,6 +106,8 @@ namespace Sylver.Network.Server
             {
                 // TODO: send error.
             }
+
+            Console.WriteLine("Connected");
 
             this._receiver.StartReceivingData(newClient);
         }

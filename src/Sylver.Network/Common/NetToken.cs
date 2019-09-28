@@ -1,11 +1,14 @@
-﻿namespace Sylver.Network.Common
+﻿using System;
+
+namespace Sylver.Network.Common
 {
-    internal sealed class NetToken<TUser> where TUser : INetConnection
+    internal sealed class NetToken<TUser> : IDisposable
+        where TUser : class, INetConnection
     {
         /// <summary>
         /// Gets the client.
         /// </summary>
-        public TUser Client { get; }
+        public TUser Client { get; private set; }
 
         /// <summary>
         /// Gets or sets the message header data.
@@ -38,6 +41,11 @@
         public int DataStartOffset { get; set; }
 
         /// <summary>
+        /// Gets a value that indicates if the message is complete.
+        /// </summary>
+        public bool IsMessageComplete => this.ReceivedMessageBytesCount == this.MessageSize.Value;
+
+        /// <summary>
         /// Creates a new <see cref="NetToken"/> instance.
         /// </summary>
         /// <param name="client">Client instance.</param>
@@ -51,11 +59,19 @@
         /// </summary>
         public void ResetData()
         {
+            this.DataStartOffset = 0;
             this.ReceivedHeaderBytesCount = 0;
             this.ReceivedMessageBytesCount = 0;
             this.HeaderData = null;
             this.MessageData = null;
             this.MessageSize = null;
+        }
+
+        /// <inheritdoc />
+        public void Dispose()
+        {
+            this.ResetData();
+            this.Client = null;
         }
     }
 }

@@ -29,5 +29,11 @@ namespace Sylver.Network.Server
         /// Stops the server.
         /// </summary>
         void Stop();
+
+        /// <summary>
+        /// Disconnects a client.
+        /// </summary>
+        /// <param name="clientId">Client id.</param>
+        void DisconnectClient(Guid clientId);
     }
 }

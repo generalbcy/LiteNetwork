@@ -1,9 +1,8 @@
 ﻿using System;
-using System.Net.Sockets;
 
 namespace Sylver.Network.Common
 {
-    public interface INetConnection
+    public interface INetConnection : IDisposable
     {
         /// <summary>
         /// Gets the user's connection unique identifier.
