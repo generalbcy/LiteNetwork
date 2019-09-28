@@ -64,9 +64,9 @@ namespace Sylver.Network.Tests.Mocks
             this.SocketMock.Object.SetSocketOption(optionLevel, optionName, optionValue);
         }
 
-        public void VerifyAccept(SocketAsyncEventArgs socketAsyncEvent)
+        public void VerifyAccept(SocketAsyncEventArgs socketAsyncEvent, Times times)
         {
-            this.SocketMock.Verify(x => x.AcceptAsync(socketAsyncEvent), Times.Once);
+            this.SocketMock.Verify(x => x.AcceptAsync(socketAsyncEvent), times);
         }
 
         public void VerifyBind(EndPoint localEP)

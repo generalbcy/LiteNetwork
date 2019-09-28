@@ -32,19 +32,33 @@ namespace Sylver.Network.Tests.Server
         [Fact]
         public void StartAcceptingClientsTest()
         {
-            bool receiveData = true;
+            this.ConfigureSocketAcceptAsyncResult(true);
+            this._serverAcceptor.StartAccept();
+            this._serverSocket.VerifyAccept(this._serverAcceptor.SocketEvent, Times.AtLeastOnce());
+        }
+
+        [Fact]
+        public void AcceptClient_CompletedEventFired()
+        {
+            this.ConfigureSocketAcceptAsyncResult(false);
+            this._serverAcceptor.StartAccept();
+            this._serverSocket.VerifyAccept(this._serverAcceptor.SocketEvent, Times.Once());
+
+            Assert.Null(this._serverAcceptor.SocketEvent.AcceptSocket);
+        }
+
+        private void ConfigureSocketAcceptAsyncResult(bool receiveData)
+        {
             this._serverSocket.SocketMock.Setup(x => x.AcceptAsync(It.IsAny<SocketAsyncEventArgs>())).Returns<SocketAsyncEventArgs>(x =>
             {
                 bool instantReceive = receiveData == true;
-                receiveData = false;
+                receiveData = !receiveData;
 
                 x.SocketError = SocketError.Success;
                 x.AcceptSocket = this._acceptedSocket.GetSocket();
 
                 return !instantReceive; // returning false because "AcceptAsync()" returns false if accepted instantly
             });
-
-            this._serverAcceptor.StartAccept();
         }
     }
 }

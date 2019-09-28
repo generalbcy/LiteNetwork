@@ -1,5 +1,5 @@
-﻿using Moq;
-using Sylver.Network.Common;
+﻿using Sylver.Network.Common;
+using Sylver.Network.Data;
 using Sylver.Network.Server;
 using Sylver.Network.Tests.Mocks;
 using System;
@@ -24,7 +24,7 @@ namespace Sylver.Network.Tests.Server
         }
 
         [Fact]
-        public void StartServerTest()
+        public void StartServer_Test()
         {
             this._server.Object.Start();
             Assert.True(this._server.Object.IsRunning);
@@ -34,7 +34,7 @@ namespace Sylver.Network.Tests.Server
         }
 
         [Fact]
-        public void StartServerTwiceTest()
+        public void StartServerTwice_Test()
         {
             this._server.Object.Start();
             Assert.True(this._server.Object.IsRunning);
@@ -42,13 +42,39 @@ namespace Sylver.Network.Tests.Server
         }
 
         [Fact]
-        public void StopServerTest()
+        public void StopServer_Test()
         {
             this._server.Object.Start();
             Assert.True(this._server.Object.IsRunning);
             this._server.Object.Stop();
             Assert.False(this._server.Object.IsRunning);
             this._socketMock.VerifyDispose();
+        }
+
+        [Fact]
+        public void ChangePacketProcessor_BeforeStart_Test()
+        {
+            Assert.NotNull(this._server.Object.PacketProcessor);
+            Assert.IsType<NetPacketProcessor>(this._server.Object.PacketProcessor);
+            this._server.Object.PacketProcessor = new CustomNetPacketProcessor();
+
+            Assert.IsType<CustomNetPacketProcessor>(this._server.Object.PacketProcessor);
+
+            this._server.Object.Start();
+
+            Assert.Equal(sizeof(long), this._server.Object.PacketProcessor.HeaderSize);
+            Assert.False(this._server.Object.PacketProcessor.IncludeHeader);
+        }
+
+        [Fact]
+        public void ChangePacketProcessor_AfterStart_Test()
+        {
+            Assert.NotNull(this._server.Object.PacketProcessor);
+            Assert.IsType<NetPacketProcessor>(this._server.Object.PacketProcessor);
+
+            this._server.Object.Start();
+
+            Assert.Throws<InvalidOperationException>(() => this._server.Object.PacketProcessor = new CustomNetPacketProcessor());
         }
     }
 }

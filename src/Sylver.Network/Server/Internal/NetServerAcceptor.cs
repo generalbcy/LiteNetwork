@@ -12,7 +12,11 @@ namespace Sylver.Network.Server.Internal
         where TUser : class, INetServerClient
     {
         private readonly NetServer<TUser> _server;
-        private readonly SocketAsyncEventArgs _socketEvent;
+
+        /// <summary>
+        /// Gets the acceptor socket async event arguments.
+        /// </summary>
+        internal SocketAsyncEventArgs SocketEvent { get; }
 
         /// <summary>
         /// Event fired when a client is accepted.
@@ -26,8 +30,8 @@ namespace Sylver.Network.Server.Internal
         public NetServerAcceptor(NetServer<TUser> server)
         {
             this._server = server;
-            this._socketEvent = new SocketAsyncEventArgs();
-            this._socketEvent.Completed += this.OnSocketCompleted;
+            this.SocketEvent = new SocketAsyncEventArgs();
+            this.SocketEvent.Completed += this.OnSocketCompleted;
         }
 
         /// <summary>
@@ -35,12 +39,12 @@ namespace Sylver.Network.Server.Internal
         /// </summary>
         public void StartAccept()
         {
-            if (this._socketEvent.AcceptSocket != null)
-                this._socketEvent.AcceptSocket = null;
+            if (this.SocketEvent.AcceptSocket != null)
+                this.SocketEvent.AcceptSocket = null;
 
-            if (!this._server.Socket.AcceptAsync(this._socketEvent))
+            if (!this._server.Socket.AcceptAsync(this.SocketEvent))
             {
-                this.ProcessAccept(this._socketEvent);
+                this.ProcessAccept(this.SocketEvent);
             }
         }
 
@@ -48,7 +52,7 @@ namespace Sylver.Network.Server.Internal
         /// Process a new connected client.
         /// </summary>
         /// <param name="socketAsyncEvent">Socket async event arguments.</param>
-        public void ProcessAccept(SocketAsyncEventArgs socketAsyncEvent)
+        private void ProcessAccept(SocketAsyncEventArgs socketAsyncEvent)
         {
             if (socketAsyncEvent.SocketError == SocketError.Success)
             {

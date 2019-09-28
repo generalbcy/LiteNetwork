@@ -31,11 +31,6 @@
         public int Backlog { get; }
 
         /// <summary>
-        /// Gets the maximum number of connections allowed on the server.
-        /// </summary>
-        public int MaximumNumberOfConnections { get; }
-
-        /// <summary>
         /// Gets the handled client buffer size.
         /// </summary>
         public int ClientBufferSize { get; }
