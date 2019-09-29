@@ -72,10 +72,6 @@ namespace Sylver.Network.Server.Internal
 
                     if (clientToken.IsMessageComplete)
                     {
-                        byte[] test = clientToken.HeaderData.Concat(clientToken.MessageData).ToArray();
-
-                        string a = "[" + string.Join(", ", test) + "]";
-
                         var message = clientToken.MessageData.Skip(4).Take(clientToken.MessageSize.Value - 4).ToArray();
 
                         Console.WriteLine($"Received {clientToken.Client.Id}: '{Encoding.UTF8.GetString(message)}'");

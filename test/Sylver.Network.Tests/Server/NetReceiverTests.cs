@@ -17,7 +17,7 @@ namespace Sylver.Network.Tests.Server
 
         public NetReceiverTests()
         {
-            this._serverConfiguration = new NetServerConfiguration("127.0.0.1", 4444, 50, 128);
+            this._serverConfiguration = new NetServerConfiguration("127.0.0.1", 4444);
             this._server = new NetServerMock<CustomClient>(this._serverConfiguration);
             this._serverReceiver = new NetServerReceiver<CustomClient>(this._server.Object);
             this._clientSocketMock = new NetSocketMock();

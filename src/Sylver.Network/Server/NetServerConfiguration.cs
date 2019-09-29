@@ -40,9 +40,30 @@
         /// </summary>
         /// <param name="host">Server host address.</param>
         /// <param name="port">Server listening port.</param>
+        public NetServerConfiguration(string host, int port)
+            : this(host, port, DefaultBacklog, DefaultClientBufferSize)
+        {
+        }
+
+        /// <summary>
+        /// Creates a new basic <see cref="NetServerConfiguration"/> instance.
+        /// </summary>
+        /// <param name="host">Server host address.</param>
+        /// <param name="port">Server listening port.</param>
+        /// <param name="backlog">Maximum of connections in accept queue.</param>
+        public NetServerConfiguration(string host, int port, int backlog)
+            : this(host, port, backlog, DefaultClientBufferSize)
+        {
+        }
+
+        /// <summary>
+        /// Creates a new basic <see cref="NetServerConfiguration"/> instance.
+        /// </summary>
+        /// <param name="host">Server host address.</param>
+        /// <param name="port">Server listening port.</param>
         /// <param name="backlog">Maximum of connections in accept queue.</param>
         /// <param name="clientBufferSize">Allocated memory buffer per clients.</param>
-        public NetServerConfiguration(string host, int port, int backlog = DefaultBacklog, int clientBufferSize = DefaultClientBufferSize)
+        public NetServerConfiguration(string host, int port, int backlog, int clientBufferSize)
         {
             this.Host = host;
             this.Port = port;
