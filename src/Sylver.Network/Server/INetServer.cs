@@ -21,6 +21,11 @@ namespace Sylver.Network.Server
         IPacketProcessor PacketProcessor { get; set; }
 
         /// <summary>
+        /// Gets the server configuration.
+        /// </summary>
+        NetServerConfiguration ServerConfiguration { get; }
+
+        /// <summary>
         /// Starts the server.
         /// </summary>
         void Start();

@@ -43,6 +43,7 @@ namespace Sylver.Network.Tests.Server
             this.ConfigureSocketAcceptAsyncResult(false);
             this._serverAcceptor.StartAccept();
             this._serverSocket.VerifyAccept(this._serverAcceptor.SocketEvent, Times.Once());
+            this._serverAcceptor.StartAccept();
 
             Assert.Null(this._serverAcceptor.SocketEvent.AcceptSocket);
         }

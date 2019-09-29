@@ -14,7 +14,6 @@ namespace Sylver.Network.Server
     public class NetServer<TClient> : NetConnection, INetServer
         where TClient : class, INetServerClient
     {
-        private readonly NetServerConfiguration _configuration;
         private readonly ConcurrentDictionary<Guid, TClient> _clients;
         private readonly NetServerClientFactory<TClient> _clientFactory;
         private readonly NetServerAcceptor<TClient> _acceptor;
@@ -37,12 +36,15 @@ namespace Sylver.Network.Server
             }
         }
 
+        /// <inheritdoc />
+        public NetServerConfiguration ServerConfiguration { get; }
+
         /// <summary>
         /// Creates a new <see cref="NetServer{TUser}"/> instance.
         /// </summary>
         public NetServer(NetServerConfiguration configuration)
         {
-            this._configuration = configuration;
+            this.ServerConfiguration = configuration;
             this._clientFactory = new NetServerClientFactory<TClient>();
             this._clients = new ConcurrentDictionary<Guid, TClient>();
             this._acceptor = new NetServerAcceptor<TClient>(this);
@@ -61,11 +63,12 @@ namespace Sylver.Network.Server
 
             this.Socket = new NetSocket(new Socket(AddressFamily.InterNetwork, SocketType.Stream, ProtocolType.Tcp));
             this.Socket.SetSocketOption(SocketOptionLevel.Socket, SocketOptionName.ReuseAddress, 1);
-            this.Socket.Bind(NetHelper.CreateIpEndPoint(this._configuration.Host, this._configuration.Port));
-            this.Socket.Listen(this._configuration.Backlog);
+            this.Socket.Bind(NetHelper.CreateIpEndPoint(this.ServerConfiguration.Host, this.ServerConfiguration.Port));
+            this.Socket.Listen(this.ServerConfiguration.Backlog);
 
             this.IsRunning = true;
             this._acceptor.StartAccept();
+            this.OnStart();
         }
 
         /// <inheritdoc />
@@ -78,6 +81,7 @@ namespace Sylver.Network.Server
             }
 
             this.IsRunning = false;
+            this.OnStop();
         }
 
         /// <inheritdoc />
@@ -89,9 +93,31 @@ namespace Sylver.Network.Server
                 return;
             }
 
-            // TODO: raise event; on client disconnected
+            this.OnClientDisconnected(client);
             client.Dispose();
         }
+
+        /// <summary>
+        /// Triggers a child logic when the server has been started successfuly.
+        /// </summary>
+        protected virtual void OnStart() { }
+
+        /// <summary>
+        /// Triggers a child logic when the server has been stopped.
+        /// </summary>
+        protected virtual void OnStop() { }
+
+        /// <summary>
+        /// Triggers a child logic when a new client connects to the server.
+        /// </summary>
+        /// <param name="client"></param>
+        protected virtual void OnClientConnected(TClient client) { }
+
+        /// <summary>
+        /// Triggers a child logic when a client disconnects from the server.
+        /// </summary>
+        /// <param name="client"></param>
+        protected virtual void OnClientDisconnected(TClient client) { }
 
         /// <summary>
         /// Fired when a client is accepted to the server.
@@ -107,8 +133,7 @@ namespace Sylver.Network.Server
                 // TODO: send error.
             }
 
-            Console.WriteLine("Connected");
-
+            this.OnClientConnected(newClient);
             this._receiver.StartReceivingData(newClient);
         }
     }

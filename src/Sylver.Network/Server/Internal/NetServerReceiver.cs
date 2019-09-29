@@ -23,7 +23,7 @@ namespace Sylver.Network.Server.Internal
         {
             this._readPool = ObjectPool.Create<SocketAsyncEventArgs>();
             this._server = server;
-            this._receiveBufferLength = 32;
+            this._receiveBufferLength = server.ServerConfiguration.ClientBufferSize;
         }
 
         /// <summary>
