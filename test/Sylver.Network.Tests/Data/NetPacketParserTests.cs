@@ -63,6 +63,15 @@ namespace Sylver.Network.Tests.Data
             Assert.True(token.IsMessageComplete);
             Assert.Equal(this._bufferContent, token.MessageData);
             Assert.Equal(this._messageContent, Encoding.UTF8.GetString(token.MessageData.Skip(sizeof(int)).ToArray()));
+
+            token.Reset();
+
+            Assert.Null(token.HeaderData);
+            Assert.Null(token.MessageData);
+            Assert.Null(token.MessageSize);
+            Assert.Equal(0, token.ReceivedHeaderBytesCount);
+            Assert.Equal(0, token.ReceivedMessageBytesCount);
+            Assert.False(token.IsMessageComplete);
         }
 
         [Fact]
