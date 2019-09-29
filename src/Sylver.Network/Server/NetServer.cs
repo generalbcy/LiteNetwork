@@ -45,6 +45,7 @@ namespace Sylver.Network.Server
         public NetServer(NetServerConfiguration configuration)
         {
             this.ServerConfiguration = configuration;
+            this._packetProcessor = new NetPacketProcessor();
             this._clientFactory = new NetServerClientFactory<TClient>();
             this._clients = new ConcurrentDictionary<Guid, TClient>();
             this._acceptor = new NetServerAcceptor<TClient>(this);
@@ -52,7 +53,6 @@ namespace Sylver.Network.Server
 
             this._receiver = new NetServerReceiver<TClient>(this);
 
-            this._packetProcessor = new NetPacketProcessor();
         }
 
         /// <inheritdoc />

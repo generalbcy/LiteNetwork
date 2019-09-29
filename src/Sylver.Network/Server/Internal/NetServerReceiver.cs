@@ -1,5 +1,4 @@
 ﻿using Microsoft.Extensions.ObjectPool;
-using Sylver.Network.Common;
 using Sylver.Network.Data;
 using System;
 using System.Buffers;
@@ -14,6 +13,7 @@ namespace Sylver.Network.Server.Internal
     {
         private readonly ObjectPool<SocketAsyncEventArgs> _readPool;
         private readonly NetServer<TClient> _server;
+        private readonly NetPacketParser _packetParser;
         private readonly int _receiveBufferLength;
 
         /// <summary>
@@ -24,6 +24,7 @@ namespace Sylver.Network.Server.Internal
             this._readPool = ObjectPool.Create<SocketAsyncEventArgs>();
             this._server = server;
             this._receiveBufferLength = server.ServerConfiguration.ClientBufferSize;
+            this._packetParser = new NetPacketParser(server.PacketProcessor);
         }
 
         /// <summary>
@@ -67,15 +68,19 @@ namespace Sylver.Network.Server.Internal
             {
                 if (socketAsyncEvent.SocketError == SocketError.Success)
                 {
-                    this.ParseIncomingData(clientToken, socketAsyncEvent, this._server.PacketProcessor);
+                    this._packetParser.ParseIncomingData(clientToken, socketAsyncEvent.Buffer, socketAsyncEvent.BytesTransferred);
 
                     if (clientToken.IsMessageComplete)
                     {
+                        byte[] test = clientToken.HeaderData.Concat(clientToken.MessageData).ToArray();
+
+                        string a = "[" + string.Join(", ", test) + "]";
+
                         var message = clientToken.MessageData.Skip(4).Take(clientToken.MessageSize.Value - 4).ToArray();
 
                         Console.WriteLine($"Received {clientToken.Client.Id}: '{Encoding.UTF8.GetString(message)}'");
                         // TODO: dispatch message
-                        clientToken.ResetData();
+                        clientToken.Reset();
                     }
 
                     this.ReceiveData(clientToken.Client, socketAsyncEvent);
@@ -87,7 +92,6 @@ namespace Sylver.Network.Server.Internal
             }
             else
             {
-                Console.WriteLine("Disconnected");
                 this.ReturnSocketEvent(socketAsyncEvent);
                 this._server.DisconnectClient(clientToken.Client.Id);
             }
@@ -140,60 +144,6 @@ namespace Sylver.Network.Server.Internal
             socketAsyncEvent.Completed -= this.OnCompleted;
 
             this._readPool.Return(socketAsyncEvent);
-        }
-
-        /// <summary>
-        /// Parse incoming data.
-        /// </summary>
-        /// <param name="token">Client token information.</param>
-        /// <param name="socketAsyncEvent">Socket async event arguments.</param>
-        /// <param name="packetProcessor">Server packet processor.</param>
-        private void ParseIncomingData(NetToken<TClient> token, SocketAsyncEventArgs socketAsyncEvent, IPacketProcessor packetProcessor)
-        {
-            while (token.DataStartOffset < socketAsyncEvent.BytesTransferred)
-            {
-                int headerSize = packetProcessor.HeaderSize;
-
-                if (token.ReceivedHeaderBytesCount < headerSize)
-                {
-                    if (token.HeaderData == null)
-                        token.HeaderData = new byte[headerSize];
-
-                    int bufferRemainingBytes = socketAsyncEvent.BytesTransferred - token.DataStartOffset;
-                    int headerRemainingBytes = headerSize - token.ReceivedHeaderBytesCount;
-                    int bytesToRead = Math.Min(bufferRemainingBytes, headerRemainingBytes);
-
-                    Buffer.BlockCopy(socketAsyncEvent.Buffer, token.DataStartOffset, token.HeaderData, token.ReceivedHeaderBytesCount, bytesToRead);
-
-                    token.ReceivedHeaderBytesCount += bytesToRead;
-                    token.DataStartOffset += bytesToRead;
-                }
-
-                if (token.ReceivedHeaderBytesCount == headerSize && token.HeaderData != null)
-                {
-                    if (!token.MessageSize.HasValue)
-                        token.MessageSize = packetProcessor.GetMessageLength(token.HeaderData);
-                    if (token.MessageSize.Value < 0)
-                        throw new InvalidOperationException("Message size cannot be smaller than zero.");
-
-                    if (token.MessageData == null)
-                        token.MessageData = new byte[token.MessageSize.Value];
-
-                    if (token.ReceivedMessageBytesCount < token.MessageSize.Value)
-                    {
-                        int bufferRemainingBytes = socketAsyncEvent.BytesTransferred - token.DataStartOffset;
-                        int messageRemainingBytes = token.MessageSize.Value - token.ReceivedMessageBytesCount;
-                        int bytesToRead = Math.Min(bufferRemainingBytes, messageRemainingBytes);
-
-                        Buffer.BlockCopy(socketAsyncEvent.Buffer, token.DataStartOffset, token.MessageData, token.ReceivedMessageBytesCount, bytesToRead);
-
-                        token.ReceivedMessageBytesCount += bytesToRead;
-                        token.DataStartOffset += bytesToRead;
-                    }
-                }
-            }
-
-            token.DataStartOffset = 0;
         }
     }
 }
