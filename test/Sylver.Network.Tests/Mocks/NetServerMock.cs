@@ -12,25 +12,21 @@ namespace Sylver.Network.Tests.Mocks
         public NetServerMock(params object[] args)
             : base(args)
         {
-            this.SetupProtectedMethods();
         }
 
         public NetServerMock(MockBehavior behavior)
             : base(behavior)
         {
-            this.SetupProtectedMethods();
         }
 
         public NetServerMock(MockBehavior behavior, params object[] args)
             : base(behavior, args)
         {
-            this.SetupProtectedMethods();
         }
 
         public NetServerMock(Expression<Func<NetServer<TClient>>> newExpression, MockBehavior behavior = MockBehavior.Loose)
             : base(newExpression, behavior)
         {
-            this.SetupProtectedMethods();
         }
 
         public void VerifyOnStart(Times times)
@@ -51,14 +47,6 @@ namespace Sylver.Network.Tests.Mocks
         public void VerifyOnClientDisconnected(Times times)
         {
             this.Protected().Verify("OnClientDisconnected", times, ItExpr.IsAny<TClient>());
-        }
-
-        private void SetupProtectedMethods()
-        {
-            this.Protected().Setup("OnStart").Verifiable();
-            this.Protected().Setup("OnStop").Verifiable();
-            this.Protected().Setup("OnClientConnected", ItExpr.IsNull<TClient>()).Verifiable();
-            this.Protected().Setup("OnClientDisconnected", ItExpr.IsNull<TClient>()).Verifiable();
         }
     }
 }

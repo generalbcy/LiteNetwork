@@ -41,7 +41,7 @@
         /// <param name="host">Server host address.</param>
         /// <param name="port">Server listening port.</param>
         public NetServerConfiguration(string host, int port)
-            : this(host, port, DefaultBacklog, DefaultClientBufferSize)
+            : this(host, port, DefaultBacklog)
         {
         }
 

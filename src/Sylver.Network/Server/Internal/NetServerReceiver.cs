@@ -2,6 +2,7 @@
 using Sylver.Network.Data;
 using System;
 using System.Buffers;
+using System.Diagnostics.CodeAnalysis;
 using System.Linq;
 using System.Net.Sockets;
 using System.Text;
@@ -57,6 +58,7 @@ namespace Sylver.Network.Server.Internal
         /// </summary>
         /// <param name="clientToken">Client token.</param>
         /// <param name="socketAsyncEvent">Socket async event arguments.</param>
+        [ExcludeFromCodeCoverage]
         private void ProcessReceive(NetToken<TClient> clientToken, SocketAsyncEventArgs socketAsyncEvent)
         {
             if (socketAsyncEvent == null)
@@ -98,6 +100,7 @@ namespace Sylver.Network.Server.Internal
         /// </summary>
         /// <param name="sender">Sender.</param>
         /// <param name="e">Socket async event arguments.</param>
+        [ExcludeFromCodeCoverage]
         private void OnCompleted(object sender, SocketAsyncEventArgs e)
         {
             if (sender == null)

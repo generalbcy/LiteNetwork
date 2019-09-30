@@ -29,11 +29,13 @@ namespace Sylver.Network.Tests.Server
         public void StartServer_Test()
         {
             this._server.Object.Start();
+
             Assert.True(this._server.Object.IsRunning);
             Assert.Equal(this._serverConfiguration.Host, this._server.Object.ServerConfiguration.Host);
             Assert.Equal(this._serverConfiguration.Port, this._server.Object.ServerConfiguration.Port);
             Assert.Equal(this._serverConfiguration.Backlog, this._server.Object.ServerConfiguration.Backlog);
             Assert.Equal(this._serverConfiguration.ClientBufferSize, this._server.Object.ServerConfiguration.ClientBufferSize);
+
             this._socketMock.VerifySetSocketOptions(SocketOptionLevel.Socket, SocketOptionName.ReuseAddress, 1);
             this._socketMock.VerifyBind(NetHelper.CreateIpEndPoint(this._serverConfiguration.Host, this._serverConfiguration.Port));
             this._socketMock.VerifyListen(this._serverConfiguration.Backlog);
@@ -44,6 +46,7 @@ namespace Sylver.Network.Tests.Server
         public void StartServerTwice_Test()
         {
             this._server.Object.Start();
+
             Assert.True(this._server.Object.IsRunning);
             Assert.Throws<InvalidOperationException>(() => this._server.Object.Start());
         }
