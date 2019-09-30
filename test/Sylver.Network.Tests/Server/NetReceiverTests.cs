@@ -30,8 +30,6 @@ namespace Sylver.Network.Tests.Server
         {
             this._clientSocketMock.ConfigureReceiveResult(false);
             this._serverReceiver.StartReceivingData(this._clientMock.Object);
-
-            this._clientSocketMock.VerifyReceive(It.IsAny<SocketAsyncEventArgs>());
         }
     }
 }
