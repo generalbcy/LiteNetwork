@@ -29,14 +29,23 @@ namespace Sylver.Network.Tests.Mocks
         {
         }
 
-        public void VerifyOnStart(Times times)
+        public void VerifyOnBeforeStart(Times times)
         {
-            this.Protected().Verify("OnStart", times);
+            this.Protected().Verify("OnBeforeStart", times);
+        }
+        public void VerifyOnAfterStart(Times times)
+        {
+            this.Protected().Verify("OnAfterStart", times);
         }
 
-        public void VerifyOnStop(Times times)
+        public void VerifyOnBeforeStop(Times times)
         {
-            this.Protected().Verify("OnStop", times);
+            this.Protected().Verify("OnBeforeStop", times);
+        }
+
+        public void VerifyOnAfterStop(Times times)
+        {
+            this.Protected().Verify("OnAfterStop", times);
         }
 
         public void VerifyOnClientConnected(Times times)

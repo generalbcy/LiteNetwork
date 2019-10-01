@@ -61,6 +61,8 @@ namespace Sylver.Network.Server
             if (this.IsRunning)
                 throw new InvalidOperationException("Server is already running.");
 
+            this.OnBeforeStart();
+
             this.Socket = new NetSocket(new Socket(AddressFamily.InterNetwork, SocketType.Stream, ProtocolType.Tcp));
             this.Socket.SetSocketOption(SocketOptionLevel.Socket, SocketOptionName.ReuseAddress, 1);
             this.Socket.Bind(NetHelper.CreateIpEndPoint(this.ServerConfiguration.Host, this.ServerConfiguration.Port));
@@ -68,12 +70,14 @@ namespace Sylver.Network.Server
 
             this.IsRunning = true;
             this._acceptor.StartAccept();
-            this.OnStart();
+            this.OnAfterStart();
         }
 
         /// <inheritdoc />
         public void Stop()
         {
+            this.OnBeforeStop();
+
             if (this.Socket != null)
             {
                 this.Socket.Dispose();
@@ -81,7 +85,7 @@ namespace Sylver.Network.Server
             }
 
             this.IsRunning = false;
-            this.OnStop();
+            this.OnAfterStop();
         }
 
         /// <inheritdoc />
@@ -98,14 +102,24 @@ namespace Sylver.Network.Server
         }
 
         /// <summary>
-        /// Triggers a child logic when the server has been started successfuly.
+        /// Executes the child business logic before starting the server.
         /// </summary>
-        protected virtual void OnStart() { }
+        protected virtual void OnBeforeStart() { }
 
         /// <summary>
-        /// Triggers a child logic when the server has been stopped.
+        /// Executes the child business logic after the server starts.
         /// </summary>
-        protected virtual void OnStop() { }
+        protected virtual void OnAfterStart() { }
+
+        /// <summary>
+        /// Executes the child business logic before stoping the server.
+        /// </summary>
+        protected virtual void OnBeforeStop() { }
+
+        /// <summary>
+        /// Executes the child business logic after the server stops.
+        /// </summary>
+        protected virtual void OnAfterStop() { }
 
         /// <summary>
         /// Triggers a child logic when a new client connects to the server.
