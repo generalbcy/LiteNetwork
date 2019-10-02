@@ -32,6 +32,22 @@ namespace Sylver.Network.Tests.Server
             this.ConfigureSocketAcceptAsyncResult(true);
             this._serverAcceptor.StartAccept();
             this._serverSocket.VerifyAccept(this._serverAcceptor.SocketEvent, Times.AtLeastOnce());
+            Assert.Null(this._serverAcceptor.SocketEvent.AcceptSocket);
+        }
+
+        [Fact]
+        public void StartAcceptingClientsTwiceTest()
+        {
+            this.ConfigureSocketAcceptAsyncResult(true);
+
+            this._serverAcceptor.StartAccept();
+            this._serverSocket.VerifyAccept(this._serverAcceptor.SocketEvent, Times.AtLeastOnce());
+            Assert.Null(this._serverAcceptor.SocketEvent.AcceptSocket);
+
+            this._serverAcceptor.StartAccept();
+            this._serverSocket.VerifyAccept(this._serverAcceptor.SocketEvent, Times.AtLeastOnce());
+
+            Assert.Null(this._serverAcceptor.SocketEvent.AcceptSocket);
         }
 
         [Fact]
@@ -40,20 +56,17 @@ namespace Sylver.Network.Tests.Server
             this.ConfigureSocketAcceptAsyncResult(false);
             this._serverAcceptor.StartAccept();
             this._serverSocket.VerifyAccept(this._serverAcceptor.SocketEvent, Times.Once());
-            this._serverAcceptor.StartAccept();
-
-            Assert.Null(this._serverAcceptor.SocketEvent.AcceptSocket);
         }
 
         private void ConfigureSocketAcceptAsyncResult(bool receiveData)
         {
-            this._serverSocket.SocketMock.Setup(x => x.AcceptAsync(It.IsAny<SocketAsyncEventArgs>())).Returns<SocketAsyncEventArgs>(x =>
+            this._serverSocket.SocketMock.Setup(x => x.AcceptAsync(this._serverAcceptor.SocketEvent)).Returns<SocketAsyncEventArgs>(x =>
             {
-                bool instantReceive = receiveData == true;
+                bool instantReceive = receiveData;
                 receiveData = !receiveData;
 
-                x.SocketError = SocketError.Success;
-                x.AcceptSocket = this._acceptedSocket.GetSocket();
+                this._serverAcceptor.SocketEvent.SocketError = SocketError.Success;
+                this._serverAcceptor.SocketEvent.AcceptSocket = instantReceive ? this._acceptedSocket.GetSocket() : null;
 
                 return !instantReceive; // returning false because "AcceptAsync()" returns false if accepted instantly
             });

@@ -7,11 +7,15 @@ namespace Sylver.Network.Tests.Mocks
 {
     public sealed class NetSocketMock : INetSocket
     {
+        private readonly Socket _socket;
+
         public Mock<INetSocket> SocketMock { get; }
 
         public NetSocketMock()
         {
+            this._socket = new Socket(AddressFamily.InterNetwork, SocketType.Stream, ProtocolType.Tcp);
             this.SocketMock = new Mock<INetSocket>();
+            this.SocketMock.Setup(x => x.GetSocket()).Returns(this._socket);
         }
 
         public void ConfigureAcceptResult(bool result)
