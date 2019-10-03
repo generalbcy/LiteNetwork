@@ -1,5 +1,5 @@
 ﻿using Microsoft.Extensions.ObjectPool;
-using Sylver.Network.Data;
+using Sylver.Network.Data.Internal;
 using System;
 using System.Buffers;
 using System.Diagnostics.CodeAnalysis;

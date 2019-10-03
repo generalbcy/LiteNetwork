@@ -1,4 +1,4 @@
-﻿namespace Sylver.Network.Data
+﻿namespace Sylver.Network.Data.Internal
 {
     internal class NetDataToken
     {

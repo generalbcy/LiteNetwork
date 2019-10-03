@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace Sylver.Network.Data
+namespace Sylver.Network.Data.Internal
 {
     /// <summary>
     /// Provides methods to parse incoming packets.

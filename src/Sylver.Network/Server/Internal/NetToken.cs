@@ -1,4 +1,5 @@
 ﻿using Sylver.Network.Data;
+using Sylver.Network.Data.Internal;
 
 namespace Sylver.Network.Server.Internal
 {
