@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.IO;
 
 namespace Sylver.Network.Data
@@ -31,14 +32,22 @@ namespace Sylver.Network.Data
         byte[] Buffer { get; }
 
         /// <summary>
-        /// Reads a T value from the packet stream.
+        /// Reads a <typeparamref name="T"/> value from the packet stream.
         /// </summary>
-        /// <typeparam name="T">Type of the value</typeparam>
+        /// <typeparam name="T">Type of the value to read.</typeparam>
         /// <returns>The value read and converted to the type.</returns>
         T Read<T>();
 
         /// <summary>
-        /// Writes a T value in the packet stream.
+        /// Reads an array of <typeparamref name="T"/> from the packet stream.
+        /// </summary>
+        /// <typeparam name="T">Type of the value to read.</typeparam>
+        /// <param name="count">Number of <typeparamref name="T"/> to read.</param>
+        /// <returns>Array of <typeparamref name="T"/>.</returns>
+        IEnumerable<T> Read<T>(int count);
+
+        /// <summary>
+        /// Writes a <typeparamref name="T"/> value in the packet stream.
         /// </summary>
         /// <typeparam name="T">Type of the value.</typeparam>
         /// <param name="value">Value to write in the packet stream.</param>

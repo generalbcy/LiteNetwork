@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Text;
@@ -61,6 +62,13 @@ namespace Sylver.Network.Data
             }
 
             throw new NotImplementedException($"Cannot read a {typeof(T)} value from the packet stream.");
+        }
+
+        /// <inheritdoc />
+        public virtual IEnumerable<T> Read<T>(int count)
+        {
+            // TODO
+            throw new NotImplementedException();
         }
 
         /// <inheritdoc />
