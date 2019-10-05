@@ -2,6 +2,7 @@
 using Sylver.Network.Data;
 using System;
 using System.Linq;
+using System.Runtime.InteropServices;
 using System.Text;
 using Xunit;
 
@@ -136,17 +137,22 @@ namespace Sylver.Network.Tests.Data
             string stringValue = new Faker().Lorem.Sentence();
             byte[] stringValueArray = BitConverter.GetBytes(stringValue.Length).Concat(Encoding.UTF8.GetBytes(stringValue)).ToArray();
 
-            this.PacketStreamReadTest<string>(stringValue, stringValueArray);
+            this.PacketStreamReadTest<string>(stringValue, stringValueArray, adjustBuffer: false);
         }
 
-        private void PacketStreamReadTest<T>(T expectedValue, byte[] valueAsBytes)
+        private void PacketStreamReadTest<T>(T expectedValue, byte[] valueAsBytes, bool adjustBuffer = true)
         {
-            using (INetPacketStream packetStream = new NetPacketStream(valueAsBytes))
+            byte[] adjustedBuffer = adjustBuffer ? valueAsBytes.Take(Marshal.SizeOf<T>()).ToArray() : valueAsBytes;
+
+            using (INetPacketStream packetStream = new NetPacketStream(adjustedBuffer))
             {
                 Assert.Equal(NetPacketStateType.Read, packetStream.State);
+                Assert.False(packetStream.IsEndOfStream);
+
                 var readValue = packetStream.Read<T>();
 
                 Assert.Equal(expectedValue, readValue);
+                Assert.True(packetStream.IsEndOfStream);
             }
         }
     }

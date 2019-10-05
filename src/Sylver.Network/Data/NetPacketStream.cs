@@ -11,10 +11,13 @@ namespace Sylver.Network.Data
         private readonly BinaryWriter _writer;
 
         /// <inheritdoc />
-        public byte[] Buffer => this.TryGetBuffer(out ArraySegment<byte> buffer) ? buffer.ToArray() : new byte[0];
+        public NetPacketStateType State { get; }
 
         /// <inheritdoc />
-        public NetPacketStateType State { get; }
+        public bool IsEndOfStream => this.Position >= this.Length;
+
+        /// <inheritdoc />
+        public byte[] Buffer => this.TryGetBuffer(out ArraySegment<byte> buffer) ? buffer.ToArray() : new byte[0];
 
         /// <summary>
         /// Gets the encoding used to encode strings when writing on the packet stream.
