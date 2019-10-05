@@ -7,13 +7,31 @@ using Xunit;
 
 namespace Sylver.Network.Tests.Data
 {
-    public sealed class NetPacketStreamTests
+    public sealed class NetPacketStreamReaderTests
     {
         private readonly Randomizer _randomizer;
 
-        public NetPacketStreamTests()
+        public NetPacketStreamReaderTests()
         {
             this._randomizer = new Randomizer((int)DateTime.UtcNow.Ticks);
+        }
+
+        [Fact]
+        public void PacketStreamReadNonPrimitiveTest()
+        {
+            using (var packetStream = new NetPacketStream(this._randomizer.Bytes(this._randomizer.Byte())))
+            {
+                Assert.Throws<NotImplementedException>(() => packetStream.Read<object>());
+            }
+        }
+
+        [Fact]
+        public void PacketStreamReadWhenWriteOnlyTest()
+        {
+            using (var packetStream = new NetPacketStream())
+            {
+                Assert.Throws<InvalidOperationException>(() => packetStream.Read<byte>());
+            }
         }
 
         [Fact]
@@ -121,35 +139,15 @@ namespace Sylver.Network.Tests.Data
             this.PacketStreamReadTest<string>(stringValue, stringValueArray);
         }
 
-        [Fact]
-        public void PacketStreamReadNonPrimitiveTest()
-        {
-            using (var packetStream = new NetPacketStream(this._randomizer.Bytes(this._randomizer.Byte())))
-            {
-                Assert.Throws<NotImplementedException>(() => packetStream.Read<object>());
-            }
-        }
-
-        [Fact]
-        public void PacketStreamReadWhenWriteOnlyTest()
-        {
-            using (var packetStream = new NetPacketStream())
-            {
-                Assert.Throws<InvalidOperationException>(() => packetStream.Read<byte>());
-            }
-        }
-
         private void PacketStreamReadTest<T>(T expectedValue, byte[] valueAsBytes)
         {
-            using (var packetStream = new NetPacketStream(valueAsBytes))
+            using (INetPacketStream packetStream = new NetPacketStream(valueAsBytes))
             {
+                Assert.Equal(NetPacketStateType.Read, packetStream.State);
                 var readValue = packetStream.Read<T>();
 
                 Assert.Equal(expectedValue, readValue);
             }
         }
-
-        public static byte[] GetBytes(decimal decimalValue) 
-            => decimal.GetBits(decimalValue).SelectMany(x => BitConverter.GetBytes(x)).ToArray();
     }
 }

@@ -1,5 +1,7 @@
 ﻿using System;
 using System.IO;
+using System.Linq;
+using System.Text;
 
 namespace Sylver.Network.Data
 {
@@ -9,7 +11,20 @@ namespace Sylver.Network.Data
         private readonly BinaryWriter _writer;
 
         /// <inheritdoc />
+        public byte[] Buffer => this.TryGetBuffer(out ArraySegment<byte> buffer) ? buffer.ToArray() : new byte[0];
+
+        /// <inheritdoc />
         public NetPacketStateType State { get; }
+
+        /// <summary>
+        /// Gets the encoding used to encode strings when writing on the packet stream.
+        /// </summary>
+        protected virtual Encoding StringWriteEncoding => Encoding.UTF8;
+
+        /// <summary>
+        /// Gets the encoding used to decode strings when reading from the packet stream.
+        /// </summary>
+        protected virtual Encoding StringReadEncoding => Encoding.UTF8;
 
         /// <summary>
         /// Creates and initializes a new <see cref="NetPacketStream"/> instance in write-only mode.
@@ -53,12 +68,19 @@ namespace Sylver.Network.Data
 
             if (typeof(T).IsPrimitive || typeof(T) == typeof(string))
             {
-                this.WritePrimitive(value);
+                this.WritePrimitive<T>(value);
             }
-
-            throw new NotImplementedException($"Cannot write a {typeof(T)} value into the packet stream.");
+            else
+            {
+                throw new NotImplementedException($"Cannot write a {typeof(T)} value into the packet stream.");
+            }
         }
 
+        /// <summary>
+        /// Read a primitive type from the packet stream.
+        /// </summary>
+        /// <typeparam name="T">Type to read.</typeparam>
+        /// <returns></returns>
         private T ReadPrimitive<T>()
         {
             object primitiveValue = default;
@@ -102,17 +124,71 @@ namespace Sylver.Network.Data
                     primitiveValue = this._reader.ReadDouble();
                     break;
                 case TypeCode.String:
-                    primitiveValue = new string(this._reader.ReadChars(count: this._reader.ReadInt32()));
+                    int stringLength = this._reader.ReadInt32();
+                    byte[] stringBytes = this._reader.ReadBytes(stringLength);
+
+                    primitiveValue = this.StringReadEncoding.GetString(stringBytes);
                     break;
             }
 
             return (T)primitiveValue;
         }
 
-        private void WritePrimitive<T>(T value)
+        /// <summary>
+        /// Writes a primitive type to the packet stream.
+        /// </summary>
+        /// <typeparam name="T">Type to write.</typeparam>
+        /// <param name="value">Value to write.</param>
+        private void WritePrimitive<T>(object value)
         {
-            switch (value)
+            switch (Type.GetTypeCode(typeof(T)))
             {
+                case TypeCode.Byte:
+                    this._writer.Write(Convert.ToByte(value));
+                    break;
+                case TypeCode.SByte:
+                    this._writer.Write(Convert.ToSByte(value));
+                    break;
+                case TypeCode.Boolean:
+                    this._writer.Write(Convert.ToBoolean(value));
+                    break;
+                case TypeCode.Char:
+                    this._writer.Write(Convert.ToChar(value));
+                    break;
+                case TypeCode.Int16:
+                    this._writer.Write(Convert.ToInt16(value));
+                    break;
+                case TypeCode.UInt16:
+                    this._writer.Write(Convert.ToUInt16(value));
+                    break;
+                case TypeCode.Int32:
+                    this._writer.Write(Convert.ToInt32(value));
+                    break;
+                case TypeCode.UInt32:
+                    this._writer.Write(Convert.ToUInt32(value));
+                    break;
+                case TypeCode.Single:
+                    this._writer.Write(Convert.ToSingle(value));
+                    break;
+                case TypeCode.Int64:
+                    this._writer.Write(Convert.ToInt64(value));
+                    break;
+                case TypeCode.UInt64:
+                    this._writer.Write(Convert.ToUInt64(value));
+                    break;
+                case TypeCode.Double:
+                    this._writer.Write(Convert.ToDouble(value));
+                    break;
+                case TypeCode.String:
+                    {
+                        string stringValue = value.ToString();
+
+                        this._writer.Write(stringValue.Length);
+
+                        if (stringValue.Length > 0)
+                            this._writer.Write(this.StringWriteEncoding.GetBytes(stringValue));
+                    }
+                    break;
             }
         }
     }
