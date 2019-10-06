@@ -17,6 +17,8 @@ namespace Sylver.Network.Tests.Mocks
                 ? buffer.Take(this.HeaderSize).ToArray()
                 : buffer.Take(this.HeaderSize).Reverse().ToArray(), 0);
         }
+
+        public INetPacketStream CreatePacket(byte[] buffer) => new NetPacket(buffer);
     }
 
     internal sealed class CustomNetPacketProcessorMock : Mock<CustomNetPacketProcessor>

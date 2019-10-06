@@ -16,6 +16,7 @@ namespace Sylver.Network.Server.Internal
         private readonly NetServer<TClient> _server;
         private readonly NetPacketParser _packetParser;
         private readonly int _receiveBufferLength;
+        private readonly INetMessageDispatcher _messageDispatcher;
 
         /// <summary>
         /// Creates a new <see cref="NetServerReceiver{TClient}"/> instance.
@@ -26,6 +27,7 @@ namespace Sylver.Network.Server.Internal
             this._server = server;
             this._receiveBufferLength = server.ServerConfiguration.ClientBufferSize;
             this._packetParser = new NetPacketParser(server.PacketProcessor);
+            this._messageDispatcher = new NetMessageDispatcher(server.PacketProcessor);
         }
 
         /// <summary>
@@ -74,10 +76,7 @@ namespace Sylver.Network.Server.Internal
 
                     if (clientToken.IsMessageComplete)
                     {
-                        var message = clientToken.MessageData.Skip(4).Take(clientToken.MessageSize.Value - 4).ToArray();
-
-                        Console.WriteLine($"Received {clientToken.Client.Id}: '{Encoding.UTF8.GetString(message)}'");
-                        // TODO: dispatch message
+                        this._messageDispatcher.DispatchMessage(clientToken.Client, clientToken);
                         clientToken.Reset();
                     }
 

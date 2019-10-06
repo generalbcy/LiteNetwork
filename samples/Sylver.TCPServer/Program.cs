@@ -1,15 +1,22 @@
-﻿using Sylver.Network.Common;
+﻿using Sylver.Network.Data;
 using Sylver.Network.Server;
 using System;
 using System.Net.Sockets;
 
 namespace Sylver.TCPServer
 {
-    public class Client : NetConnection, INetServerClient
+    public class Client : NetServerClient
     {
         public Client(Socket socketConnection) 
             : base(socketConnection)
         {
+        }
+
+        public override void HandleMessage(INetPacketStream packetStream)
+        {
+            var message = packetStream.Read<string>();
+
+            Console.WriteLine($"Received: {message}");
         }
     }
 

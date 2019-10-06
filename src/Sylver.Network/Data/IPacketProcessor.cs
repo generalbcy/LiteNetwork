@@ -21,5 +21,12 @@
         /// <param name="buffer">Header buffer.</param>
         /// <returns>Packet message data length.</returns>
         int GetMessageLength(byte[] buffer);
+
+        /// <summary>
+        /// Creates a new <see cref="INetPacketStream"/> packet instance.
+        /// </summary>
+        /// <param name="buffer">Input buffer</param>
+        /// <returns>New packet</returns>
+        INetPacketStream CreatePacket(byte[] buffer);
     }
 }

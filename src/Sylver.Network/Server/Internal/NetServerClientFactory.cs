@@ -15,7 +15,10 @@ namespace Sylver.Network.Server.Internal
         /// </summary>
         public NetServerClientFactory()
         {
-            this._clientFactory = ActivatorUtilities.CreateFactory(typeof(TClient), new[] { typeof(Socket) });
+            this._clientFactory = ActivatorUtilities.CreateFactory(typeof(TClient), new[]
+            {
+                typeof(Socket)
+            });
         }
 
         /// <summary>
@@ -24,10 +27,6 @@ namespace Sylver.Network.Server.Internal
         /// <param name="acceptSocket">Accepted socket.</param>
         /// <returns>New client.</returns>
         public TClient CreateClient(Socket acceptSocket)
-        {
-            var newClient = this._clientFactory(this._serviceProvider, new[] { acceptSocket }) as TClient;
-
-            return newClient;
-        }
+            => this._clientFactory(this._serviceProvider, new[] { acceptSocket }) as TClient;
     }
 }

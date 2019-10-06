@@ -21,5 +21,8 @@ namespace Sylver.Network.Data
                 ? buffer.Take(this.HeaderSize).ToArray()
                 : buffer.Take(this.HeaderSize).Reverse().ToArray(), 0);
         }
+
+        /// <inheritdoc />
+        public INetPacketStream CreatePacket(byte[] buffer) => new NetPacket(buffer);
     }
 }
