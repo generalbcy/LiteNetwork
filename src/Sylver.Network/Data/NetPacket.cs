@@ -10,7 +10,22 @@ namespace Sylver.Network.Data
         public const int HeaderSize = sizeof(int);
 
         /// <inheritdoc />
-        public override byte[] Buffer => this.BuildBuffer();
+        public override byte[] Buffer
+        {
+            get
+            {
+                if (this.State == NetPacketStateType.Write)
+                {
+                    long oldPosition = this.Position;
+
+                    this.Seek(0, SeekOrigin.Begin);
+                    this.Write((int)this.ContentLength);
+                    this.Seek((int)oldPosition, SeekOrigin.Begin);
+                }
+
+                return base.Buffer;
+            }
+        }
 
         /// <summary>
         /// Gets the packet's content length.
@@ -28,25 +43,10 @@ namespace Sylver.Network.Data
         /// <summary>
         /// Creates a new <see cref="NetPacket"/> in read-only mode.
         /// </summary>
-        /// <param name="buffer"></param>
+        /// <param name="buffer">Input buffer</param>
         public NetPacket(byte[] buffer)
             : base(buffer)
         {
-        }
-
-        /// <summary>
-        /// Builds the <see cref="NetPacket"/> buffer.
-        /// </summary>
-        /// <returns></returns>
-        public byte[] BuildBuffer()
-        {
-            long oldPosition = this.Position;
-
-            this.Seek(0, SeekOrigin.Begin);
-            this.Write((int)this.ContentLength);
-            this.Seek((int)oldPosition, SeekOrigin.Begin);
-
-            return base.Buffer;
         }
     }
 }
