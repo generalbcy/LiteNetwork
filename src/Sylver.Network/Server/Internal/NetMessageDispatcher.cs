@@ -21,21 +21,21 @@ namespace Sylver.Network.Server.Internal
         /// <inheritdoc />
         public void DispatchMessage(INetServerClient client, NetDataToken token)
         {
+            int bufferSize = this._packetProcessor.IncludeHeader ? this._packetProcessor.HeaderSize + token.MessageSize.Value : token.MessageSize.Value;
+            var buffer = new byte[bufferSize];
+
+            if (this._packetProcessor.IncludeHeader)
+            {
+                Array.Copy(token.HeaderData, 0, buffer, 0, this._packetProcessor.HeaderSize);
+                Array.Copy(token.MessageData, 0, buffer, this._packetProcessor.HeaderSize, token.MessageSize.Value);
+            }
+            else
+            {
+                Array.Copy(token.MessageData, 0, buffer, 0, token.MessageSize.Value);
+            }
+
             Task.Run(() =>
             {
-                int bufferSize = this._packetProcessor.IncludeHeader ? this._packetProcessor.HeaderSize + token.MessageSize.Value : token.MessageSize.Value;
-                var buffer = new byte[bufferSize];
-
-                if (this._packetProcessor.IncludeHeader)
-                {
-                    Array.Copy(token.HeaderData, 0, buffer, 0, this._packetProcessor.HeaderSize);
-                    Array.Copy(token.MessageData, 0, buffer, this._packetProcessor.HeaderSize, token.MessageSize.Value);
-                }
-                else
-                {
-                    Array.Copy(token.MessageData, 0, buffer, 0, token.MessageSize.Value);
-                }
-
                 using (INetPacketStream packet = this._packetProcessor.CreatePacket(buffer))
                 {
                     client.HandleMessage(packet);
