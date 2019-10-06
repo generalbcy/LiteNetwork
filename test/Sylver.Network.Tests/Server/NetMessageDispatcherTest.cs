@@ -29,17 +29,14 @@ namespace Sylver.Network.Tests.Server
             };
         }
 
-        [Theory]
-        [InlineData(true)]
-        [InlineData(false)]
-        public void DispatchMessageTest(bool includeHeader)
+        [Fact]
+        public void DispatchMessageTest()
         {
-            var packetProcessor = new NetPacketProcessorMock(includeHeader);
-            var messageDispatcher = new NetMessageDispatcher(packetProcessor.Object);
+            var packetProcessor = new NetPacketProcessor();
+            var messageDispatcher = new NetMessageDispatcher(packetProcessor);
 
             messageDispatcher.DispatchMessage(this._clientMock.Object, this._netDataToken);
 
-            packetProcessor.Verify(x => x.CreatePacket(It.IsAny<byte[]>()), Times.Once());
             this._clientMock.Verify(x => x.HandleMessage(It.IsAny<INetPacketStream>()), Times.Once());
         }
     }

@@ -1,10 +1,11 @@
-﻿using Sylver.Network.Data;
+﻿using System.Diagnostics.CodeAnalysis;
 using System.Net;
 using System.Net.Sockets;
 
 namespace Sylver.Network.Common
 {
-    public class NetSocket : INetSocket
+    [ExcludeFromCodeCoverage]
+    internal sealed class NetSocket : INetSocket
     {
         private readonly Socket _socket;
 

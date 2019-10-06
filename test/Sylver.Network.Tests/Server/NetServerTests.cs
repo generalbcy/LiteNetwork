@@ -1,5 +1,4 @@
 ﻿using Moq;
-using Moq.Protected;
 using Sylver.Network.Common;
 using Sylver.Network.Data;
 using Sylver.Network.Server;
@@ -41,6 +40,8 @@ namespace Sylver.Network.Tests.Server
             this._socketMock.VerifyListen(this._serverConfiguration.Backlog);
             this._server.VerifyOnBeforeStart(Times.Once());
             this._server.VerifyOnAfterStart(Times.Once());
+            Assert.True(this._server.BeforeStartCalled);
+            Assert.True(this._server.AfterStartCalled);
         }
 
         [Fact]
@@ -62,6 +63,8 @@ namespace Sylver.Network.Tests.Server
             this._socketMock.VerifyDispose();
             this._server.VerifyOnBeforeStop(Times.Once());
             this._server.VerifyOnAfterStop(Times.Once());
+            Assert.True(this._server.BeforeStopCalled);
+            Assert.True(this._server.AfterStopCalled);
         }
 
         [Fact]
