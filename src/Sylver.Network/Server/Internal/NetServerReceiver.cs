@@ -3,9 +3,7 @@ using Sylver.Network.Data.Internal;
 using System;
 using System.Buffers;
 using System.Diagnostics.CodeAnalysis;
-using System.Linq;
 using System.Net.Sockets;
-using System.Text;
 
 namespace Sylver.Network.Server.Internal
 {

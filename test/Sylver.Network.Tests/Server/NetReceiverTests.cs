@@ -2,7 +2,6 @@
 using Sylver.Network.Server;
 using Sylver.Network.Server.Internal;
 using Sylver.Network.Tests.Mocks;
-using System.Net.Sockets;
 using Xunit;
 
 namespace Sylver.Network.Tests.Server

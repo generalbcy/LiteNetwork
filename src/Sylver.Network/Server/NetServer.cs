@@ -18,6 +18,7 @@ namespace Sylver.Network.Server
         private readonly NetServerClientFactory<TClient> _clientFactory;
         private readonly NetServerAcceptor<TClient> _acceptor;
         private readonly NetServerReceiver<TClient> _receiver;
+        private readonly NetServerSender _sender;
 
         private IPacketProcessor _packetProcessor;
 
@@ -52,7 +53,7 @@ namespace Sylver.Network.Server
             this._acceptor.OnClientAccepted += this.OnClientAccepted;
 
             this._receiver = new NetServerReceiver<TClient>(this);
-
+            this._sender = new NetServerSender();
         }
 
         /// <inheritdoc />
