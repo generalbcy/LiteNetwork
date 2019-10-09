@@ -53,8 +53,11 @@ namespace Sylver.Network.Common
                     // TODO: dispose managed state (managed objects).
                 }
 
-                this.Socket.Dispose();
-                this.Socket = null;
+                if (this.Socket != null)
+                {
+                    this.Socket.Dispose();
+                    this.Socket = null;
+                }
 
                 this._disposedValue = true;
             }

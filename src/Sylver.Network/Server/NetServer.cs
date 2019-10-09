@@ -106,7 +106,15 @@ namespace Sylver.Network.Server
         }
 
         /// <inheritdoc />
-        public void SendPacketTo(INetConnection connection, byte[] messageData) => this._sender.Send(new NetMessageData(connection, messageData));
+        public void SendPacketTo(INetConnection connection, byte[] messageData)
+        {
+            if (connection == null)
+            {
+                throw new ArgumentNullException(nameof(connection));
+            }
+
+            this._sender.Send(new NetMessageData(connection, messageData));
+        }
 
         /// <inheritdoc />
         public void SendPacketTo(IEnumerable<INetConnection> connections, byte[] messageData)

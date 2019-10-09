@@ -52,5 +52,17 @@ namespace Sylver.Network.Tests.Server
             this._sender.Stop();
             Assert.False(this._sender.IsRunning);
         }
+
+        [Fact]
+        public void DisposeSenderTest()
+        {
+            this._sender.Start();
+
+            Assert.True(this._sender.IsRunning);
+
+            this._sender.Dispose();
+
+            Assert.False(this._sender.IsRunning);
+        }
     }
 }
