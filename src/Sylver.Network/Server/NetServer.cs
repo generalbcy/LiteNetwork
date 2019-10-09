@@ -3,6 +3,7 @@ using Sylver.Network.Data;
 using Sylver.Network.Server.Internal;
 using System;
 using System.Collections.Concurrent;
+using System.Collections.Generic;
 using System.Net.Sockets;
 
 namespace Sylver.Network.Server
@@ -70,6 +71,7 @@ namespace Sylver.Network.Server
             this.Socket.Listen(this.ServerConfiguration.Backlog);
 
             this.IsRunning = true;
+            this._sender.Start();
             this._acceptor.StartAccept();
             this.OnAfterStart();
         }
@@ -78,6 +80,7 @@ namespace Sylver.Network.Server
         public void Stop()
         {
             this.OnBeforeStop();
+            this._sender.Stop();
 
             if (this.Socket != null)
             {
@@ -101,6 +104,26 @@ namespace Sylver.Network.Server
             this.OnClientDisconnected(client);
             client.Dispose();
         }
+
+        /// <inheritdoc />
+        public void SendPacketTo(INetConnection connection, byte[] messageData) => this._sender.Send(new NetMessageData(connection, messageData));
+
+        /// <inheritdoc />
+        public void SendPacketTo(IEnumerable<INetConnection> connections, byte[] messageData)
+        {
+            if (connections == null)
+            {
+                throw new ArgumentNullException(nameof(connections));
+            }
+
+            foreach (INetConnection connection in connections)
+            {
+                this.SendPacketTo(connection, messageData);
+            }
+        }
+
+        /// <inheritdoc />
+        public void SendPacketToAll(byte[] messageData) => this.SendPacketTo(this._clients.Values, messageData);
 
         /// <summary>
         /// Executes the child business logic before starting the server.
@@ -141,7 +164,7 @@ namespace Sylver.Network.Server
         /// <param name="e">Accepted client socket async event arguments.</param>
         private void OnClientAccepted(object sender, SocketAsyncEventArgs e)
         {
-            TClient newClient = this._clientFactory.CreateClient(e.AcceptSocket);
+            TClient newClient = this._clientFactory.CreateClient(e.AcceptSocket, this);
 
             if (!this._clients.TryAdd(newClient.Id, newClient))
             {

@@ -60,7 +60,17 @@ namespace Sylver.Network.Tests.Mocks
 
         public bool ReceiveAsync(SocketAsyncEventArgs socketAsyncEvent)
         {
-            return this.SocketMock.Object.ReceiveAsync(socketAsyncEvent);
+            return this.SocketMock.Object.ReceiveAsync(It.IsAny<SocketAsyncEventArgs>());
+        }
+
+        public void ConfigureSendResult(bool result)
+        {
+            this.SocketMock.Setup(x => x.SendAsync(It.IsAny<SocketAsyncEventArgs>())).Returns<SocketAsyncEventArgs>(x => result);
+        }
+
+        public bool SendAsync(SocketAsyncEventArgs socketAsyncEvent)
+        {
+            return this.SocketMock.Object.SendAsync(It.IsAny<SocketAsyncEventArgs>());
         }
 
         public void SetSocketOption(SocketOptionLevel optionLevel, SocketOptionName optionName, int optionValue)
@@ -98,9 +108,14 @@ namespace Sylver.Network.Tests.Mocks
             this.SocketMock.Verify(x => x.Listen(backlog), Times.Once);
         }
 
-        public void VerifyReceive(SocketAsyncEventArgs socketAsyncEvent)
+        public void VerifyReceive(SocketAsyncEventArgs socketAsyncEvent, Times times)
         {
-            this.SocketMock.Verify(x => x.ReceiveAsync(socketAsyncEvent), Times.Once);
+            this.SocketMock.Verify(x => x.ReceiveAsync(socketAsyncEvent), times);
+        }
+
+        public void VerifySend(SocketAsyncEventArgs socketAsyncEvent, Times times)
+        {
+            this.SocketMock.Verify(x => x.SendAsync(socketAsyncEvent), times);
         }
 
         public void VerifySetSocketOptions(SocketOptionLevel optionLevel, SocketOptionName optionName, int optionValue)

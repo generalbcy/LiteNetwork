@@ -2,6 +2,7 @@
 using Sylver.Network.Server;
 using Sylver.Network.Server.Internal;
 using Sylver.Network.Tests.Mocks;
+using Sylver.Network.Tests.Server.Mocks;
 using System.Net.Sockets;
 using Xunit;
 

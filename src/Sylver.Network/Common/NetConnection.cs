@@ -34,7 +34,11 @@ namespace Sylver.Network.Common
         }
 
         /// <inheritdoc />
-        public void Dispose() => this.Dispose(true);
+        public void Dispose()
+        {
+            this.Dispose(true);
+            GC.SuppressFinalize(this);
+        }
 
         /// <summary>
         /// Dispose the <see cref="NetConnection"/> resources.

@@ -4,7 +4,7 @@ using Moq;
 using Moq.Protected;
 using Sylver.Network.Server;
 
-namespace Sylver.Network.Tests.Mocks
+namespace Sylver.Network.Tests.Server.Mocks
 {
     public sealed class NetServerMock<TClient> : Mock<NetServer<TClient>>
         where TClient : class, INetServerClient

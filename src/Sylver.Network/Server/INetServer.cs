@@ -1,6 +1,7 @@
 ﻿using Sylver.Network.Common;
 using Sylver.Network.Data;
 using System;
+using System.Collections.Generic;
 
 namespace Sylver.Network.Server
 {
@@ -40,5 +41,25 @@ namespace Sylver.Network.Server
         /// </summary>
         /// <param name="clientId">Client id.</param>
         void DisconnectClient(Guid clientId);
+
+        /// <summary>
+        /// Send packet to a given client connection.
+        /// </summary>
+        /// <param name="connection">Target client connection.</param>
+        /// <param name="messageData">Packet message data to send.</param>
+        void SendPacketTo(INetConnection connection, byte[] messageData);
+
+        /// <summary>
+        /// Send a packet to a given collection of clients.
+        /// </summary>
+        /// <param name="connections">Collection of clients connections.</param>
+        /// <param name="messageData">Packet message data to send.</param>
+        void SendPacketTo(IEnumerable<INetConnection> connections, byte[] messageData);
+
+        /// <summary>
+        /// Send a packet to all connected clients.
+        /// </summary>
+        /// <param name="messageData">Packet message data to send.</param>
+        void SendPacketToAll(byte[] messageData);
     }
 }

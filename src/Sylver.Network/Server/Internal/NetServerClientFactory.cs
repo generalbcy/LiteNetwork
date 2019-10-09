@@ -1,6 +1,8 @@
 ﻿using Microsoft.Extensions.DependencyInjection;
 using System;
+using System.Linq;
 using System.Net.Sockets;
+using System.Reflection;
 
 namespace Sylver.Network.Server.Internal
 {
@@ -25,8 +27,18 @@ namespace Sylver.Network.Server.Internal
         /// Creates a new client.
         /// </summary>
         /// <param name="acceptSocket">Accepted socket.</param>
+        /// <param name="parentServer">Parent server.</param>
         /// <returns>New client.</returns>
-        public TClient CreateClient(Socket acceptSocket)
-            => this._clientFactory(this._serviceProvider, new[] { acceptSocket }) as TClient;
+        public TClient CreateClient(Socket acceptSocket, INetServer parentServer)
+        {
+            var client = this._clientFactory(this._serviceProvider, new[] { acceptSocket }) as TClient;
+
+            if (client is NetServerClient netServerClient)
+            {
+                netServerClient.Server = parentServer;
+            }
+
+            return client;
+        }
     }
 }

@@ -3,6 +3,7 @@ using Sylver.Network.Common;
 using Sylver.Network.Data;
 using Sylver.Network.Server;
 using Sylver.Network.Tests.Mocks;
+using Sylver.Network.Tests.Server.Mocks;
 using System;
 using System.Net.Sockets;
 using Xunit;
@@ -72,7 +73,7 @@ namespace Sylver.Network.Tests.Server
         {
             Assert.NotNull(this._server.Object.PacketProcessor);
             Assert.IsType<NetPacketProcessor>(this._server.Object.PacketProcessor);
-            this._server.Object.PacketProcessor = new CustomNetPacketProcessor();
+            this._server.Object.PacketProcessor = new CustomNetPacketProcessor(false);
 
             Assert.IsType<CustomNetPacketProcessor>(this._server.Object.PacketProcessor);
 
@@ -90,7 +91,7 @@ namespace Sylver.Network.Tests.Server
 
             this._server.Object.Start();
 
-            Assert.Throws<InvalidOperationException>(() => this._server.Object.PacketProcessor = new CustomNetPacketProcessor());
+            Assert.Throws<InvalidOperationException>(() => this._server.Object.PacketProcessor = new CustomNetPacketProcessor(false));
         }
     }
 }

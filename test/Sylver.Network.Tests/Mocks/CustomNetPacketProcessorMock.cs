@@ -9,7 +9,12 @@ namespace Sylver.Network.Tests.Mocks
     {
         public int HeaderSize => sizeof(long);
 
-        public bool IncludeHeader => false;
+        public bool IncludeHeader { get; }
+
+        public CustomNetPacketProcessor(bool includeHeader)
+        {
+            this.IncludeHeader = includeHeader;
+        }
 
         public int GetMessageLength(byte[] buffer)
         {

@@ -31,6 +31,9 @@ namespace Sylver.Network.Common
         public bool ReceiveAsync(SocketAsyncEventArgs socketAsyncEvent) => this._socket.ReceiveAsync(socketAsyncEvent);
 
         /// <inheritdoc />
+        public bool SendAsync(SocketAsyncEventArgs socketAsyncEvent) => this._socket.SendAsync(socketAsyncEvent);
+
+        /// <inheritdoc />
         public void Listen(int backlog) => this._socket.Listen(backlog);
 
         /// <inheritdoc />

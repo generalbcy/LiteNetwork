@@ -54,5 +54,14 @@ namespace Sylver.Network.Common
         /// <param name="socketAsyncEvent"></param>
         /// <returns></returns>
         bool ReceiveAsync(SocketAsyncEventArgs socketAsyncEvent);
+
+        /// <summary>
+        /// Sends data asynchronously to a connected <see cref="Socket"/> object.
+        /// </summary>
+        /// <param name="socketAsyncEvent">
+        /// The <see cref="SocketAsyncEventArgs"/> object to use for this asynchronous socket operation.
+        /// </param>
+        /// <returns></returns>            
+        bool SendAsync(SocketAsyncEventArgs socketAsyncEvent);
     }
 }
