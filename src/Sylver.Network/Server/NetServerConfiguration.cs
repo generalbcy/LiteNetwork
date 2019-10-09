@@ -3,7 +3,7 @@
     /// <summary>
     /// Provides properties to configure a new <see cref="NetServer{T}"/> instance.
     /// </summary>
-    public sealed class NetServerConfiguration
+    public class NetServerConfiguration
     {
         /// <summary>
         /// Gets the default maximum of connections in accept queue.
