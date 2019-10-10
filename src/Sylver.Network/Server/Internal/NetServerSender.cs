@@ -73,7 +73,7 @@ namespace Sylver.Network.Server.Internal
         /// </summary>
         private void ProcessSendingQueue()
         {
-            while (true)
+            while (!this._cancellationToken.IsCancellationRequested)
             {
                 try
                 {
@@ -84,10 +84,9 @@ namespace Sylver.Network.Server.Internal
                         this.SendMessage(message.Connection, message.Data);
                     }
                 }
-                catch
+                catch (OperationCanceledException)
                 {
-                    if (this._cancellationToken.IsCancellationRequested)
-                        break;
+                    // The operation has been cancelled: nothing to do
                 }
             }
         }

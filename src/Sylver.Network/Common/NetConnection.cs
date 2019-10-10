@@ -3,6 +3,9 @@ using System.Net.Sockets;
 
 namespace Sylver.Network.Common
 {
+    /// <summary>
+    /// Net connection abstraction.
+    /// </summary>
     public abstract class NetConnection : INetConnection, IDisposable
     {
         private bool _disposedValue;
