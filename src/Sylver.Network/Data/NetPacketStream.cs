@@ -155,7 +155,7 @@ namespace Sylver.Network.Data
             switch (Type.GetTypeCode(typeof(T)))
             {
                 case TypeCode.Byte:
-                    this._writer.Write(Convert.ToByte(value, ));
+                    this._writer.Write(Convert.ToByte(value));
                     break;
                 case TypeCode.SByte:
                     this._writer.Write(Convert.ToSByte(value));
