@@ -1,7 +1,9 @@
-﻿using Sylver.Network.Common;
+﻿using Sylver.Network.Client.Internal;
+using Sylver.Network.Common;
 using Sylver.Network.Data;
 using System;
 using System.Collections.Generic;
+using System.Net.Sockets;
 using System.Text;
 
 namespace Sylver.Network.Client
@@ -33,10 +35,15 @@ namespace Sylver.Network.Client
             }
         }
 
+        internal INetClientConnector Connector { get; }
+
         protected NetClient()
         {
             this.Id = Guid.NewGuid();
             this._packetProcessor = new NetPacketProcessor();
+            this.Connector = new NetClientConnector();
+            this.Connector.Connected += this.OnClientConnected;
+            this.Connector.Error += this.OnClientConnectionError;
         }
 
         protected virtual void Dispose(bool disposing)
@@ -45,13 +52,10 @@ namespace Sylver.Network.Client
             {
                 if (disposing)
                 {
-                    // TODO: dispose managed state (managed objects).
+                    this.Connector.Dispose();
                 }
 
-                // TODO: free unmanaged resources (unmanaged objects) and override a finalizer below.
-                // TODO: set large fields to null.
-
-                _disposedValue = true;
+                this._disposedValue = true;
             }
         }
 
@@ -67,7 +71,13 @@ namespace Sylver.Network.Client
         /// <inheritdoc />
         public void Connect()
         {
-            throw new NotImplementedException();
+            if (this.IsRunning)
+                throw new InvalidOperationException("Client is already running");
+
+            if (this.IsConnected)
+                throw new InvalidOperationException("Client is already connected to remote.");
+
+            this.Connector.Connect();
         }
 
         /// <inheritdoc />
@@ -84,6 +94,21 @@ namespace Sylver.Network.Client
 
         /// <inheritdoc />
         public void SendMessage(INetPacketStream packet)
+        {
+            throw new NotImplementedException();
+        }
+
+        protected virtual void OnConnected() { }
+
+        protected virtual void OnDisconnected() { }
+
+
+        private void OnClientConnected(object sender, EventArgs e)
+        {
+            throw new NotImplementedException();
+        }
+
+        private void OnClientConnectionError(object sender, SocketError e)
         {
             throw new NotImplementedException();
         }
