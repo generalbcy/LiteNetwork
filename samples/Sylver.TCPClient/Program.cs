@@ -35,7 +35,7 @@ namespace Sylver.TCPClient
         public MyClient()
         {
             var retry = new NetClientRetryConfiguration(NetClientRetryOption.Limited, 100);
-            this.ClientConfiguration = new NetClientConfiguration("127.0.0.1", 4444, retryConfiguration: retry);
+            this.ClientConfiguration = new NetClientConfiguration("127.0.0.1", 4444, 128, retry);
         }
 
         protected override void OnConnected()

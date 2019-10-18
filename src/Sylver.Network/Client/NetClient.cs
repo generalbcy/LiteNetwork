@@ -39,13 +39,19 @@ namespace Sylver.Network.Client
 
         internal INetClientConnector Connector { get; }
 
-        protected NetClient()
+        public NetClient()
+            : this(null)
+        {
+        }
+
+        public NetClient(NetClientConfiguration clientConfiguration)
         {
             this.Id = Guid.NewGuid();
             this.Socket = new NetSocket(new Socket(AddressFamily.InterNetwork, SocketType.Stream, ProtocolType.Tcp));
             this.Connector = new NetClientConnector(this);
             this.Connector.Connected += this.OnClientConnected;
             this.Connector.Error += this.OnClientConnectionError;
+            this.ClientConfiguration = clientConfiguration;
             this._packetProcessor = new NetPacketProcessor();
         }
 
@@ -76,6 +82,9 @@ namespace Sylver.Network.Client
         {
             if (this.IsConnected)
                 throw new InvalidOperationException("Client is already connected to remote.");
+
+            if (this.ClientConfiguration == null)
+                throw new ArgumentNullException("Client configuration is not set.", nameof(this.ClientConfiguration));
 
             if (this.ClientConfiguration.Port <= 0)
                 throw new ArgumentException($"Invalid port number '{this.ClientConfiguration.Port}' in configuration.", nameof(this.ClientConfiguration.Port));
