@@ -122,5 +122,15 @@ namespace Sylver.Network.Tests.Mocks
         {
             this.SocketMock.Verify(x => x.SetSocketOption(optionLevel, optionName, optionValue), Times.Once);
         }
+
+        public void ConfigureConnectResult(bool result)
+        {
+            this.SocketMock.Setup(x => x.ConnectAsync(It.IsAny<SocketAsyncEventArgs>())).Returns<SocketAsyncEventArgs>(x => result);
+        }
+
+        public bool ConnectAsync(SocketAsyncEventArgs socketAsyncEvent)
+        {
+            return this.SocketMock.Object.ConnectAsync(It.IsAny<SocketAsyncEventArgs>());
+        }
     }
 }
