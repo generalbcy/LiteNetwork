@@ -55,6 +55,8 @@ namespace Sylver.TCPClient
             using (INetPacketStream packet = new NetPacket())
             {
                 packet.Write(message);
+
+                this.SendMessage(packet);
             }
         }
     }

@@ -1,10 +1,9 @@
 ﻿using Sylver.Network.Client.Internal;
 using Sylver.Network.Common;
+using Sylver.Network.Common.Internal;
 using Sylver.Network.Data;
 using System;
-using System.Collections.Generic;
 using System.Net.Sockets;
-using System.Text;
 
 namespace Sylver.Network.Client
 {
@@ -12,6 +11,8 @@ namespace Sylver.Network.Client
     {
         private bool _disposedValue;
         private IPacketProcessor _packetProcessor;
+
+        private readonly INetSender _sender;
 
         /// <inheritdoc />
         public Guid Id { get; }
@@ -39,11 +40,18 @@ namespace Sylver.Network.Client
 
         internal INetClientConnector Connector { get; }
 
+        /// <summary>
+        /// Creates a new <see cref="NetClient"/> instance without any configuration.
+        /// </summary>
         public NetClient()
             : this(null)
         {
         }
 
+        /// <summary>
+        /// Creates and configures a new <see cref="NetClient"/> instance.
+        /// </summary>
+        /// <param name="clientConfiguration"></param>
         public NetClient(NetClientConfiguration clientConfiguration)
         {
             this.Id = Guid.NewGuid();
@@ -53,28 +61,7 @@ namespace Sylver.Network.Client
             this.Connector.Error += this.OnClientConnectionError;
             this.ClientConfiguration = clientConfiguration;
             this._packetProcessor = new NetPacketProcessor();
-        }
-
-        protected virtual void Dispose(bool disposing)
-        {
-            if (!this._disposedValue)
-            {
-                if (disposing)
-                {
-                    this.Connector.Dispose();
-                }
-
-                this._disposedValue = true;
-            }
-        }
-
-        /// <summary>
-        /// Dispose the <see cref="NetClient"/> resources.
-        /// </summary>
-        public void Dispose()
-        {
-            this.Dispose(true);
-            GC.SuppressFinalize(this);
+            this._sender = new NetClientSender();
         }
 
         /// <inheritdoc />
@@ -95,13 +82,26 @@ namespace Sylver.Network.Client
             if (this.ClientConfiguration.BufferSize <= 0)
                 throw new ArgumentException($"Invalid buffer size '{this.ClientConfiguration.BufferSize}' in configuration.", nameof(this.ClientConfiguration.BufferSize));
 
+            this._sender.Start();
             this.Connector.Connect();
         }
 
         /// <inheritdoc />
         public void Disconnect()
         {
-            throw new NotImplementedException();
+            this._sender.Stop();
+            // TODO: disconnect client
+        }
+
+        /// <inheritdoc />
+        public void SendMessage(INetPacketStream packet)
+        {
+            if (packet == null)
+            {
+                throw new ArgumentNullException(nameof(packet));
+            }
+
+            this._sender.Send(new NetMessageData(this, packet.Buffer));
         }
 
         /// <inheritdoc />
@@ -110,10 +110,27 @@ namespace Sylver.Network.Client
             // Nothing to do. Must be override in child classes.
         }
 
-        /// <inheritdoc />
-        public void SendMessage(INetPacketStream packet)
+        /// <summary>
+        /// Dispose the <see cref="NetClient"/> resources.
+        /// </summary>
+        public void Dispose()
         {
-            throw new NotImplementedException();
+            this.Dispose(true);
+            GC.SuppressFinalize(this);
+        }
+
+        protected virtual void Dispose(bool disposing)
+        {
+            if (!this._disposedValue)
+            {
+                if (disposing)
+                {
+                    this.Connector.Dispose();
+                    this._sender.Dispose();
+                }
+
+                this._disposedValue = true;
+            }
         }
 
         protected virtual void OnConnected() { }
