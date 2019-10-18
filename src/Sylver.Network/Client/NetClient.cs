@@ -13,15 +13,17 @@ namespace Sylver.Network.Client
         private bool _disposedValue;
         private IPacketProcessor _packetProcessor;
 
+        /// <inheritdoc />
         public Guid Id { get; }
 
+        /// <inheritdoc />
         public INetSocket Socket { get; }
 
         /// <inheritdoc />
         public bool IsConnected { get; private set; }
 
         /// <inheritdoc />
-        public bool IsRunning { get; private set; }
+        public NetClientConfiguration ClientConfiguration { get; protected set; }
 
         /// <inheritdoc />
         public IPacketProcessor PacketProcessor
@@ -29,8 +31,8 @@ namespace Sylver.Network.Client
             get => this._packetProcessor;
             set
             {
-                if (this.IsRunning)
-                    throw new InvalidOperationException("Cannot update packet processor when server is running.");
+                if (this.IsConnected)
+                    throw new InvalidOperationException("Cannot update packet processor when the client is already connected.");
                 this._packetProcessor = value;
             }
         }
@@ -40,10 +42,11 @@ namespace Sylver.Network.Client
         protected NetClient()
         {
             this.Id = Guid.NewGuid();
-            this._packetProcessor = new NetPacketProcessor();
-            this.Connector = new NetClientConnector();
+            this.Socket = new NetSocket(new Socket(AddressFamily.InterNetwork, SocketType.Stream, ProtocolType.Tcp));
+            this.Connector = new NetClientConnector(this);
             this.Connector.Connected += this.OnClientConnected;
             this.Connector.Error += this.OnClientConnectionError;
+            this._packetProcessor = new NetPacketProcessor();
         }
 
         protected virtual void Dispose(bool disposing)
@@ -71,11 +74,17 @@ namespace Sylver.Network.Client
         /// <inheritdoc />
         public void Connect()
         {
-            if (this.IsRunning)
-                throw new InvalidOperationException("Client is already running");
-
             if (this.IsConnected)
                 throw new InvalidOperationException("Client is already connected to remote.");
+
+            if (this.ClientConfiguration.Port <= 0)
+                throw new ArgumentException($"Invalid port number '{this.ClientConfiguration.Port}' in configuration.", nameof(this.ClientConfiguration.Port));
+
+            if (NetHelper.BuildIPAddress(this.ClientConfiguration.Host) == null)
+                throw new ArgumentException($"Invalid host address '{this.ClientConfiguration.Host}' in configuration", nameof(this.ClientConfiguration.Host));
+
+            if (this.ClientConfiguration.BufferSize <= 0)
+                throw new ArgumentException($"Invalid buffer size '{this.ClientConfiguration.BufferSize}' in configuration.", nameof(this.ClientConfiguration.BufferSize));
 
             this.Connector.Connect();
         }
@@ -102,15 +111,14 @@ namespace Sylver.Network.Client
 
         protected virtual void OnDisconnected() { }
 
-
         private void OnClientConnected(object sender, EventArgs e)
         {
-            throw new NotImplementedException();
+            this.OnConnected();
         }
 
         private void OnClientConnectionError(object sender, SocketError e)
         {
-            throw new NotImplementedException();
+            Console.WriteLine($"Connection error: {e.ToString()}");
         }
     }
 }

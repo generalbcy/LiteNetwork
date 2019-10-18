@@ -45,5 +45,8 @@ namespace Sylver.Network.Common
 
         /// <inheritdoc />
         public void Dispose() => this._socket.Dispose();
+
+        /// <inheritdoc />
+        public bool ConnectAsync(SocketAsyncEventArgs socketAsyncEvent) => this._socket.ConnectAsync(socketAsyncEvent);
     }
 }

@@ -9,6 +9,9 @@ namespace Sylver.Network.Client.Internal
 
         event EventHandler<SocketError> Error;
 
+        /// <summary>
+        /// Connects to a server.
+        /// </summary>
         void Connect();
     }
 }

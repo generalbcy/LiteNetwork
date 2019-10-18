@@ -12,9 +12,9 @@ namespace Sylver.Network.Client
         bool IsConnected { get; }
 
         /// <summary>
-        /// Gets the <see cref="INetClient"/> running state.
+        /// Gets the client configuration.
         /// </summary>
-        bool IsRunning { get; }
+        NetClientConfiguration ClientConfiguration { get; }
 
         /// <summary>
         /// Gets or sest the client's packet processor.

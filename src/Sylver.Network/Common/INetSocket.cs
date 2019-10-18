@@ -7,6 +7,9 @@ namespace Sylver.Network.Common
     /// <summary>
     /// Provides an interface to manage a Sylver socket.
     /// </summary>
+    /// <remarks>
+    /// Summaries and documentation are from Microsoft docs.
+    /// </remarks>
     public interface INetSocket : IDisposable
     {
         /// <summary>
@@ -63,5 +66,12 @@ namespace Sylver.Network.Common
         /// </param>
         /// <returns></returns>            
         bool SendAsync(SocketAsyncEventArgs socketAsyncEvent);
+
+        /// <summary>
+        /// Begins an asynchronous request for a connection to a remote host.
+        /// </summary>
+        /// <param name="socketAsyncEvent">The <see cref="SocketAsyncEventArgs"/> object to use for this asynchronous socket operation.</param>
+        /// <returns></returns>
+        bool ConnectAsync(SocketAsyncEventArgs socketAsyncEvent);
     }
 }

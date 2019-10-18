@@ -1,4 +1,6 @@
-﻿using System;
+﻿using Sylver.Network.Client;
+using Sylver.Network.Data;
+using System;
 
 namespace Sylver.TCPClient
 {
@@ -6,7 +8,54 @@ namespace Sylver.TCPClient
     {
         static void Main(string[] args)
         {
-            Console.WriteLine("Hello World!");
+            var myClient = new MyClient();
+
+            myClient.Connect();
+
+            while (true)
+            {
+                string messageToSend = Console.ReadLine();
+
+                if (messageToSend == "quit")
+                {
+                    break;
+                }
+                else
+                {
+                    myClient.SendMessage(messageToSend);   
+                }
+            }
+
+            myClient.Dispose();
+        }
+    }
+
+    public sealed class MyClient : NetClient
+    {
+        public MyClient()
+        {
+            var retry = new NetClientRetryConfiguration(NetClientRetryOption.Limited, 100);
+            this.ClientConfiguration = new NetClientConfiguration("127.0.0.1", 4444, retryConfiguration: retry);
+        }
+
+        protected override void OnConnected()
+        {
+            Console.WriteLine("Connected to server");
+        }
+
+        public override void HandleMessage(INetPacketStream packet)
+        {
+            string message = packet.Read<string>();
+
+            Console.WriteLine($"Received from server: {message}");
+        }
+
+        public void SendMessage(string message)
+        {
+            using (INetPacketStream packet = new NetPacket())
+            {
+                packet.Write(message);
+            }
         }
     }
 }
