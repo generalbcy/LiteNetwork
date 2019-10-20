@@ -18,7 +18,7 @@ namespace Sylver.Network.Server
     {
         private readonly ConcurrentDictionary<Guid, TClient> _clients;
         private readonly NetServerClientFactory<TClient> _clientFactory;
-        private readonly NetServerAcceptor<TClient> _acceptor;
+        private readonly NetServerAcceptor _acceptor;
         private readonly INetReceiver _receiver;
         private readonly INetSender _sender;
 
@@ -51,7 +51,7 @@ namespace Sylver.Network.Server
             this._packetProcessor = new NetPacketProcessor();
             this._clientFactory = new NetServerClientFactory<TClient>();
             this._clients = new ConcurrentDictionary<Guid, TClient>();
-            this._acceptor = new NetServerAcceptor<TClient>(this);
+            this._acceptor = new NetServerAcceptor(this);
             this._acceptor.OnClientAccepted += this.OnClientAccepted;
 
             this._sender = new NetServerSender();

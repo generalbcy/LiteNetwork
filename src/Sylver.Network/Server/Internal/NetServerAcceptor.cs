@@ -7,11 +7,9 @@ namespace Sylver.Network.Server.Internal
     /// <summary>
     /// Accepts the clients into the server.
     /// </summary>
-    /// <typeparam name="TUser">User type handled by the server.</typeparam>
-    internal sealed class NetServerAcceptor<TUser>
-        where TUser : class, INetServerClient
+    internal sealed class NetServerAcceptor
     {
-        private readonly NetServer<TUser> _server;
+        private readonly INetServer _server;
 
         /// <summary>
         /// Gets the acceptor socket async event arguments.
@@ -27,7 +25,7 @@ namespace Sylver.Network.Server.Internal
         /// Creates a new <see cref="NetServerAcceptor{TUser}"/> instance.
         /// </summary>
         /// <param name="server"></param>
-        public NetServerAcceptor(NetServer<TUser> server)
+        public NetServerAcceptor(INetServer server)
         {
             this._server = server;
             this.SocketEvent = new SocketAsyncEventArgs();

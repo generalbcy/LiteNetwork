@@ -14,7 +14,7 @@ namespace Sylver.Network.Tests.Server
         private readonly NetSocketMock _acceptedSocket;
         private readonly NetServerConfiguration _serverConfiguration;
         private readonly NetServerMock<CustomClient> _server;
-        private readonly NetServerAcceptor<CustomClient> _serverAcceptor;
+        private readonly NetServerAcceptor _serverAcceptor;
 
         public NetAcceptorTests()
         {
@@ -22,7 +22,7 @@ namespace Sylver.Network.Tests.Server
             this._acceptedSocket = new NetSocketMock();
             this._serverConfiguration = new NetServerConfiguration("127.0.0.1", 4444);
             this._server = new NetServerMock<CustomClient>(this._serverConfiguration);
-            this._serverAcceptor = new NetServerAcceptor<CustomClient>(this._server.Object);
+            this._serverAcceptor = new NetServerAcceptor(this._server.Object);
 
             this._server.SetupGet(x => x.Socket).Returns(this._serverSocket);
         }
