@@ -12,9 +12,9 @@
 
 Just like the old version, `Sylver.Network` kept the same *"easy-to-use"* concept that allows you to create your own socket servers and/or socket client in a **few lines** of code.
 
-### Features
+## Features
 
-#### Server
+### Server
 
 - Server configuration
     - Listening host / port
@@ -22,7 +22,7 @@ Just like the old version, `Sylver.Network` kept the same *"easy-to-use"* concep
 - Client management
 - Broadcast messages to all connected clients or a given list of connected clients
 
-#### Client
+### Client
 
 - Client configuration
     - Remote server address / port
@@ -32,7 +32,7 @@ Just like the old version, `Sylver.Network` kept the same *"easy-to-use"* concep
 - Disconnect from the remote server
 - Send/Receive messages to/from the server
 
-#### Packets
+### Packets
 
 - Create packet streams
 - Read data from packet streams
