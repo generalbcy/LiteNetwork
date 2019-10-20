@@ -1,6 +1,7 @@
-﻿using System;
+﻿using Sylver.Network.Common;
+using System;
 
-namespace Sylver.Network.Common.Internal
+namespace Sylver.Network.Infrastructure
 {
     internal interface INetSender : IDisposable
     {

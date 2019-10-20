@@ -1,10 +1,11 @@
-﻿using System;
+﻿using Sylver.Network.Common;
+using System;
 using System.Collections.Concurrent;
 using System.Net.Sockets;
 using System.Threading;
 using System.Threading.Tasks;
 
-namespace Sylver.Network.Common.Internal
+namespace Sylver.Network.Infrastructure
 {
     internal abstract class NetSender : INetSender
     {
@@ -65,21 +66,17 @@ namespace Sylver.Network.Common.Internal
         private void ProcessSendingQueue()
         {
             while (!this._cancellationToken.IsCancellationRequested)
-            {
                 try
                 {
                     NetMessageData message = this._sendingCollection.Take(this._cancellationToken);
 
                     if (message.Connection != null && message.Data != null)
-                    {
                         this.SendMessage(message.Connection, message.Data);
-                    }
                 }
                 catch (OperationCanceledException)
                 {
                     // The operation has been cancelled: nothing to do
                 }
-            }
         }
 
         /// <summary>
@@ -94,9 +91,7 @@ namespace Sylver.Network.Common.Internal
             socketAsyncEvent.SetBuffer(data, 0, data.Length);
 
             if (!connection.Socket.SendAsync(socketAsyncEvent))
-            {
                 this.OnSendCompleted(this, socketAsyncEvent);
-            }
         }
 
         /// <summary>

@@ -1,9 +1,10 @@
-﻿using Sylver.Network.Data;
+﻿using Sylver.Network.Common;
+using Sylver.Network.Data;
 using Sylver.Network.Data.Internal;
 using System;
 using System.Threading.Tasks;
 
-namespace Sylver.Network.Server.Internal
+namespace Sylver.Network.Infrastructure
 {
     internal sealed class NetMessageDispatcher : INetMessageDispatcher
     {
@@ -19,9 +20,9 @@ namespace Sylver.Network.Server.Internal
         }
 
         /// <inheritdoc />
-        public void DispatchMessage(INetServerClient client, NetDataToken token)
+        public void DispatchMessage(INetUser client, NetDataToken token)
         {
-            int bufferSize = this._packetProcessor.IncludeHeader ? this._packetProcessor.HeaderSize + token.MessageSize.Value : token.MessageSize.Value;
+            var bufferSize = this._packetProcessor.IncludeHeader ? this._packetProcessor.HeaderSize + token.MessageSize.Value : token.MessageSize.Value;
             var buffer = new byte[bufferSize];
 
             if (this._packetProcessor.IncludeHeader)
@@ -30,16 +31,12 @@ namespace Sylver.Network.Server.Internal
                 Array.Copy(token.MessageData, 0, buffer, this._packetProcessor.HeaderSize, token.MessageSize.Value);
             }
             else
-            {
                 Array.Copy(token.MessageData, 0, buffer, 0, token.MessageSize.Value);
-            }
 
             Task.Run(() =>
             {
                 using (INetPacketStream packet = this._packetProcessor.CreatePacket(buffer))
-                {
                     client.HandleMessage(packet);
-                }
             });
         }
     }

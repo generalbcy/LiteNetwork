@@ -1,4 +1,4 @@
-﻿using Sylver.Network.Common.Internal;
+﻿using Sylver.Network.Infrastructure;
 using System.Net.Sockets;
 
 namespace Sylver.Network.Client.Internal
@@ -17,10 +17,7 @@ namespace Sylver.Network.Client.Internal
         }
 
         /// <inheritdoc />
-        protected override void ClearSocketEvent(SocketAsyncEventArgs socketAsyncEvent)
-        {
-            socketAsyncEvent.SetBuffer(null, 0, 0);
-        }
+        protected override void ClearSocketEvent(SocketAsyncEventArgs socketAsyncEvent) => socketAsyncEvent.SetBuffer(null, 0, 0);
 
         /// <inheritdoc />
         protected override SocketAsyncEventArgs GetSocketEvent() => this._socketAsyncEvent;

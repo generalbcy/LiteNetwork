@@ -4,7 +4,7 @@ using System;
 
 namespace Sylver.Network.Client
 {
-    public interface INetClient : INetConnection
+    public interface INetClient : INetUser, INetConnection
     {
         /// <summary>
         /// Gets the <see cref="INetClient"/> connected state.
@@ -35,12 +35,6 @@ namespace Sylver.Network.Client
         /// Disconnects from the remote server.
         /// </summary>
         void Disconnect();
-
-        /// <summary>
-        /// Handle an incoming packet.
-        /// </summary>
-        /// <param name="packet">Incoming packet.</param>
-        void HandleMessage(INetPacketStream packet);
 
         /// <summary>
         /// Sends a packet to the remote server.

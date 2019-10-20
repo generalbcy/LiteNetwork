@@ -1,6 +1,7 @@
-﻿using Sylver.Network.Data.Internal;
+﻿using Sylver.Network.Common;
+using Sylver.Network.Data.Internal;
 
-namespace Sylver.Network.Server.Internal
+namespace Sylver.Network.Infrastructure
 {
     internal interface INetMessageDispatcher
     {
@@ -9,6 +10,6 @@ namespace Sylver.Network.Server.Internal
         /// </summary>
         /// <param name="client">Client to dispatch the message.</param>
         /// <param name="token">Client data token containing the received data.</param>
-        void DispatchMessage(INetServerClient client, NetDataToken token);
+        void DispatchMessage(INetUser client, NetDataToken token);
     }
 }

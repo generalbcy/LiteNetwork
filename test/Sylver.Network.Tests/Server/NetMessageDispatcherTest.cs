@@ -2,7 +2,7 @@
 using Moq;
 using Sylver.Network.Data;
 using Sylver.Network.Data.Internal;
-using Sylver.Network.Server.Internal;
+using Sylver.Network.Infrastructure;
 using Sylver.Network.Tests.Mocks;
 using Sylver.Network.Tests.Server.Mocks;
 using System;

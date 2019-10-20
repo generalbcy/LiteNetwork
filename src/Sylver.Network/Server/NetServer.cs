@@ -1,5 +1,6 @@
 ﻿using Sylver.Network.Common;
 using Sylver.Network.Data;
+using Sylver.Network.Infrastructure;
 using Sylver.Network.Server.Internal;
 using System;
 using System.Collections.Concurrent;
@@ -18,8 +19,8 @@ namespace Sylver.Network.Server
         private readonly ConcurrentDictionary<Guid, TClient> _clients;
         private readonly NetServerClientFactory<TClient> _clientFactory;
         private readonly NetServerAcceptor<TClient> _acceptor;
-        private readonly NetServerReceiver<TClient> _receiver;
-        private readonly NetServerSender _sender;
+        private readonly INetReceiver _receiver;
+        private readonly INetSender _sender;
 
         private IPacketProcessor _packetProcessor;
 
@@ -53,8 +54,8 @@ namespace Sylver.Network.Server
             this._acceptor = new NetServerAcceptor<TClient>(this);
             this._acceptor.OnClientAccepted += this.OnClientAccepted;
 
-            this._receiver = new NetServerReceiver<TClient>(this);
             this._sender = new NetServerSender();
+            this._receiver = new NetServerReceiver(this);
         }
 
         /// <inheritdoc />
@@ -180,7 +181,7 @@ namespace Sylver.Network.Server
             }
 
             this.OnClientConnected(newClient);
-            this._receiver.StartReceivingData(newClient);
+            this._receiver.Start(newClient);
         }
     }
 }

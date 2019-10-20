@@ -1,7 +1,7 @@
 ﻿using Sylver.Network.Client.Internal;
 using Sylver.Network.Common;
-using Sylver.Network.Common.Internal;
 using Sylver.Network.Data;
+using Sylver.Network.Infrastructure;
 using System;
 using System.Net.Sockets;
 
@@ -13,6 +13,7 @@ namespace Sylver.Network.Client
         private IPacketProcessor _packetProcessor;
 
         private readonly INetSender _sender;
+        private readonly INetReceiver _receiver;
 
         /// <inheritdoc />
         public Guid Id { get; }
@@ -62,6 +63,7 @@ namespace Sylver.Network.Client
             this.ClientConfiguration = clientConfiguration;
             this._packetProcessor = new NetPacketProcessor();
             this._sender = new NetClientSender();
+            this._receiver = new NetClientReceiver(this);
         }
 
         /// <inheritdoc />
@@ -90,7 +92,8 @@ namespace Sylver.Network.Client
         public void Disconnect()
         {
             this._sender.Stop();
-            // TODO: disconnect client
+            this.Socket.GetSocket().Disconnect(true);
+            this.OnDisconnected();
         }
 
         /// <inheritdoc />
@@ -119,6 +122,10 @@ namespace Sylver.Network.Client
             GC.SuppressFinalize(this);
         }
 
+        /// <summary>
+        /// Dispose the <see cref="NetClient"/> resources.
+        /// </summary>
+        /// <param name="disposing"></param>
         protected virtual void Dispose(bool disposing)
         {
             if (!this._disposedValue)
@@ -127,6 +134,7 @@ namespace Sylver.Network.Client
                 {
                     this.Connector.Dispose();
                     this._sender.Dispose();
+                    this._receiver.Dispose();
                 }
 
                 this._disposedValue = true;
@@ -140,6 +148,7 @@ namespace Sylver.Network.Client
         private void OnClientConnected(object sender, EventArgs e)
         {
             this.OnConnected();
+            this._receiver.Start(this);
         }
 
         private void OnClientConnectionError(object sender, SocketError e)

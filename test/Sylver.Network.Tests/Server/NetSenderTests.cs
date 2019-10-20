@@ -3,13 +3,14 @@ using Moq;
 using Sylver.Network.Common;
 using Sylver.Network.Server.Internal;
 using Sylver.Network.Tests.Server.Mocks;
+using System;
 using System.Net.Sockets;
 using System.Threading.Tasks;
 using Xunit;
 
 namespace Sylver.Network.Tests.Server
 {
-    public sealed class NetSenderTests
+    public sealed class NetSenderTests : IDisposable
     {
         private readonly Randomizer _randomizer;
         private readonly NetServerSender _sender;
@@ -45,7 +46,7 @@ namespace Sylver.Network.Tests.Server
             this._sender.Send(new NetMessageData(this._clientMock.Object, message));
 
             // Wait 1 second so the sender task can process the previous message.
-            await Task.Delay(1000);
+            await Task.Delay(1000).ConfigureAwait(false);
 
             this._clientMock.SocketMock.VerifySend(It.IsAny<SocketAsyncEventArgs>(), Times.Once());
 
@@ -63,6 +64,11 @@ namespace Sylver.Network.Tests.Server
             this._sender.Dispose();
 
             Assert.False(this._sender.IsRunning);
+        }
+
+        public void Dispose()
+        {
+            this._sender.Dispose();
         }
     }
 }

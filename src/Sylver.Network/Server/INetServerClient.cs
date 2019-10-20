@@ -4,14 +4,8 @@ using System.Collections.Generic;
 
 namespace Sylver.Network.Server
 {
-    public interface INetServerClient : INetConnection
+    public interface INetServerClient : INetUser, INetConnection
     {
-        /// <summary>
-        /// Handle an incoming packet.
-        /// </summary>
-        /// <param name="packet">Incoming packet stream.</param>
-        void HandleMessage(INetPacketStream packetStream);
-
         /// <summary>
         /// Sends a packet to this client.
         /// </summary>
