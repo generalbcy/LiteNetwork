@@ -12,6 +12,7 @@ namespace Sylver.Network.Client
         private bool _disposedValue;
         private IPacketProcessor _packetProcessor;
 
+        private readonly INetClientConnector _connector;
         private readonly INetSender _sender;
         private readonly INetReceiver _receiver;
 
@@ -39,8 +40,6 @@ namespace Sylver.Network.Client
             }
         }
 
-        internal INetClientConnector Connector { get; }
-
         /// <summary>
         /// Creates a new <see cref="NetClient"/> instance without any configuration.
         /// </summary>
@@ -57,11 +56,11 @@ namespace Sylver.Network.Client
         {
             this.Id = Guid.NewGuid();
             this.Socket = new NetSocket(new Socket(AddressFamily.InterNetwork, SocketType.Stream, ProtocolType.Tcp));
-            this.Connector = new NetClientConnector(this);
-            this.Connector.Connected += this.OnClientConnected;
-            this.Connector.Error += this.OnClientConnectionError;
             this.ClientConfiguration = clientConfiguration;
             this._packetProcessor = new NetPacketProcessor();
+            this._connector = new NetClientConnector(this);
+            this._connector.Connected += this.OnClientConnected;
+            this._connector.Error += this.OnClientConnectionError;
             this._sender = new NetClientSender();
             this._receiver = new NetClientReceiver(this);
         }
@@ -85,7 +84,7 @@ namespace Sylver.Network.Client
                 throw new ArgumentException($"Invalid buffer size '{this.ClientConfiguration.BufferSize}' in configuration.", nameof(this.ClientConfiguration.BufferSize));
 
             this._sender.Start();
-            this.Connector.Connect();
+            this._connector.Connect();
         }
 
         /// <inheritdoc />
@@ -132,7 +131,7 @@ namespace Sylver.Network.Client
             {
                 if (disposing)
                 {
-                    this.Connector.Dispose();
+                    this._connector.Dispose();
                     this._sender.Dispose();
                     this._receiver.Dispose();
                 }
