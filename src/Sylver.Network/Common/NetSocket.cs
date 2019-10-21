@@ -9,6 +9,9 @@ namespace Sylver.Network.Common
     {
         private readonly Socket _socket;
 
+        /// <inheritdoc />
+        public bool IsConnected => this._socket.Connected;
+
         /// <summary>
         /// Creates a new <see cref="NetSocket"/> instance.
         /// </summary>

@@ -13,6 +13,11 @@ namespace Sylver.Network.Common
     public interface INetSocket : IDisposable
     {
         /// <summary>
+        /// Gets or sets a value that indicates the socket connection state.
+        /// </summary>
+        bool IsConnected { get; }
+
+        /// <summary>
         /// Gets the number of bytes available.
         /// </summary>
         /// <returns></returns>

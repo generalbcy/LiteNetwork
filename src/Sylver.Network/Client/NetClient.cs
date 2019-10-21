@@ -7,9 +7,8 @@ using System.Net.Sockets;
 
 namespace Sylver.Network.Client
 {
-    public class NetClient : INetClient
+    public class NetClient : NetConnection, INetClient
     {
-        private bool _disposedValue;
         private IPacketProcessor _packetProcessor;
 
         private readonly INetClientConnector _connector;
@@ -17,13 +16,7 @@ namespace Sylver.Network.Client
         private readonly INetReceiver _receiver;
 
         /// <inheritdoc />
-        public Guid Id { get; }
-
-        /// <inheritdoc />
-        public INetSocket Socket { get; }
-
-        /// <inheritdoc />
-        public bool IsConnected { get; private set; }
+        public bool IsConnected => this.Socket.IsConnected;
 
         /// <inheritdoc />
         public NetClientConfiguration ClientConfiguration { get; protected set; }
@@ -53,9 +46,8 @@ namespace Sylver.Network.Client
         /// </summary>
         /// <param name="clientConfiguration"></param>
         public NetClient(NetClientConfiguration clientConfiguration)
+            : base(new Socket(AddressFamily.InterNetwork, SocketType.Stream, ProtocolType.Tcp))
         {
-            this.Id = Guid.NewGuid();
-            this.Socket = new NetSocket(new Socket(AddressFamily.InterNetwork, SocketType.Stream, ProtocolType.Tcp));
             this.ClientConfiguration = clientConfiguration;
             this._packetProcessor = new NetPacketProcessor();
             this._connector = new NetClientConnector(this);
@@ -115,29 +107,13 @@ namespace Sylver.Network.Client
         /// <summary>
         /// Dispose the <see cref="NetClient"/> resources.
         /// </summary>
-        public void Dispose()
-        {
-            this.Dispose(true);
-            GC.SuppressFinalize(this);
-        }
-
-        /// <summary>
-        /// Dispose the <see cref="NetClient"/> resources.
-        /// </summary>
         /// <param name="disposing"></param>
-        protected virtual void Dispose(bool disposing)
+        protected override void Dispose(bool disposing)
         {
-            if (!this._disposedValue)
-            {
-                if (disposing)
-                {
-                    this._connector.Dispose();
-                    this._sender.Dispose();
-                    this._receiver.Dispose();
-                }
-
-                this._disposedValue = true;
-            }
+            this._connector.Dispose();
+            this._sender.Dispose();
+            this._receiver.Dispose();
+            base.Dispose(disposing);
         }
 
         protected virtual void OnConnected() { }

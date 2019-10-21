@@ -26,7 +26,7 @@ namespace Sylver.Network.Tests.Server
         }
 
         [Fact]
-        public void StartServer_Test()
+        public void StartServerTest()
         {
             this._server.Object.Start();
 
@@ -46,7 +46,7 @@ namespace Sylver.Network.Tests.Server
         }
 
         [Fact]
-        public void StartServerTwice_Test()
+        public void StartServerTwiceTest()
         {
             this._server.Object.Start();
 
@@ -55,7 +55,7 @@ namespace Sylver.Network.Tests.Server
         }
 
         [Fact]
-        public void StopServer_Test()
+        public void StopServerTest()
         {
             this._server.Object.Start();
             Assert.True(this._server.Object.IsRunning);
@@ -69,7 +69,7 @@ namespace Sylver.Network.Tests.Server
         }
 
         [Fact]
-        public void ChangePacketProcessor_BeforeStart_Test()
+        public void ChangePacketProcessorBeforeStartTest()
         {
             Assert.NotNull(this._server.Object.PacketProcessor);
             Assert.IsType<NetPacketProcessor>(this._server.Object.PacketProcessor);
@@ -84,7 +84,7 @@ namespace Sylver.Network.Tests.Server
         }
 
         [Fact]
-        public void ChangePacketProcessor_AfterStart_Test()
+        public void ChangePacketProcessorAfterStartTest()
         {
             Assert.NotNull(this._server.Object.PacketProcessor);
             Assert.IsType<NetPacketProcessor>(this._server.Object.PacketProcessor);

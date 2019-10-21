@@ -1,15 +1,19 @@
 ﻿using Moq;
 using Sylver.Network.Common;
+using System;
 using System.Net;
 using System.Net.Sockets;
 
 namespace Sylver.Network.Tests.Mocks
 {
-    public sealed class NetSocketMock : INetSocket
+    public sealed class NetSocketMock : INetSocket, IDisposable
     {
         private readonly Socket _socket;
+        private bool _connectedState;
 
         public Mock<INetSocket> SocketMock { get; }
+
+        public bool IsConnected { get; private set; }
 
         public NetSocketMock()
         {
@@ -125,7 +129,12 @@ namespace Sylver.Network.Tests.Mocks
 
         public void ConfigureConnectResult(bool result)
         {
-            this.SocketMock.Setup(x => x.ConnectAsync(It.IsAny<SocketAsyncEventArgs>())).Returns<SocketAsyncEventArgs>(x => result);
+            this.SocketMock.Setup(x => x.ConnectAsync(It.IsAny<SocketAsyncEventArgs>())).Returns<SocketAsyncEventArgs>(x =>
+            {
+                this.IsConnected = !result;
+
+                return result;
+            });
         }
 
         public bool ConnectAsync(SocketAsyncEventArgs socketAsyncEvent)
