@@ -16,6 +16,7 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "global", "global", "{D1F9A1
 		.gitattributes = .gitattributes
 		.gitignore = .gitignore
 		.travis.yml = .travis.yml
+		CHANGELOG.md = CHANGELOG.md
 		LICENSE = LICENSE
 		README.md = README.md
 	EndProjectSection
@@ -24,7 +25,7 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "samples", "samples", "{83BF
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Sylver.TCPServer", "samples\Sylver.TCPServer\Sylver.TCPServer.csproj", "{7543AA70-AF9B-4878-B674-8402CD268E16}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Sylver.TCPClient", "samples\Sylver.TCPClient\Sylver.TCPClient.csproj", "{99ECF655-3251-435B-8D80-14CF15D5EBA5}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Sylver.TCPClient", "samples\Sylver.TCPClient\Sylver.TCPClient.csproj", "{99ECF655-3251-435B-8D80-14CF15D5EBA5}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
