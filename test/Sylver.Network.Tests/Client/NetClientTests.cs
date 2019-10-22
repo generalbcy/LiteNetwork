@@ -1,5 +1,6 @@
 ﻿using Moq;
 using Sylver.Network.Client;
+using Sylver.Network.Data;
 using Sylver.Network.Tests.Mocks;
 using System;
 using System.Collections.Generic;
@@ -21,6 +22,7 @@ namespace Sylver.Network.Tests.Client
             new object[] { new NetClientConfiguration("347.SD.23S", 4444), typeof(AggregateException) },
             new object[] { new NetClientConfiguration(null, 0), typeof(ArgumentException) },
             new object[] { new NetClientConfiguration("33432.3433.265.45445", 0), typeof(ArgumentException) },
+            new object[] { new NetClientConfiguration("127.0.0.1", 0, -1), typeof(ArgumentException) },
             new object[] { null, typeof(ArgumentNullException) }
         };
 
@@ -31,6 +33,15 @@ namespace Sylver.Network.Tests.Client
             this._socketMock = new NetSocketMock();
             this._client = new Mock<NetClient>(configuration);
             this._client.SetupGet(x => x.Socket).Returns(this._socketMock);
+        }
+
+        [Fact]
+        public void CreateNetClientWithoutConfigurationTest()
+        {
+            using (INetClient client = new NetClient())
+            {
+                Assert.Null(client.ClientConfiguration);
+            }
         }
 
         [Theory]
@@ -52,6 +63,49 @@ namespace Sylver.Network.Tests.Client
             this._client.Object.Connect();
             await Task.Delay(1000).ConfigureAwait(false); // Fake connection
             Assert.True(this._client.Object.IsConnected);
+        }
+
+        [Fact]
+        public async Task NetClientConnectTwiceTest()
+        {
+            this._socketMock.ConfigureConnectResult(false); // instance connection
+
+            Assert.False(this._client.Object.IsConnected);
+            this._client.Object.Connect();
+            await Task.Delay(1000).ConfigureAwait(false); // Fake connection
+            Assert.True(this._client.Object.IsConnected);
+
+            Assert.Throws<InvalidOperationException>(() => this._client.Object.Connect());
+        }
+
+        [Fact]
+        public void ChangePacketProcessorBeforeConnectTest()
+        {
+            this._socketMock.ConfigureConnectResult(false); // instance connection
+
+            Assert.NotNull(this._client.Object.PacketProcessor);
+            Assert.IsType<NetPacketProcessor>(this._client.Object.PacketProcessor);
+            this._client.Object.PacketProcessor = new CustomNetPacketProcessor(true);
+
+            Assert.IsType<CustomNetPacketProcessor>(this._client.Object.PacketProcessor);
+
+            this._client.Object.Connect();
+
+            Assert.Equal(sizeof(long), this._client.Object.PacketProcessor.HeaderSize);
+            Assert.True(this._client.Object.PacketProcessor.IncludeHeader);
+        }
+
+        [Fact]
+        public void ChangePacketProcessorAfterStartTest()
+        {
+            this._socketMock.ConfigureConnectResult(false); // instance connection
+
+            Assert.NotNull(this._client.Object.PacketProcessor);
+            Assert.IsType<NetPacketProcessor>(this._client.Object.PacketProcessor);
+
+            this._client.Object.Connect();
+
+            Assert.Throws<InvalidOperationException>(() => this._client.Object.PacketProcessor = new CustomNetPacketProcessor(false));
         }
     }
 }
