@@ -21,12 +21,6 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "global", "global", "{D1F9A1
 		README.md = README.md
 	EndProjectSection
 EndProject
-Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "samples", "samples", "{83BFCA76-4938-4ED9-ADCB-B86C7A02B97C}"
-EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Sylver.TCPServer", "samples\Sylver.TCPServer\Sylver.TCPServer.csproj", "{7543AA70-AF9B-4878-B674-8402CD268E16}"
-EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Sylver.TCPClient", "samples\Sylver.TCPClient\Sylver.TCPClient.csproj", "{99ECF655-3251-435B-8D80-14CF15D5EBA5}"
-EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -41,14 +35,6 @@ Global
 		{DFD90503-6122-4EDA-9247-14F04A0CA485}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{DFD90503-6122-4EDA-9247-14F04A0CA485}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{DFD90503-6122-4EDA-9247-14F04A0CA485}.Release|Any CPU.Build.0 = Release|Any CPU
-		{7543AA70-AF9B-4878-B674-8402CD268E16}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{7543AA70-AF9B-4878-B674-8402CD268E16}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{7543AA70-AF9B-4878-B674-8402CD268E16}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{7543AA70-AF9B-4878-B674-8402CD268E16}.Release|Any CPU.Build.0 = Release|Any CPU
-		{99ECF655-3251-435B-8D80-14CF15D5EBA5}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{99ECF655-3251-435B-8D80-14CF15D5EBA5}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{99ECF655-3251-435B-8D80-14CF15D5EBA5}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{99ECF655-3251-435B-8D80-14CF15D5EBA5}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -56,8 +42,6 @@ Global
 	GlobalSection(NestedProjects) = preSolution
 		{45EB400F-44B7-42D8-BFF8-0C4AB8F8ACB6} = {01C8D1FF-649D-43A9-A4DD-7135CE5ACBA4}
 		{DFD90503-6122-4EDA-9247-14F04A0CA485} = {DB5F1167-8632-4507-A31A-6BABF8890737}
-		{7543AA70-AF9B-4878-B674-8402CD268E16} = {83BFCA76-4938-4ED9-ADCB-B86C7A02B97C}
-		{99ECF655-3251-435B-8D80-14CF15D5EBA5} = {83BFCA76-4938-4ED9-ADCB-B86C7A02B97C}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {A1D6B2EF-2DB2-4798-AEA9-AEFFC61454DB}

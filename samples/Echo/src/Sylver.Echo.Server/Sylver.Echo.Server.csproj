@@ -6,6 +6,7 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\..\src\Sylver.Network\Sylver.Network.csproj" />
+    <ProjectReference Include="..\..\..\..\src\Sylver.Network\Sylver.Network.csproj" />
   </ItemGroup>
+
 </Project>

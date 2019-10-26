@@ -23,6 +23,7 @@ namespace Sylver.Network.Server
         private readonly INetSender _sender;
 
         private IPacketProcessor _packetProcessor;
+        private NetServerConfiguration _serverConfiguration;
 
         /// <inheritdoc />
         public bool IsRunning { get; private set; }
@@ -40,7 +41,24 @@ namespace Sylver.Network.Server
         }
 
         /// <inheritdoc />
-        public NetServerConfiguration ServerConfiguration { get; }
+        public NetServerConfiguration ServerConfiguration
+        {
+            get => this._serverConfiguration;
+            protected set
+            {
+                if (this.IsRunning)
+                    throw new InvalidOperationException("Cannot update configuration when server is running.");
+                this._serverConfiguration = value;
+            }
+        }
+
+        /// <summary>
+        /// Creates a new <see cref="NetServer{TUser}"/> instance.
+        /// </summary>
+        protected NetServer()
+            : this(new NetServerConfiguration(default, default))
+        {
+        }
 
         /// <summary>
         /// Creates a new <see cref="NetServer{TUser}"/> instance.

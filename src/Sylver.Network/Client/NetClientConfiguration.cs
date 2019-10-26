@@ -44,7 +44,7 @@
         /// <param name="port">Port</param>
         /// <param name="bufferSize">Data buffer size.</param>
         public NetClientConfiguration(string host, int port, int bufferSize)
-            : this(host, port, bufferSize, default)
+            : this(host, port, bufferSize, new NetClientRetryConfiguration(NetClientRetryOption.OneTime, default))
         {
         }
 

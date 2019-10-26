@@ -12,6 +12,9 @@ namespace Sylver.Network.Common
         /// <inheritdoc />
         public bool IsConnected => this._socket.Connected;
 
+        /// <inheritdoc />
+        public EndPoint RemoteEndPoint => this._socket.RemoteEndPoint;
+
         /// <summary>
         /// Creates a new <see cref="NetSocket"/> instance.
         /// </summary>

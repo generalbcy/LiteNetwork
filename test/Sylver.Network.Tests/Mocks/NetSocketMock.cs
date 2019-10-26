@@ -15,6 +15,8 @@ namespace Sylver.Network.Tests.Mocks
 
         public bool IsConnected { get; private set; }
 
+        public EndPoint RemoteEndPoint { get; private set; }
+
         public NetSocketMock()
         {
             this._socket = new Socket(AddressFamily.InterNetwork, SocketType.Stream, ProtocolType.Tcp);

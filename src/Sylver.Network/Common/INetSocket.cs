@@ -13,9 +13,14 @@ namespace Sylver.Network.Common
     public interface INetSocket : IDisposable
     {
         /// <summary>
-        /// Gets or sets a value that indicates the socket connection state.
+        /// Gets a value that indicates the socket connection state.
         /// </summary>
         bool IsConnected { get; }
+
+        /// <summary>
+        /// Gets the socket remote end point.
+        /// </summary>
+        EndPoint RemoteEndPoint { get; }
 
         /// <summary>
         /// Gets the number of bytes available.
