@@ -20,7 +20,7 @@ namespace Sylver.Network.Server
         }
 
         /// <inheritdoc />
-        public abstract void HandleMessage(INetPacketStream packetStream);
+        public abstract void HandleMessage(INetPacketStream packet);
 
         /// <inheritdoc />
         public void SendPacket(INetPacketStream packet)
