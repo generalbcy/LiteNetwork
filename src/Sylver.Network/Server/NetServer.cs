@@ -125,32 +125,44 @@ namespace Sylver.Network.Server
         }
 
         /// <inheritdoc />
-        public void SendPacketTo(INetConnection connection, byte[] messageData)
+        public void SendTo(INetConnection connection, INetPacketStream packet)
         {
             if (connection == null)
             {
                 throw new ArgumentNullException(nameof(connection));
             }
 
-            this._sender.Send(new NetMessageData(connection, messageData));
+            if (packet == null)
+            {
+                throw new ArgumentNullException(nameof(packet));
+            }
+
+            this._sender.Send(new NetMessageData(connection, packet.Buffer));
         }
 
         /// <inheritdoc />
-        public void SendPacketTo(IEnumerable<INetConnection> connections, byte[] messageData)
+        public void SendTo(IEnumerable<INetConnection> connections, INetPacketStream packet)
         {
             if (connections == null)
             {
                 throw new ArgumentNullException(nameof(connections));
             }
 
+            if (packet == null)
+            {
+                throw new ArgumentNullException(nameof(packet));
+            }
+
+            byte[] messageData = packet.Buffer;
+
             foreach (INetConnection connection in connections)
             {
-                this.SendPacketTo(connection, messageData);
+                this._sender.Send(new NetMessageData(connection, messageData));
             }
         }
 
         /// <inheritdoc />
-        public void SendPacketToAll(byte[] messageData) => this.SendPacketTo(this._clients.Values, messageData);
+        public void SendToAll(INetPacketStream packet) => this.SendTo(this._clients.Values, packet);
 
         /// <summary>
         /// Executes the child business logic before starting the server.

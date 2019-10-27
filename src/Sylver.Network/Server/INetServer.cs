@@ -46,20 +46,20 @@ namespace Sylver.Network.Server
         /// Send packet to a given client connection.
         /// </summary>
         /// <param name="connection">Target client connection.</param>
-        /// <param name="messageData">Packet message data to send.</param>
-        void SendPacketTo(INetConnection connection, byte[] messageData);
+        /// <param name="packet">Packet message data to send.</param>
+        void SendTo(INetConnection connection, INetPacketStream packet);
 
         /// <summary>
         /// Send a packet to a given collection of clients.
         /// </summary>
         /// <param name="connections">Collection of clients connections.</param>
-        /// <param name="messageData">Packet message data to send.</param>
-        void SendPacketTo(IEnumerable<INetConnection> connections, byte[] messageData);
+        /// <param name="packet">Packet message data to send.</param>
+        void SendTo(IEnumerable<INetConnection> connections, INetPacketStream packet);
 
         /// <summary>
         /// Send a packet to all connected clients.
         /// </summary>
-        /// <param name="messageData">Packet message data to send.</param>
-        void SendPacketToAll(byte[] messageData);
+        /// <param name="packet">Packet message data to send.</param>
+        void SendToAll(INetPacketStream packet);
     }
 }

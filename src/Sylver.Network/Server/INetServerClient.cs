@@ -10,26 +10,26 @@ namespace Sylver.Network.Server
         /// Sends a packet to this client.
         /// </summary>
         /// <param name="packet">Packet stream</param>
-        void SendPacket(INetPacketStream packet);
+        void Send(INetPacketStream packet);
 
         /// <summary>
         /// Sends a packet to an other client.
         /// </summary>
         /// <param name="client">Other client connection</param>
         /// <param name="packet">Packet to send.</param>
-        void SendPacketTo(INetConnection client, INetPacketStream packet);
+        void SendTo(INetConnection client, INetPacketStream packet);
 
         /// <summary>
         /// Sends a packet to collection of clients.
         /// </summary>
         /// <param name="clients">Collection of clients</param>
         /// <param name="packet">Packet to send.</param>
-        void SendPacketTo(IEnumerable<INetConnection> clients, INetPacketStream packet);
+        void SendTo(IEnumerable<INetConnection> clients, INetPacketStream packet);
 
         /// <summary>
         /// Sends a packet to every connected clients on the server.
         /// </summary>
         /// <param name="packet">Packet to send.</param>
-        void SendPacketToAll(INetPacketStream packet);
+        void SendToAll(INetPacketStream packet);
     }
 }

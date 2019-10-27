@@ -7,7 +7,7 @@ namespace Sylver.Network.Server.Internal
     /// <summary>
     /// Accepts the clients into the server.
     /// </summary>
-    internal sealed class NetServerAcceptor
+    internal class NetServerAcceptor
     {
         private readonly INetServer _server;
 

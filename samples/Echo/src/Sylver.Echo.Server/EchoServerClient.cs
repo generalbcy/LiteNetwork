@@ -36,7 +36,7 @@ namespace Sylver.Echo.Server
             {
                 packet.Write(message);
 
-                this.SendPacket(packet);
+                this.Send(packet);
             }
         }
     }

@@ -19,10 +19,12 @@ namespace Sylver.Network.Tests.Server
         public NetServerTests()
         {
             this._socketMock = new NetSocketMock();
+            this._socketMock.ConfigureAcceptResult(true);
+
             this._serverConfiguration = new NetServerConfiguration("127.0.0.1", 4444);
+
             this._server = new NetServerMock<CustomClient>(this._serverConfiguration);
             this._server.SetupGet(x => x.Socket).Returns(this._socketMock);
-            this._socketMock.ConfigureAcceptResult(true);
         }
 
         [Fact]

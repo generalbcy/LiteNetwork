@@ -88,7 +88,7 @@ namespace Sylver.Network.Client
         }
 
         /// <inheritdoc />
-        public void SendMessage(INetPacketStream packet)
+        public void Send(INetPacketStream packet)
         {
             if (packet == null)
             {

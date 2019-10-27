@@ -37,61 +37,61 @@ namespace Sylver.Network.Tests.Server
         [Fact]
         public void SendPacketToItSelftTest()
         {
-            this._customClient.SendPacket(this._packet);
+            this._customClient.Send(this._packet);
         }
 
         [Fact]
         public void SendNullPacketToItSelfTest()
         {
-            Assert.Throws<ArgumentNullException>(() => this._customClient.SendPacket(null));
+            Assert.Throws<ArgumentNullException>(() => this._customClient.Send(null));
         }
 
         [Fact]
         public void SendPacketToOtherClientTest()
         {
-            this._customClient.SendPacketTo(this._otherClient, this._packet);
+            this._customClient.SendTo(this._otherClient, this._packet);
         }
 
         [Fact]
         public void SendNullPacketToOtherClientTest()
         {
-            Assert.Throws<ArgumentNullException>(() => this._customClient.SendPacketTo(this._otherClient, null));
+            Assert.Throws<ArgumentNullException>(() => this._customClient.SendTo(this._otherClient, null));
         }
 
         [Fact]
         public void SendPacketToNullClient()
         {
-            Assert.Throws<ArgumentNullException>(() => this._customClient.SendPacketTo(client: null, this._packet));
+            Assert.Throws<ArgumentNullException>(() => this._customClient.SendTo(client: null, this._packet));
         }
 
         [Fact]
         public void SendPacketToListOfClientsTest()
         {
-            this._customClient.SendPacketTo(this._customClientsList, this._packet);
+            this._customClient.SendTo(this._customClientsList, this._packet);
         }
 
         [Fact]
         public void SendNullPacketToListOfClientsTest()
         {
-            Assert.Throws<ArgumentNullException>(() => this._customClient.SendPacketTo(this._customClientsList, null));
+            Assert.Throws<ArgumentNullException>(() => this._customClient.SendTo(this._customClientsList, null));
         }
 
         [Fact]
         public void SendPacketToAnUndefinedListOfClientsTest()
         {
-            Assert.Throws<ArgumentNullException>(() => this._customClient.SendPacketTo(clients: null, this._packet));
+            Assert.Throws<ArgumentNullException>(() => this._customClient.SendTo(clients: null, this._packet));
         }
 
         [Fact]
         public void SendPacketToAllTest()
         {
-            this._customClient.SendPacketToAll(this._packet);
+            this._customClient.SendToAll(this._packet);
         }
 
         [Fact]
         public void SendNullPacketToAllTest()
         {
-            Assert.Throws<ArgumentNullException>(() => this._customClient.SendPacketToAll(null));
+            Assert.Throws<ArgumentNullException>(() => this._customClient.SendToAll(null));
         }
 
         public void Dispose()

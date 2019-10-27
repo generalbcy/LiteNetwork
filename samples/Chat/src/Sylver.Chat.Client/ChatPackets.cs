@@ -18,7 +18,7 @@ namespace Sylver.Chat.Client
                 packet.Write<byte>((byte)ChatPacketType.SetName);
                 packet.Write<string>(name);
 
-                client.SendMessage(packet);
+                client.Send(packet);
             }
         }
 
@@ -34,7 +34,7 @@ namespace Sylver.Chat.Client
                 packet.Write<byte>((byte)ChatPacketType.Chat);
                 packet.Write<string>(message);
 
-                client.SendMessage(packet);
+                client.Send(packet);
             }
         }
     }

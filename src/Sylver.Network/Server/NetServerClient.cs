@@ -1,5 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Net.Sockets;
 using Sylver.Network.Common;
 using Sylver.Network.Data;
@@ -23,47 +22,27 @@ namespace Sylver.Network.Server
         public abstract void HandleMessage(INetPacketStream packet);
 
         /// <inheritdoc />
-        public void SendPacket(INetPacketStream packet)
+        public void Send(INetPacketStream packet)
         {
-            if (packet == null)
-            {
-                throw new ArgumentNullException(nameof(packet));
-            }
-
-            this.Server.SendPacketTo(this, packet.Buffer);
+            this.Server.SendTo(this, packet);
         }
 
         /// <inheritdoc />
-        public void SendPacketTo(INetConnection client, INetPacketStream packet)
+        public void SendTo(INetConnection client, INetPacketStream packet)
         {
-            if (packet == null)
-            {
-                throw new ArgumentNullException(nameof(packet));
-            }
-
-            this.Server.SendPacketTo(client, packet.Buffer);
+            this.Server.SendTo(client, packet);
         }
 
         /// <inheritdoc />
-        public void SendPacketTo(IEnumerable<INetConnection> clients, INetPacketStream packet)
+        public void SendTo(IEnumerable<INetConnection> clients, INetPacketStream packet)
         {
-            if (packet == null)
-            {
-                throw new ArgumentNullException(nameof(packet));
-            }
-
-            this.Server.SendPacketTo(clients, packet.Buffer);
+            this.Server.SendTo(clients, packet);
         }
 
         /// <inheritdoc />
-        public void SendPacketToAll(INetPacketStream packet)
+        public void SendToAll(INetPacketStream packet)
         {
-            if (packet == null)
-            {
-                throw new ArgumentNullException(nameof(packet));
-            }
-
-            this.Server.SendPacketToAll(packet.Buffer);
+            this.Server.SendToAll(packet);
         }
     }
 }

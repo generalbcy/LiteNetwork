@@ -4,7 +4,7 @@ using System.Net.Sockets;
 
 namespace Sylver.Network.Server.Internal
 {
-    internal sealed class NetServerSender : NetSender
+    internal class NetServerSender : NetSender
     {
         private readonly ObjectPool<SocketAsyncEventArgs> _writePool;
 

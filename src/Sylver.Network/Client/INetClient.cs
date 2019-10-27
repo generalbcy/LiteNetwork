@@ -40,6 +40,6 @@ namespace Sylver.Network.Client
         /// Sends a packet to the remote server.
         /// </summary>
         /// <param name="packet">Packet stream.</param>
-        void SendMessage(INetPacketStream packet);
+        void Send(INetPacketStream packet);
     }
 }

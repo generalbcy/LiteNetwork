@@ -69,6 +69,8 @@ namespace Sylver.Chat.Server
         {
             string message = packet.Read<string>();
 
+            Console.WriteLine($"Received message from '{this.Name}': '{message}'");
+
             this.SendChatMessageToAll(this.Name, message);
         }
 
@@ -85,7 +87,7 @@ namespace Sylver.Chat.Server
                 packet.Write<string>(clientName); // Client name data
                 packet.Write<string>(message); // client message
 
-                this.SendPacketToAll(packet);
+                this.SendToAll(packet);
             }
         }
     }

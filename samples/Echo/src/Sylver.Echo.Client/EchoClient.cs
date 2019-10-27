@@ -52,7 +52,7 @@ namespace Sylver.Echo.Client
             {
                 packet.Write(message);
 
-                this.SendMessage(packet);
+                this.Send(packet);
             }
         }
     }
