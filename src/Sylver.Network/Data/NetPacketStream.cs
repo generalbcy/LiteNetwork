@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Globalization;
 using System.IO;
 using System.Linq;
 using System.Text;
@@ -155,40 +156,40 @@ namespace Sylver.Network.Data
             switch (Type.GetTypeCode(typeof(T)))
             {
                 case TypeCode.Byte:
-                    this._writer.Write(Convert.ToByte(value));
+                    this._writer.Write(Convert.ToByte(value, CultureInfo.DefaultThreadCurrentCulture));
                     break;
                 case TypeCode.SByte:
-                    this._writer.Write(Convert.ToSByte(value));
+                    this._writer.Write(Convert.ToSByte(value, CultureInfo.DefaultThreadCurrentCulture));
                     break;
                 case TypeCode.Boolean:
-                    this._writer.Write(Convert.ToBoolean(value));
+                    this._writer.Write(Convert.ToBoolean(value, CultureInfo.DefaultThreadCurrentCulture));
                     break;
                 case TypeCode.Char:
-                    this._writer.Write(Convert.ToChar(value));
+                    this._writer.Write(Convert.ToChar(value, CultureInfo.DefaultThreadCurrentCulture));
                     break;
                 case TypeCode.Int16:
-                    this._writer.Write(Convert.ToInt16(value));
+                    this._writer.Write(Convert.ToInt16(value, CultureInfo.DefaultThreadCurrentCulture));
                     break;
                 case TypeCode.UInt16:
-                    this._writer.Write(Convert.ToUInt16(value));
+                    this._writer.Write(Convert.ToUInt16(value, CultureInfo.DefaultThreadCurrentCulture));
                     break;
                 case TypeCode.Int32:
-                    this._writer.Write(Convert.ToInt32(value));
+                    this._writer.Write(Convert.ToInt32(value, CultureInfo.DefaultThreadCurrentCulture));
                     break;
                 case TypeCode.UInt32:
-                    this._writer.Write(Convert.ToUInt32(value));
+                    this._writer.Write(Convert.ToUInt32(value, CultureInfo.DefaultThreadCurrentCulture));
                     break;
                 case TypeCode.Single:
-                    this._writer.Write(Convert.ToSingle(value));
+                    this._writer.Write(Convert.ToSingle(value, CultureInfo.DefaultThreadCurrentCulture));
                     break;
                 case TypeCode.Int64:
-                    this._writer.Write(Convert.ToInt64(value));
+                    this._writer.Write(Convert.ToInt64(value, CultureInfo.DefaultThreadCurrentCulture));
                     break;
                 case TypeCode.UInt64:
-                    this._writer.Write(Convert.ToUInt64(value));
+                    this._writer.Write(Convert.ToUInt64(value, CultureInfo.DefaultThreadCurrentCulture));
                     break;
                 case TypeCode.Double:
-                    this._writer.Write(Convert.ToDouble(value));
+                    this._writer.Write(Convert.ToDouble(value, CultureInfo.DefaultThreadCurrentCulture));
                     break;
                 case TypeCode.String:
                     {

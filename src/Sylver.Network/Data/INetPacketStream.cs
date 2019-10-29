@@ -39,14 +39,6 @@ namespace Sylver.Network.Data
         T Read<T>();
 
         /// <summary>
-        /// Reads an array of <typeparamref name="T"/> from the packet stream.
-        /// </summary>
-        /// <typeparam name="T">Type of the value to read.</typeparam>
-        /// <param name="count">Number of <typeparamref name="T"/> to read.</param>
-        /// <returns>Array of <typeparamref name="T"/>.</returns>
-        IEnumerable<T> Read<T>(int count);
-
-        /// <summary>
         /// Writes a <typeparamref name="T"/> value in the packet stream.
         /// </summary>
         /// <typeparam name="T">Type of the value.</typeparam>
@@ -57,7 +49,7 @@ namespace Sylver.Network.Data
         /// Sets the position within the current stream to the specified value.
         /// </summary>
         /// <param name="offset">The new position within the stream. This is relative to the loc parameter, and can be positive or negative.</param>
-        /// <param name="loc">A value of type <see cref="T:System.IO.SeekOrigin"></see>, which acts as the seek reference point.</param>
+        /// <param name="loc">A value of type <see cref="SeekOrigin"></see>, which acts as the seek reference point.</param>
         /// <returns>
         /// The new position within the stream, calculated by combining the initial 
         /// reference point and the offset.
