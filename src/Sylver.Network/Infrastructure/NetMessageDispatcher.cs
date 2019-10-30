@@ -8,7 +8,10 @@ namespace Sylver.Network.Infrastructure
 {
     internal sealed class NetMessageDispatcher : INetMessageDispatcher
     {
-        private readonly IPacketProcessor _packetProcessor;
+        /// <summary>
+        /// Gets or sets the packet processor.
+        /// </summary>
+        public IPacketProcessor PacketProcessor { get; set; }
 
         /// <summary>
         /// Creates a new <see cref="NetMessageDispatcher"/> instance to dispatch messages to clients.
@@ -16,26 +19,26 @@ namespace Sylver.Network.Infrastructure
         /// <param name="packetProcessor">Packet processor.</param>
         public NetMessageDispatcher(IPacketProcessor packetProcessor)
         {
-            this._packetProcessor = packetProcessor;
+            this.PacketProcessor = packetProcessor;
         }
 
         /// <inheritdoc />
         public void DispatchMessage(INetUser client, NetDataToken token)
         {
-            var bufferSize = this._packetProcessor.IncludeHeader ? this._packetProcessor.HeaderSize + token.MessageSize.Value : token.MessageSize.Value;
+            var bufferSize = this.PacketProcessor.IncludeHeader ? this.PacketProcessor.HeaderSize + token.MessageSize.Value : token.MessageSize.Value;
             var buffer = new byte[bufferSize];
 
-            if (this._packetProcessor.IncludeHeader)
+            if (this.PacketProcessor.IncludeHeader)
             {
-                Array.Copy(token.HeaderData, 0, buffer, 0, this._packetProcessor.HeaderSize);
-                Array.Copy(token.MessageData, 0, buffer, this._packetProcessor.HeaderSize, token.MessageSize.Value);
+                Array.Copy(token.HeaderData, 0, buffer, 0, this.PacketProcessor.HeaderSize);
+                Array.Copy(token.MessageData, 0, buffer, this.PacketProcessor.HeaderSize, token.MessageSize.Value);
             }
             else
                 Array.Copy(token.MessageData, 0, buffer, 0, token.MessageSize.Value);
 
             Task.Run(() =>
             {
-                using (INetPacketStream packet = this._packetProcessor.CreatePacket(buffer))
+                using (INetPacketStream packet = this.PacketProcessor.CreatePacket(buffer))
                     client.HandleMessage(packet);
             });
         }

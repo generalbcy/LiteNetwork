@@ -1,10 +1,16 @@
 ﻿using Sylver.Network.Common;
+using Sylver.Network.Data;
 using Sylver.Network.Data.Internal;
 
 namespace Sylver.Network.Infrastructure
 {
     internal interface INetMessageDispatcher
     {
+        /// <summary>
+        /// Gets or sets the packet processor.
+        /// </summary>
+        IPacketProcessor PacketProcessor { get; set; }
+
         /// <summary>
         /// Dispatch a message to the given client.
         /// </summary>

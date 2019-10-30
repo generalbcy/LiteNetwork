@@ -9,17 +9,25 @@ namespace Sylver.Network.Infrastructure
 {
     internal abstract class NetReceiver : INetReceiver
     {
-        /// <inheritdoc />
-        public event EventHandler<object> ReceivedComplete;
-
         private readonly NetPacketParser _packetParser;
         private readonly INetMessageDispatcher _messageDispatcher;
         private bool _disposedValue;
 
+        /// <summary>
+        /// Creates a new <see cref="NetReceiver"/> instance.
+        /// </summary>
+        /// <param name="packetProcessor">Default packet processor.</param>
         public NetReceiver(IPacketProcessor packetProcessor)
         {
             this._packetParser = new NetPacketParser(packetProcessor);
             this._messageDispatcher = new NetMessageDispatcher(packetProcessor);
+        }
+
+        /// <inheritdoc />
+        public void SetPacketProcessor(IPacketProcessor packetProcessor)
+        {
+            this._packetParser.PacketProcessor = packetProcessor;
+            this._messageDispatcher.PacketProcessor = packetProcessor;
         }
 
         /// <inheritdoc />

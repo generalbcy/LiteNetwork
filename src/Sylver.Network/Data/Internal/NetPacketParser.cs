@@ -7,7 +7,10 @@ namespace Sylver.Network.Data.Internal
     /// </summary>
     internal sealed class NetPacketParser
     {
-        private readonly IPacketProcessor _packetProcessor;
+        /// <summary>
+        /// Gets or sets the packet processor.
+        /// </summary>
+        public IPacketProcessor PacketProcessor { get; set; }
 
         /// <summary>
         /// Creates a new <see cref="NetPacketParser"/> instance.
@@ -15,7 +18,7 @@ namespace Sylver.Network.Data.Internal
         /// <param name="packetProcessor">Net packet processor used to parse the incoming data.</param>
         public NetPacketParser(IPacketProcessor packetProcessor)
         {
-            this._packetProcessor = packetProcessor;
+            this.PacketProcessor = packetProcessor;
         }
 
         /// <summary>
@@ -28,7 +31,7 @@ namespace Sylver.Network.Data.Internal
         {
             while (token.DataStartOffset < bytesTransfered)
             {
-                int headerSize = this._packetProcessor.HeaderSize;
+                int headerSize = this.PacketProcessor.HeaderSize;
 
                 if (token.ReceivedHeaderBytesCount < headerSize)
                 {
@@ -48,7 +51,7 @@ namespace Sylver.Network.Data.Internal
                 if (token.ReceivedHeaderBytesCount == headerSize && token.HeaderData != null)
                 {
                     if (!token.MessageSize.HasValue)
-                        token.MessageSize = this._packetProcessor.GetMessageLength(token.HeaderData);
+                        token.MessageSize = this.PacketProcessor.GetMessageLength(token.HeaderData);
                     if (token.MessageSize.Value < 0)
                         throw new InvalidOperationException("Message size cannot be smaller than zero.");
 

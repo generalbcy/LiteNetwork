@@ -155,5 +155,51 @@ namespace Sylver.Network.Tests.Data
                 Assert.True(packetStream.IsEndOfStream);
             }
         }
+
+        [Fact]
+        public void PacketStreamReadNonPrimitiveArrayTest()
+        {
+            using (var packetStream = new NetPacketStream(this._randomizer.Bytes(this._randomizer.Byte())))
+            {
+                Assert.Throws<NotImplementedException>(() => packetStream.Read<object>(this._randomizer.Byte(min: 1)));
+            }
+        }
+
+        [Theory]
+        [InlineData(0)]
+        [InlineData(-1)]
+        [InlineData(int.MinValue)]
+        public void PacketStreamReadArrayWithInvalidAmountTest(int amount)
+        {
+            using (var packetStream = new NetPacketStream(this._randomizer.Bytes(this._randomizer.Byte())))
+            {
+                Assert.Throws<ArgumentException>(() => packetStream.Read<byte>(amount));
+            }
+        }
+
+        [Fact]
+        public void PacketStreamReadArrayWhenWriteOnlyTest()
+        {
+            using (var packetStream = new NetPacketStream())
+            {
+                Assert.Throws<InvalidOperationException>(() => packetStream.Read<byte>(this._randomizer.Byte(min: 1)));
+            }
+        }
+
+        [Fact]
+        public void PacketStreamReadByteArrayTest()
+        {
+            var buffer = this._randomizer.Bytes(this._randomizer.Byte());
+            int amount = this._randomizer.Int(min: 1, max: buffer.Length);
+            byte[] expectedBuffer = buffer.Take(amount).ToArray();
+
+            using (var packetStream = new NetPacketStream(buffer))
+            {
+                byte[] readBuffer = packetStream.Read<byte>(amount);
+
+                Assert.Equal(amount, readBuffer.Length);
+                Assert.Equal(expectedBuffer, readBuffer);
+            }
+        }
     }
 }

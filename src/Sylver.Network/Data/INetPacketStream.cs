@@ -39,6 +39,14 @@ namespace Sylver.Network.Data
         T Read<T>();
 
         /// <summary>
+        /// Reads an array of <typeparamref name="T"/> value from the packet.
+        /// </summary>
+        /// <typeparam name="T">Value type.</typeparam>
+        /// <param name="amount">Amount to read.</param>
+        /// <returns>An array of type <typeparamref name="T"/>.</returns>
+        T[] Read<T>(int amount);
+
+        /// <summary>
         /// Writes a <typeparamref name="T"/> value in the packet stream.
         /// </summary>
         /// <typeparam name="T">Type of the value.</typeparam>

@@ -66,10 +66,26 @@ namespace Sylver.Network.Data
         }
 
         /// <inheritdoc />
-        public virtual IEnumerable<T> Read<T>(int count)
+        public virtual T[] Read<T>(int amount)
         {
-            // TODO
-            throw new NotImplementedException();
+            if (this.State != NetPacketStateType.Read)
+                throw new InvalidOperationException($"The current packet stream is in write-only mode.");
+
+            if (amount <= 0)
+                throw new ArgumentException($"Amount is '{amount}' and must be grather than 0.", nameof(amount));
+
+            Type type = typeof(T);
+            var array = new T[amount];
+
+            if (type == typeof(byte))
+                array = this._reader.ReadBytes(amount) as T[];
+            else
+            {
+                for (var i = 0; i < amount; i++)
+                    array[i] = this.Read<T>();
+            }
+
+            return array;
         }
 
         /// <inheritdoc />
