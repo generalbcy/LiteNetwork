@@ -3,6 +3,7 @@
 [![Build Status](https://travis-ci.org/Eastrall/Sylver.Network.svg?branch=master)](https://travis-ci.org/Eastrall/Sylver.Network)
 [![codecov](https://codecov.io/gh/Eastrall/Sylver.Network/branch/master/graph/badge.svg)](https://codecov.io/gh/Eastrall/Sylver.Network)
 [![Codacy Badge](https://api.codacy.com/project/badge/Grade/efaa4d26423845a8ac80445d1371e40d)](https://www.codacy.com/manual/Eastrall/Sylver.Network?utm_source=github.com&amp;utm_medium=referral&amp;utm_content=Eastrall/Sylver.Network&amp;utm_campaign=Badge_Grade)
+[![Nuget](https://img.shields.io/nuget/v/Sylver.Network)](https://img.shields.io/nuget/v/Sylver.Network)
 
 `Sylver.Network` is a simple and fast networking library built with C# and the .NET Core Framework. It simplifies the creation of socket servers and clients over the TCP/IP protocol.
 
@@ -11,6 +12,14 @@
 :information_source: `Sylver.Network` is a rewrite of my previous networking library named `Ether.Network`. This new version looks like the old one, but it has a better code structure, unit tests and performance improvements.
 
 Just like the old version, `Sylver.Network` kept the same *"easy-to-use"* concept that allows you to create your own socket servers and/or socket client in a **few lines** of code.
+
+## How to install
+
+Install `Sylver.Network` through the Visual Studio project package manager or using the following command in the Package Manager Console:
+
+```
+$> Install-Package Sylver.Network
+```
 
 ## Features
 
