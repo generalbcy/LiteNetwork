@@ -3,7 +3,7 @@
 [![Build Status](https://travis-ci.org/Eastrall/Sylver.Network.svg?branch=master)](https://travis-ci.org/Eastrall/Sylver.Network)
 [![codecov](https://codecov.io/gh/Eastrall/Sylver.Network/branch/master/graph/badge.svg)](https://codecov.io/gh/Eastrall/Sylver.Network)
 [![Codacy Badge](https://api.codacy.com/project/badge/Grade/efaa4d26423845a8ac80445d1371e40d)](https://www.codacy.com/manual/Eastrall/Sylver.Network?utm_source=github.com&amp;utm_medium=referral&amp;utm_content=Eastrall/Sylver.Network&amp;utm_campaign=Badge_Grade)
-[![Nuget](https://img.shields.io/nuget/v/Sylver.Network)](https://img.shields.io/nuget/v/Sylver.Network)
+[![Nuget](https://img.shields.io/nuget/v/Sylver.Network)](https://www.nuget.org/packages/Sylver.Network/)
 
 `Sylver.Network` is a simple and fast networking library built with C# and the .NET Core Framework. It simplifies the creation of socket servers and clients over the TCP/IP protocol.
 
