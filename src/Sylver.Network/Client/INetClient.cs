@@ -35,11 +35,5 @@ namespace Sylver.Network.Client
         /// Disconnects from the remote server.
         /// </summary>
         void Disconnect();
-
-        /// <summary>
-        /// Sends a packet to the remote server.
-        /// </summary>
-        /// <param name="packet">Packet stream.</param>
-        void Send(INetPacketStream packet);
     }
 }

@@ -9,5 +9,11 @@ namespace Sylver.Network.Common
         /// </summary>
         /// <param name="packet">Incoming packet.</param>
         void HandleMessage(INetPacketStream packet);
+
+        /// <summary>
+        /// Sends a packet to the remote server.
+        /// </summary>
+        /// <param name="packet">Packet stream.</param>
+        void Send(INetPacketStream packet);
     }
 }

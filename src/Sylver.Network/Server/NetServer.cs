@@ -53,6 +53,11 @@ namespace Sylver.Network.Server
         }
 
         /// <summary>
+        /// Gets the list of connected clients.
+        /// </summary>
+        protected virtual IEnumerable<TClient> Clients => this._clients.Values;
+
+        /// <summary>
         /// Creates a new <see cref="NetServer{TUser}"/> instance.
         /// </summary>
         protected NetServer()

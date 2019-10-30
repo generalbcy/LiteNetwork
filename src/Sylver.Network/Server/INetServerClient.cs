@@ -7,12 +7,6 @@ namespace Sylver.Network.Server
     public interface INetServerClient : INetUser, INetConnection
     {
         /// <summary>
-        /// Sends a packet to this client.
-        /// </summary>
-        /// <param name="packet">Packet stream</param>
-        void Send(INetPacketStream packet);
-
-        /// <summary>
         /// Sends a packet to an other client.
         /// </summary>
         /// <param name="client">Other client connection</param>
