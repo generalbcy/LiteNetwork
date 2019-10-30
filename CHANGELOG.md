@@ -1,4 +1,17 @@
-﻿# [1.0.0](https://github.com/Eastrall/Sylver.Network/releases/tag/v1.0) (2019-10-22)
+﻿# [1.1.0](https://github.com/Eastrall/Sylver.Network/releases/tag/v1.1) (2019-10-31)
+
+### Features
+
+- **NetPacketStream** : Add `Read<T>(amount)` to read an array of `T`
+
+### Fixes
+
+- **NetServer** : Add connected `Clients` property.
+- **NetServer** : Set packet processor to receiver when changed throught property.
+- **NetClient** : Set packet processor to receiver when changed throught property.
+- **NetClient**/**NetServerClient** : Move the `Send(INetPacketStream)` to the `INetUser` interface (common interface)
+
+# [1.0.0](https://github.com/Eastrall/Sylver.Network/releases/tag/v1.0) (2019-10-30)
 
 ✨ Initial release
 

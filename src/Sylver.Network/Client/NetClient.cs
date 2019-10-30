@@ -30,6 +30,7 @@ namespace Sylver.Network.Client
                 if (this.IsConnected)
                     throw new InvalidOperationException("Cannot update packet processor when the client is already connected.");
                 this._packetProcessor = value;
+                this._receiver.SetPacketProcessor(this._packetProcessor);
             }
         }
 
