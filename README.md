@@ -21,6 +21,12 @@ Install `Sylver.Network` through the Visual Studio project package manager or us
 $> Install-Package Sylver.Network
 ```
 
+Or you can use the `dotnet` command:
+
+```
+$> dotnet add package Sylver.Network
+```
+
 ## Features
 
 ### Server
