@@ -35,7 +35,7 @@ namespace Sylver.Network.Common
         {
             IPAddress address = BuildIPAddress(ipOrHost);
 
-            if (port <= 0) 
+            if (port <= IPEndPoint.MinPort || port > IPEndPoint.MaxPort)
                 throw new ArgumentException($"Invalid port: {port}");
 
             return new IPEndPoint(address, port);
