@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Globalization;
 using System.IO;
 using System.Linq;
@@ -19,24 +18,24 @@ namespace Sylver.Network.Data
         public bool IsEndOfStream => this.Position >= this.Length;
 
         /// <inheritdoc />
-        public virtual byte[] Buffer => this.TryGetBuffer(out ArraySegment<byte> buffer) ? buffer.ToArray() : new byte[0];
+        public virtual byte[] Buffer => this.TryGetBuffer(out ArraySegment<byte> buffer) ? buffer.ToArray() : Array.Empty<byte>();
 
         /// <summary>
         /// Gets the encoding used to encode strings when writing on the packet stream.
         /// </summary>
-        protected virtual Encoding StringWriteEncoding => Encoding.UTF8;
+        protected virtual Encoding WriteEncoding => Encoding.UTF8;
 
         /// <summary>
         /// Gets the encoding used to decode strings when reading from the packet stream.
         /// </summary>
-        protected virtual Encoding StringReadEncoding => Encoding.UTF8;
+        protected virtual Encoding ReadEncoding => Encoding.UTF8;
 
         /// <summary>
         /// Creates and initializes a new <see cref="NetPacketStream"/> instance in write-only mode.
         /// </summary>
         public NetPacketStream()
         {
-            this._writer = new BinaryWriter(this);
+            this._writer = new BinaryWriter(this, this.WriteEncoding);
             this.State = NetPacketStateType.Write;
         }
 
@@ -47,7 +46,7 @@ namespace Sylver.Network.Data
         public NetPacketStream(byte[] buffer)
             : base(buffer, 0, buffer.Length, false, true)
         {
-            this._reader = new BinaryReader(this);
+            this._reader = new BinaryReader(this, this.ReadEncoding);
             this.State = NetPacketStateType.Read;
         }
 
@@ -155,7 +154,7 @@ namespace Sylver.Network.Data
                     int stringLength = this._reader.ReadInt32();
                     byte[] stringBytes = this._reader.ReadBytes(stringLength);
 
-                    primitiveValue = this.StringReadEncoding.GetString(stringBytes);
+                    primitiveValue = this.ReadEncoding.GetString(stringBytes);
                     break;
             }
 
@@ -214,7 +213,7 @@ namespace Sylver.Network.Data
                         this._writer.Write(stringValue.Length);
 
                         if (stringValue.Length > 0)
-                            this._writer.Write(this.StringWriteEncoding.GetBytes(stringValue));
+                            this._writer.Write(this.WriteEncoding.GetBytes(stringValue));
                     }
                     break;
             }

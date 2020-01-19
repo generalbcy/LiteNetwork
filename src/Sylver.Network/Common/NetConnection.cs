@@ -31,7 +31,7 @@ namespace Sylver.Network.Common
         protected NetConnection(Socket socketConnection)
         {
             this.Id = Guid.NewGuid();
-            
+
             if (socketConnection != null)
                 this.Socket = new NetSocket(socketConnection);
         }
