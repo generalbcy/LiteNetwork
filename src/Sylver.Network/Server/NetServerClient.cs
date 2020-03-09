@@ -1,7 +1,7 @@
-﻿using System.Collections.Generic;
-using System.Net.Sockets;
-using Sylver.Network.Common;
+﻿using Sylver.Network.Common;
 using Sylver.Network.Data;
+using System.Collections.Generic;
+using System.Net.Sockets;
 
 namespace Sylver.Network.Server
 {
@@ -16,7 +16,7 @@ namespace Sylver.Network.Server
         /// Creates and initializes a new <see cref="NetServerClient"/> instance.
         /// </summary>
         /// <param name="socketConnection">Client socket connection.</param>
-        protected NetServerClient(Socket socketConnection) 
+        protected NetServerClient(Socket socketConnection)
             : base(socketConnection)
         {
         }
