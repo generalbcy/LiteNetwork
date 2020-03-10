@@ -10,10 +10,10 @@ namespace Sylver.Network.Common
         private readonly Socket _socket;
 
         /// <inheritdoc />
-        public bool IsConnected => this._socket.Connected;
+        public bool IsConnected => _socket.Connected;
 
         /// <inheritdoc />
-        public EndPoint RemoteEndPoint => this._socket.RemoteEndPoint;
+        public EndPoint RemoteEndPoint => _socket.RemoteEndPoint;
 
         /// <summary>
         /// Creates a new <see cref="NetSocket"/> instance.
@@ -21,38 +21,38 @@ namespace Sylver.Network.Common
         /// <param name="socket">Socket.</param>
         public NetSocket(Socket socket)
         {
-            this._socket = socket;
+            _socket = socket;
         }
 
         /// <inheritidoc />
-        public int GetAvailable() => this._socket.Available;
+        public int GetAvailable() => _socket.Available;
 
         /// <inheritdoc />
-        public Socket GetSocket() => this._socket;
+        public Socket GetSocket() => _socket;
 
         /// <inheritdoc />
-        public bool AcceptAsync(SocketAsyncEventArgs socketAsyncEvent) => this._socket.AcceptAsync(socketAsyncEvent);
+        public bool AcceptAsync(SocketAsyncEventArgs socketAsyncEvent) => _socket.AcceptAsync(socketAsyncEvent);
 
         /// <inheritdoc />
-        public bool ReceiveAsync(SocketAsyncEventArgs socketAsyncEvent) => this._socket.ReceiveAsync(socketAsyncEvent);
+        public bool ReceiveAsync(SocketAsyncEventArgs socketAsyncEvent) => _socket.ReceiveAsync(socketAsyncEvent);
 
         /// <inheritdoc />
-        public bool SendAsync(SocketAsyncEventArgs socketAsyncEvent) => this._socket.SendAsync(socketAsyncEvent);
+        public bool SendAsync(SocketAsyncEventArgs socketAsyncEvent) => _socket.SendAsync(socketAsyncEvent);
 
         /// <inheritdoc />
-        public void Listen(int backlog) => this._socket.Listen(backlog);
+        public void Listen(int backlog) => _socket.Listen(backlog);
 
         /// <inheritdoc />
-        public void Bind(EndPoint localEP) => this._socket.Bind(localEP);
+        public void Bind(EndPoint localEP) => _socket.Bind(localEP);
 
         /// <inheritdoc />
         public void SetSocketOption(SocketOptionLevel optionLevel, SocketOptionName optionName, int optionValue) 
-            => this._socket.SetSocketOption(optionLevel, optionName, optionValue);
+            => _socket.SetSocketOption(optionLevel, optionName, optionValue);
 
         /// <inheritdoc />
-        public void Dispose() => this._socket.Dispose();
+        public void Dispose() => _socket.Dispose();
 
         /// <inheritdoc />
-        public bool ConnectAsync(SocketAsyncEventArgs socketAsyncEvent) => this._socket.ConnectAsync(socketAsyncEvent);
+        public bool ConnectAsync(SocketAsyncEventArgs socketAsyncEvent) => _socket.ConnectAsync(socketAsyncEvent);
     }
 }

@@ -65,10 +65,10 @@
         /// <param name="clientBufferSize">Allocated memory buffer per clients.</param>
         public NetServerConfiguration(string host, int port, int backlog, int clientBufferSize)
         {
-            this.Host = host;
-            this.Port = port;
-            this.Backlog = backlog;
-            this.ClientBufferSize = clientBufferSize;
+            Host = host;
+            Port = port;
+            Backlog = backlog;
+            ClientBufferSize = clientBufferSize;
         }
     }
 }

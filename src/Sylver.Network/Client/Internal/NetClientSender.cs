@@ -12,14 +12,14 @@ namespace Sylver.Network.Client.Internal
         /// </summary>
         public NetClientSender()
         {
-            this._socketAsyncEvent = new SocketAsyncEventArgs();
-            this._socketAsyncEvent.Completed += this.OnSendCompleted;
+            _socketAsyncEvent = new SocketAsyncEventArgs();
+            _socketAsyncEvent.Completed += OnSendCompleted;
         }
 
         /// <inheritdoc />
         protected override void ClearSocketEvent(SocketAsyncEventArgs socketAsyncEvent) => socketAsyncEvent.SetBuffer(null, 0, 0);
 
         /// <inheritdoc />
-        protected override SocketAsyncEventArgs GetSocketEvent() => this._socketAsyncEvent;
+        protected override SocketAsyncEventArgs GetSocketEvent() => _socketAsyncEvent;
     }
 }

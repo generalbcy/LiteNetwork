@@ -14,13 +14,13 @@ namespace Sylver.Network.Tests.Data
 
         public NetPacketStreamReaderTests()
         {
-            this._randomizer = new Randomizer((int)DateTime.UtcNow.Ticks);
+            _randomizer = new Randomizer((int)DateTime.UtcNow.Ticks);
         }
 
         [Fact]
         public void PacketStreamReadNonPrimitiveTest()
         {
-            using (var packetStream = new NetPacketStream(this._randomizer.Bytes(this._randomizer.Byte())))
+            using (var packetStream = new NetPacketStream(_randomizer.Bytes(_randomizer.Byte())))
             {
                 Assert.Throws<NotImplementedException>(() => packetStream.Read<object>());
             }
@@ -38,97 +38,97 @@ namespace Sylver.Network.Tests.Data
         [Fact]
         public void PacketStreamReadByteTest()
         {
-            byte byteValue = this._randomizer.Byte();
+            byte byteValue = _randomizer.Byte();
 
-            this.PacketStreamReadTest<byte>(byteValue, BitConverter.GetBytes(byteValue));
+            PacketStreamReadTest<byte>(byteValue, BitConverter.GetBytes(byteValue));
         }
 
         [Fact]
         public void PacketStreamReadSByteTest()
         {
-            sbyte sbyteValue = this._randomizer.SByte();
+            sbyte sbyteValue = _randomizer.SByte();
 
-            this.PacketStreamReadTest<sbyte>(sbyteValue, BitConverter.GetBytes(sbyteValue));
+            PacketStreamReadTest<sbyte>(sbyteValue, BitConverter.GetBytes(sbyteValue));
         }
 
         [Fact]
         public void PacketStreamReadBooleanTest()
         {
-            bool booleanValue = this._randomizer.Bool();
+            bool booleanValue = _randomizer.Bool();
 
-            this.PacketStreamReadTest<bool>(booleanValue, BitConverter.GetBytes(booleanValue));
+            PacketStreamReadTest<bool>(booleanValue, BitConverter.GetBytes(booleanValue));
         }
 
         [Fact]
         public void PacketStreamReadCharTest()
         {
-            char charValue = this._randomizer.Char(max: 'z');
+            char charValue = _randomizer.Char(max: 'z');
 
-            this.PacketStreamReadTest<char>(charValue, BitConverter.GetBytes(charValue));
+            PacketStreamReadTest<char>(charValue, BitConverter.GetBytes(charValue));
         }
 
         [Fact]
         public void PacketStreamReadShortTest()
         {
-            short shortValue = this._randomizer.Short();
+            short shortValue = _randomizer.Short();
 
-            this.PacketStreamReadTest<short>(shortValue, BitConverter.GetBytes(shortValue));
+            PacketStreamReadTest<short>(shortValue, BitConverter.GetBytes(shortValue));
         }
 
         [Fact]
         public void PacketStreamReadUShortTest()
         {
-            ushort ushortValue = this._randomizer.UShort();
+            ushort ushortValue = _randomizer.UShort();
 
-            this.PacketStreamReadTest<ushort>(ushortValue, BitConverter.GetBytes(ushortValue));
+            PacketStreamReadTest<ushort>(ushortValue, BitConverter.GetBytes(ushortValue));
         }
 
         [Fact]
         public void PacketStreamReadIntTest()
         {
-            int intValue = this._randomizer.Int();
+            int intValue = _randomizer.Int();
 
-            this.PacketStreamReadTest<int>(intValue, BitConverter.GetBytes(intValue));
+            PacketStreamReadTest<int>(intValue, BitConverter.GetBytes(intValue));
         }
 
         [Fact]
         public void PacketStreamReadUIntTest()
         {
-            uint uintValue = this._randomizer.UInt();
+            uint uintValue = _randomizer.UInt();
 
-            this.PacketStreamReadTest<uint>(uintValue, BitConverter.GetBytes(uintValue));
+            PacketStreamReadTest<uint>(uintValue, BitConverter.GetBytes(uintValue));
         }
 
         [Fact]
         public void PacketStreamReadLongTest()
         {
-            long longValue = this._randomizer.Long();
+            long longValue = _randomizer.Long();
 
-            this.PacketStreamReadTest<long>(longValue, BitConverter.GetBytes(longValue));
+            PacketStreamReadTest<long>(longValue, BitConverter.GetBytes(longValue));
         }
 
         [Fact]
         public void PacketStreamReadULongTest() 
         {
-            ulong ulongValue = this._randomizer.ULong();
+            ulong ulongValue = _randomizer.ULong();
 
-            this.PacketStreamReadTest<ulong>(ulongValue, BitConverter.GetBytes(ulongValue));
+            PacketStreamReadTest<ulong>(ulongValue, BitConverter.GetBytes(ulongValue));
         }
 
         [Fact]
         public void PacketStreamReadFloatTest()
         {
-            float floatValue = this._randomizer.Float();
+            float floatValue = _randomizer.Float();
 
-            this.PacketStreamReadTest<float>(floatValue, BitConverter.GetBytes(floatValue));
+            PacketStreamReadTest<float>(floatValue, BitConverter.GetBytes(floatValue));
         }
 
         [Fact]
         public void PacketStreamReadDoubleTest()
         {
-            double doubleValue = this._randomizer.Double();
+            double doubleValue = _randomizer.Double();
 
-            this.PacketStreamReadTest<double>(doubleValue, BitConverter.GetBytes(doubleValue));
+            PacketStreamReadTest<double>(doubleValue, BitConverter.GetBytes(doubleValue));
         }
 
         [Fact]
@@ -137,7 +137,7 @@ namespace Sylver.Network.Tests.Data
             string stringValue = new Faker().Lorem.Sentence();
             byte[] stringValueArray = BitConverter.GetBytes(stringValue.Length).Concat(Encoding.UTF8.GetBytes(stringValue)).ToArray();
 
-            this.PacketStreamReadTest<string>(stringValue, stringValueArray, adjustBuffer: false);
+            PacketStreamReadTest<string>(stringValue, stringValueArray, adjustBuffer: false);
         }
 
         private void PacketStreamReadTest<T>(T expectedValue, byte[] valueAsBytes, bool adjustBuffer = true)
@@ -159,9 +159,9 @@ namespace Sylver.Network.Tests.Data
         [Fact]
         public void PacketStreamReadNonPrimitiveArrayTest()
         {
-            using (var packetStream = new NetPacketStream(this._randomizer.Bytes(this._randomizer.Byte())))
+            using (var packetStream = new NetPacketStream(_randomizer.Bytes(_randomizer.Byte())))
             {
-                Assert.Throws<NotImplementedException>(() => packetStream.Read<object>(this._randomizer.Byte(min: 1)));
+                Assert.Throws<NotImplementedException>(() => packetStream.Read<object>(_randomizer.Byte(min: 1)));
             }
         }
 
@@ -171,7 +171,7 @@ namespace Sylver.Network.Tests.Data
         [InlineData(int.MinValue)]
         public void PacketStreamReadArrayWithInvalidAmountTest(int amount)
         {
-            using (var packetStream = new NetPacketStream(this._randomizer.Bytes(this._randomizer.Byte())))
+            using (var packetStream = new NetPacketStream(_randomizer.Bytes(_randomizer.Byte())))
             {
                 Assert.Throws<ArgumentException>(() => packetStream.Read<byte>(amount));
             }
@@ -182,15 +182,15 @@ namespace Sylver.Network.Tests.Data
         {
             using (var packetStream = new NetPacketStream())
             {
-                Assert.Throws<InvalidOperationException>(() => packetStream.Read<byte>(this._randomizer.Byte(min: 1)));
+                Assert.Throws<InvalidOperationException>(() => packetStream.Read<byte>(_randomizer.Byte(min: 1)));
             }
         }
 
         [Fact]
         public void PacketStreamReadByteArrayTest()
         {
-            var buffer = this._randomizer.Bytes(this._randomizer.Byte());
-            int amount = this._randomizer.Int(min: 1, max: buffer.Length);
+            var buffer = _randomizer.Bytes(_randomizer.Byte());
+            int amount = _randomizer.Int(min: 1, max: buffer.Length);
             byte[] expectedBuffer = buffer.Take(amount).ToArray();
 
             using (var packetStream = new NetPacketStream(buffer))

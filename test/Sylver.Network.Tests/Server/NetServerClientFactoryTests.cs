@@ -16,30 +16,30 @@ namespace Sylver.Network.Tests.Server
 
         public NetServerClientFactoryTests()
         {
-            this._serverConfiguration = new NetServerConfiguration("127.0.0.1", 4444);
-            this._factory = new NetServerClientFactory<CustomClient>();
-            this._serverMock = new NetServerMock<CustomClient>(this._serverConfiguration);
-            this._clientSocket = new Socket(AddressFamily.InterNetwork, SocketType.Stream, ProtocolType.Tcp);
+            _serverConfiguration = new NetServerConfiguration("127.0.0.1", 4444);
+            _factory = new NetServerClientFactory<CustomClient>();
+            _serverMock = new NetServerMock<CustomClient>(_serverConfiguration);
+            _clientSocket = new Socket(AddressFamily.InterNetwork, SocketType.Stream, ProtocolType.Tcp);
         }
 
         [Fact]
         public void CreateClientTest()
         {
-            CustomClient newClient = this._factory.CreateClient(this._clientSocket, this._serverMock.Object);
+            CustomClient newClient = _factory.CreateClient(_clientSocket, _serverMock.Object);
 
             Assert.NotNull(newClient);
             Assert.NotNull(newClient.Server);
             Assert.NotNull(newClient.Socket);
             Assert.IsType<CustomClient>(newClient);
             Assert.NotEqual(Guid.Empty, newClient.Id);
-            Assert.Equal(this._clientSocket, newClient.Socket.GetSocket());
-            Assert.Equal(this._serverMock.Object, newClient.Server);
+            Assert.Equal(_clientSocket, newClient.Socket.GetSocket());
+            Assert.Equal(_serverMock.Object, newClient.Server);
         }
 
         [Fact]
         public void CreateAndDisposeClient()
         {
-            CustomClient newClient = this._factory.CreateClient(this._clientSocket, this._serverMock.Object);
+            CustomClient newClient = _factory.CreateClient(_clientSocket, _serverMock.Object);
 
             Assert.NotNull(newClient);
             Assert.NotNull(newClient.Socket);

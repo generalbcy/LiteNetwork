@@ -20,7 +20,7 @@ namespace Sylver.Chat.Server
         public ChatServerClient(Socket socketConnection)
             : base(socketConnection)
         {
-            this.Name = this.Id.ToString();
+            Name = Id.ToString();
         }
 
         /// <summary>
@@ -36,10 +36,10 @@ namespace Sylver.Chat.Server
                 switch (packetType)
                 {
                     case ChatPacketType.SetName:
-                        this.OnSetName(packetStream);
+                        OnSetName(packetStream);
                         break;
                     case ChatPacketType.Chat:
-                        this.OnChat(packetStream);
+                        OnChat(packetStream);
                         break;
                 }
             }
@@ -58,7 +58,7 @@ namespace Sylver.Chat.Server
         {
             string newName = packet.Read<string>();
 
-            this.Name = newName;
+            Name = newName;
         }
 
         /// <summary>
@@ -69,9 +69,9 @@ namespace Sylver.Chat.Server
         {
             string message = packet.Read<string>();
 
-            Console.WriteLine($"Received message from '{this.Name}': '{message}'");
+            Console.WriteLine($"Received message from '{Name}': '{message}'");
 
-            this.SendChatMessageToAll(this.Name, message);
+            SendChatMessageToAll(Name, message);
         }
 
         /// <summary>
@@ -87,7 +87,7 @@ namespace Sylver.Chat.Server
                 packet.Write<string>(clientName); // Client name data
                 packet.Write<string>(message); // client message
 
-                this.SendToAll(packet);
+                SendToAll(packet);
             }
         }
     }

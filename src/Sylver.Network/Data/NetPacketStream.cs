@@ -6,6 +6,9 @@ using System.Text;
 
 namespace Sylver.Network.Data
 {
+    /// <summary>
+    /// Provides a mechanism to read inside a packet stream.
+    /// </summary>
     public class NetPacketStream : MemoryStream, INetPacketStream
     {
         private readonly BinaryReader _reader;
@@ -15,10 +18,10 @@ namespace Sylver.Network.Data
         public NetPacketStateType State { get; }
 
         /// <inheritdoc />
-        public bool IsEndOfStream => this.Position >= this.Length;
+        public bool IsEndOfStream => Position >= Length;
 
         /// <inheritdoc />
-        public virtual byte[] Buffer => this.TryGetBuffer(out ArraySegment<byte> buffer) ? buffer.ToArray() : Array.Empty<byte>();
+        public virtual byte[] Buffer => TryGetBuffer(out ArraySegment<byte> buffer) ? buffer.ToArray() : Array.Empty<byte>();
 
         /// <summary>
         /// Gets the encoding used to encode strings when writing on the packet stream.
@@ -35,8 +38,8 @@ namespace Sylver.Network.Data
         /// </summary>
         public NetPacketStream()
         {
-            this._writer = new BinaryWriter(this, this.WriteEncoding);
-            this.State = NetPacketStateType.Write;
+            _writer = new BinaryWriter(this, WriteEncoding);
+            State = NetPacketStateType.Write;
         }
 
         /// <summary>
@@ -46,19 +49,21 @@ namespace Sylver.Network.Data
         public NetPacketStream(byte[] buffer)
             : base(buffer, 0, buffer.Length, false, true)
         {
-            this._reader = new BinaryReader(this, this.ReadEncoding);
-            this.State = NetPacketStateType.Read;
+            _reader = new BinaryReader(this, ReadEncoding);
+            State = NetPacketStateType.Read;
         }
 
         /// <inheritdoc />
         public virtual T Read<T>()
         {
-            if (this.State != NetPacketStateType.Read)
+            if (State != NetPacketStateType.Read)
+            {
                 throw new InvalidOperationException($"The current packet stream is in write-only mode.");
+            }
 
             if (typeof(T).IsPrimitive || typeof(T) == typeof(string))
             {
-                return this.ReadPrimitive<T>();
+                return ReadPrimitive<T>();
             }
 
             throw new NotImplementedException($"Cannot read a {typeof(T)} value from the packet stream.");
@@ -67,21 +72,29 @@ namespace Sylver.Network.Data
         /// <inheritdoc />
         public virtual T[] Read<T>(int amount)
         {
-            if (this.State != NetPacketStateType.Read)
+            if (State != NetPacketStateType.Read)
+            {
                 throw new InvalidOperationException($"The current packet stream is in write-only mode.");
+            }
 
             if (amount <= 0)
+            {
                 throw new ArgumentException($"Amount is '{amount}' and must be grather than 0.", nameof(amount));
+            }
 
             Type type = typeof(T);
             var array = new T[amount];
 
             if (type == typeof(byte))
-                array = this._reader.ReadBytes(amount) as T[];
+            {
+                array = _reader.ReadBytes(amount) as T[];
+            }
             else
             {
                 for (var i = 0; i < amount; i++)
-                    array[i] = this.Read<T>();
+                {
+                    array[i] = Read<T>();
+                }
             }
 
             return array;
@@ -90,12 +103,14 @@ namespace Sylver.Network.Data
         /// <inheritdoc />
         public virtual void Write<T>(T value)
         {
-            if (this.State != NetPacketStateType.Write)
+            if (State != NetPacketStateType.Write)
+            {
                 throw new InvalidOperationException($"The current packet stream is in read-only mode.");
+            }
 
             if (typeof(T).IsPrimitive || typeof(T) == typeof(string))
             {
-                this.WritePrimitive<T>(value);
+                WritePrimitive<T>(value);
             }
             else
             {
@@ -115,46 +130,46 @@ namespace Sylver.Network.Data
             switch (Type.GetTypeCode(typeof(T)))
             {
                 case TypeCode.Byte:
-                    primitiveValue = this._reader.ReadByte();
+                    primitiveValue = _reader.ReadByte();
                     break;
                 case TypeCode.SByte:
-                    primitiveValue = this._reader.ReadSByte();
+                    primitiveValue = _reader.ReadSByte();
                     break;
                 case TypeCode.Boolean:
-                    primitiveValue = this._reader.ReadBoolean();
+                    primitiveValue = _reader.ReadBoolean();
                     break;
                 case TypeCode.Char:
-                    primitiveValue = this._reader.ReadChar();
+                    primitiveValue = _reader.ReadChar();
                     break;
                 case TypeCode.Int16:
-                    primitiveValue = this._reader.ReadInt16();
+                    primitiveValue = _reader.ReadInt16();
                     break;
                 case TypeCode.UInt16:
-                    primitiveValue = this._reader.ReadUInt16();
+                    primitiveValue = _reader.ReadUInt16();
                     break;
                 case TypeCode.Int32:
-                    primitiveValue = this._reader.ReadInt32();
+                    primitiveValue = _reader.ReadInt32();
                     break;
                 case TypeCode.UInt32:
-                    primitiveValue = this._reader.ReadUInt32();
+                    primitiveValue = _reader.ReadUInt32();
                     break;
                 case TypeCode.Single:
-                    primitiveValue = this._reader.ReadSingle();
+                    primitiveValue = _reader.ReadSingle();
                     break;
                 case TypeCode.Int64:
-                    primitiveValue = this._reader.ReadInt64();
+                    primitiveValue = _reader.ReadInt64();
                     break;
                 case TypeCode.UInt64:
-                    primitiveValue = this._reader.ReadUInt64();
+                    primitiveValue = _reader.ReadUInt64();
                     break;
                 case TypeCode.Double:
-                    primitiveValue = this._reader.ReadDouble();
+                    primitiveValue = _reader.ReadDouble();
                     break;
                 case TypeCode.String:
-                    int stringLength = this._reader.ReadInt32();
-                    byte[] stringBytes = this._reader.ReadBytes(stringLength);
+                    int stringLength = _reader.ReadInt32();
+                    byte[] stringBytes = _reader.ReadBytes(stringLength);
 
-                    primitiveValue = this.ReadEncoding.GetString(stringBytes);
+                    primitiveValue = ReadEncoding.GetString(stringBytes);
                     break;
             }
 
@@ -171,49 +186,51 @@ namespace Sylver.Network.Data
             switch (Type.GetTypeCode(typeof(T)))
             {
                 case TypeCode.Byte:
-                    this._writer.Write(Convert.ToByte(value, CultureInfo.DefaultThreadCurrentCulture));
+                    _writer.Write(Convert.ToByte(value, CultureInfo.DefaultThreadCurrentCulture));
                     break;
                 case TypeCode.SByte:
-                    this._writer.Write(Convert.ToSByte(value, CultureInfo.DefaultThreadCurrentCulture));
+                    _writer.Write(Convert.ToSByte(value, CultureInfo.DefaultThreadCurrentCulture));
                     break;
                 case TypeCode.Boolean:
-                    this._writer.Write(Convert.ToBoolean(value, CultureInfo.DefaultThreadCurrentCulture));
+                    _writer.Write(Convert.ToBoolean(value, CultureInfo.DefaultThreadCurrentCulture));
                     break;
                 case TypeCode.Char:
-                    this._writer.Write(Convert.ToChar(value, CultureInfo.DefaultThreadCurrentCulture));
+                    _writer.Write(Convert.ToChar(value, CultureInfo.DefaultThreadCurrentCulture));
                     break;
                 case TypeCode.Int16:
-                    this._writer.Write(Convert.ToInt16(value, CultureInfo.DefaultThreadCurrentCulture));
+                    _writer.Write(Convert.ToInt16(value, CultureInfo.DefaultThreadCurrentCulture));
                     break;
                 case TypeCode.UInt16:
-                    this._writer.Write(Convert.ToUInt16(value, CultureInfo.DefaultThreadCurrentCulture));
+                    _writer.Write(Convert.ToUInt16(value, CultureInfo.DefaultThreadCurrentCulture));
                     break;
                 case TypeCode.Int32:
-                    this._writer.Write(Convert.ToInt32(value, CultureInfo.DefaultThreadCurrentCulture));
+                    _writer.Write(Convert.ToInt32(value, CultureInfo.DefaultThreadCurrentCulture));
                     break;
                 case TypeCode.UInt32:
-                    this._writer.Write(Convert.ToUInt32(value, CultureInfo.DefaultThreadCurrentCulture));
+                    _writer.Write(Convert.ToUInt32(value, CultureInfo.DefaultThreadCurrentCulture));
                     break;
                 case TypeCode.Single:
-                    this._writer.Write(Convert.ToSingle(value, CultureInfo.DefaultThreadCurrentCulture));
+                    _writer.Write(Convert.ToSingle(value, CultureInfo.DefaultThreadCurrentCulture));
                     break;
                 case TypeCode.Int64:
-                    this._writer.Write(Convert.ToInt64(value, CultureInfo.DefaultThreadCurrentCulture));
+                    _writer.Write(Convert.ToInt64(value, CultureInfo.DefaultThreadCurrentCulture));
                     break;
                 case TypeCode.UInt64:
-                    this._writer.Write(Convert.ToUInt64(value, CultureInfo.DefaultThreadCurrentCulture));
+                    _writer.Write(Convert.ToUInt64(value, CultureInfo.DefaultThreadCurrentCulture));
                     break;
                 case TypeCode.Double:
-                    this._writer.Write(Convert.ToDouble(value, CultureInfo.DefaultThreadCurrentCulture));
+                    _writer.Write(Convert.ToDouble(value, CultureInfo.DefaultThreadCurrentCulture));
                     break;
                 case TypeCode.String:
                     {
                         string stringValue = value.ToString();
 
-                        this._writer.Write(stringValue.Length);
+                        _writer.Write(stringValue.Length);
 
                         if (stringValue.Length > 0)
-                            this._writer.Write(this.WriteEncoding.GetBytes(stringValue));
+                        {
+                            _writer.Write(WriteEncoding.GetBytes(stringValue));
+                        }
                     }
                     break;
             }

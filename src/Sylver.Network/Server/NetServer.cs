@@ -31,32 +31,37 @@ namespace Sylver.Network.Server
         /// <inheritdoc />
         public IPacketProcessor PacketProcessor
         {
-            get => this._packetProcessor;
+            get => _packetProcessor;
             set
             {
-                if (this.IsRunning)
+                if (IsRunning)
+                {
                     throw new InvalidOperationException("Cannot update packet processor when server is running.");
-                this._packetProcessor = value;
-                this._receiver.SetPacketProcessor(this._packetProcessor);
+                }
+                _packetProcessor = value;
+                _receiver.SetPacketProcessor(_packetProcessor);
             }
         }
 
         /// <inheritdoc />
         public NetServerConfiguration ServerConfiguration
         {
-            get => this._serverConfiguration;
+            get => _serverConfiguration;
             protected set
             {
-                if (this.IsRunning)
+                if (IsRunning)
+                {
                     throw new InvalidOperationException("Cannot update configuration when server is running.");
-                this._serverConfiguration = value;
+                }
+
+                _serverConfiguration = value;
             }
         }
 
         /// <summary>
         /// Gets the list of connected clients.
         /// </summary>
-        protected virtual IEnumerable<TClient> Clients => this._clients.Values;
+        protected virtual IEnumerable<TClient> Clients => _clients.Values;
 
         /// <summary>
         /// Creates a new <see cref="NetServer{TUser}"/> instance.
@@ -71,62 +76,64 @@ namespace Sylver.Network.Server
         /// </summary>
         public NetServer(NetServerConfiguration configuration)
         {
-            this.ServerConfiguration = configuration;
-            this._packetProcessor = new NetPacketProcessor();
-            this._clientFactory = new NetServerClientFactory<TClient>();
-            this._clients = new ConcurrentDictionary<Guid, TClient>();
-            this._acceptor = new NetServerAcceptor(this);
-            this._acceptor.OnClientAccepted += this.OnClientAccepted;
+            ServerConfiguration = configuration;
+            _packetProcessor = new NetPacketProcessor();
+            _clientFactory = new NetServerClientFactory<TClient>();
+            _clients = new ConcurrentDictionary<Guid, TClient>();
+            _acceptor = new NetServerAcceptor(this);
+            _acceptor.OnClientAccepted += OnClientAccepted;
 
-            this._sender = new NetServerSender();
-            this._receiver = new NetServerReceiver(this);
+            _sender = new NetServerSender();
+            _receiver = new NetServerReceiver(this);
         }
 
         /// <inheritdoc />
         public void Start()
         {
-            if (this.IsRunning)
+            if (IsRunning)
+            {
                 throw new InvalidOperationException("Server is already running.");
+            }
 
-            this.OnBeforeStart();
+            OnBeforeStart();
 
-            this.Socket = new NetSocket(new Socket(AddressFamily.InterNetwork, SocketType.Stream, ProtocolType.Tcp));
-            this.Socket.SetSocketOption(SocketOptionLevel.Socket, SocketOptionName.ReuseAddress, 1);
-            this.Socket.Bind(NetHelper.CreateIpEndPoint(this.ServerConfiguration.Host, this.ServerConfiguration.Port));
-            this.Socket.Listen(this.ServerConfiguration.Backlog);
+            Socket = new NetSocket(new Socket(AddressFamily.InterNetwork, SocketType.Stream, ProtocolType.Tcp));
+            Socket.SetSocketOption(SocketOptionLevel.Socket, SocketOptionName.ReuseAddress, 1);
+            Socket.Bind(NetHelper.CreateIpEndPoint(ServerConfiguration.Host, ServerConfiguration.Port));
+            Socket.Listen(ServerConfiguration.Backlog);
 
-            this.IsRunning = true;
-            this._sender.Start();
-            this._acceptor.StartAccept();
-            this.OnAfterStart();
+            IsRunning = true;
+            _sender.Start();
+            _acceptor.StartAccept();
+            OnAfterStart();
         }
 
         /// <inheritdoc />
         public void Stop()
         {
-            this.OnBeforeStop();
-            this._sender.Stop();
+            OnBeforeStop();
+            _sender.Stop();
 
-            if (this.Socket != null)
+            if (Socket != null)
             {
-                this.Socket.Dispose();
-                this.Socket = null;
+                Socket.Dispose();
+                Socket = null;
             }
 
-            this.IsRunning = false;
-            this.OnAfterStop();
+            IsRunning = false;
+            OnAfterStop();
         }
 
         /// <inheritdoc />
         public void DisconnectClient(Guid clientId)
         {
-            if (!this._clients.TryRemove(clientId, out TClient client))
+            if (!_clients.TryRemove(clientId, out TClient client))
             {
                 // TODO: error; cannot find client by id.
                 return;
             }
 
-            this.OnClientDisconnected(client);
+            OnClientDisconnected(client);
             client.Dispose();
         }
 
@@ -143,7 +150,7 @@ namespace Sylver.Network.Server
                 throw new ArgumentNullException(nameof(packet));
             }
 
-            this._sender.Send(new NetMessageData(connection, packet.Buffer));
+            _sender.Send(new NetMessageData(connection, packet.Buffer));
         }
 
         /// <inheritdoc />
@@ -163,12 +170,12 @@ namespace Sylver.Network.Server
 
             foreach (INetConnection connection in connections)
             {
-                this._sender.Send(new NetMessageData(connection, messageData));
+                _sender.Send(new NetMessageData(connection, messageData));
             }
         }
 
         /// <inheritdoc />
-        public void SendToAll(INetPacketStream packet) => this.SendTo(this._clients.Values, packet);
+        public void SendToAll(INetPacketStream packet) => SendTo(_clients.Values, packet);
 
         /// <summary>
         /// Executes the child business logic before starting the server.
@@ -209,15 +216,15 @@ namespace Sylver.Network.Server
         /// <param name="e">Accepted client socket async event arguments.</param>
         private void OnClientAccepted(object sender, SocketAsyncEventArgs e)
         {
-            TClient newClient = this._clientFactory.CreateClient(e.AcceptSocket, this);
+            TClient newClient = _clientFactory.CreateClient(e.AcceptSocket, this);
 
-            if (!this._clients.TryAdd(newClient.Id, newClient))
+            if (!_clients.TryAdd(newClient.Id, newClient))
             {
                 // TODO: send error.
             }
 
-            this.OnClientConnected(newClient);
-            this._receiver.Start(newClient);
+            OnClientConnected(newClient);
+            _receiver.Start(newClient);
         }
     }
 }

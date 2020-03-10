@@ -1,4 +1,8 @@
-﻿# [1.1.0](https://github.com/Eastrall/Sylver.Network/releases/tag/v1.1) (2019-10-31)
+﻿# [1.2.0](https://github.com/Eastrall/Sylver.Network/releases/tag/v1.1) (2020-03-31)
+
+...
+
+# [1.1.0](https://github.com/Eastrall/Sylver.Network/releases/tag/v1.1) (2019-10-31)
 
 ### Features
 

@@ -35,18 +35,18 @@
         /// <summary>
         /// Gets a value that indicates if the message is complete.
         /// </summary>
-        public bool IsMessageComplete => this.MessageSize.HasValue ? this.ReceivedMessageBytesCount == this.MessageSize.Value : false;
+        public bool IsMessageComplete => MessageSize.HasValue ? ReceivedMessageBytesCount == MessageSize.Value : false;
 
         /// <summary>
         /// Reset the token data properties.
         /// </summary>
         public void Reset()
         {
-            this.ReceivedHeaderBytesCount = 0;
-            this.ReceivedMessageBytesCount = 0;
-            this.HeaderData = null;
-            this.MessageData = null;
-            this.MessageSize = null;
+            ReceivedHeaderBytesCount = 0;
+            ReceivedMessageBytesCount = 0;
+            HeaderData = null;
+            MessageData = null;
+            MessageSize = null;
         }
     }
 }

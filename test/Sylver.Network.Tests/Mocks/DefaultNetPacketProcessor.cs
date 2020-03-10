@@ -1,18 +1,25 @@
-﻿using System;
+﻿using Sylver.Network.Data;
+using System;
 using System.Linq;
 
-namespace Sylver.Network.Data
+namespace Sylver.Network.Tests.Mocks
 {
-    /// <summary>
-    /// Default Sylver packet processor.
-    /// </summary>
-    internal sealed class NetPacketProcessor : IPacketProcessor
+    internal sealed class DefaultNetPacketProcessor : IPacketProcessor
     {
         /// <inheritdoc />
         public int HeaderSize => sizeof(int);
 
         /// <inheritdoc />
-        public bool IncludeHeader => false;
+        public bool IncludeHeader { get; }
+
+        /// <summary>
+        /// Creates a new <see cref="DefaultNetPacketProcessor"/> instance.
+        /// </summary>
+        /// <param name="includeHeader"></param>
+        public DefaultNetPacketProcessor(bool includeHeader)
+        {
+            IncludeHeader = includeHeader;
+        }
 
         /// <inheritdoc />
         public int GetMessageLength(byte[] buffer)

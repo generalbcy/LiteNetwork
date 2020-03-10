@@ -26,7 +26,7 @@ namespace Sylver.Chat.Client
         /// </summary>
         protected override void OnConnected()
         {
-            ChatPackets.SetName(this, this.Name);
+            ChatPackets.SetName(this, Name);
             Console.WriteLine($"You are connected! You can start typing any message.");
         }
 
@@ -49,7 +49,10 @@ namespace Sylver.Chat.Client
             switch (packetHeader)
             {
                 case ChatPacketType.ChatAnswer:
-                    this.OnChatAnswer(packet);
+                    OnChatAnswer(packet);
+                    break;
+                case ChatPacketType.Test:
+                    OnTest(packet);
                     break;
             }
         }
@@ -73,6 +76,12 @@ namespace Sylver.Chat.Client
             string messageContent = packet.Read<string>();
 
             Console.WriteLine($"[{messageAuthor}]: {messageContent}");
+        }
+
+        private void OnTest(INetPacketStream packet)
+        {
+            int testValue = packet.Read<int>();
+            Console.WriteLine("Server sent test: " + testValue);
         }
     }
 }

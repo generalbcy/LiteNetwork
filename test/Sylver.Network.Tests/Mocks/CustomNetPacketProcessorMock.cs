@@ -13,14 +13,14 @@ namespace Sylver.Network.Tests.Mocks
 
         public CustomNetPacketProcessor(bool includeHeader)
         {
-            this.IncludeHeader = includeHeader;
+            IncludeHeader = includeHeader;
         }
 
         public int GetMessageLength(byte[] buffer)
         {
             return BitConverter.ToInt32(BitConverter.IsLittleEndian
-                ? buffer.Take(this.HeaderSize).ToArray()
-                : buffer.Take(this.HeaderSize).Reverse().ToArray(), 0);
+                ? buffer.Take(HeaderSize).ToArray()
+                : buffer.Take(HeaderSize).Reverse().ToArray(), 0);
         }
 
         public INetPacketStream CreatePacket(byte[] buffer) => new NetPacket(buffer);

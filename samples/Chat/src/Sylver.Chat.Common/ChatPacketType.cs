@@ -21,5 +21,8 @@
         /// Chat answer.
         /// </summary>
         ChatAnswer,
+
+        Test,
+        TestLargeFile,
     }
 }

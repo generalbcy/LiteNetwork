@@ -18,8 +18,8 @@ namespace Sylver.Network.Server.Internal
         public NetServerReceiver(INetServer server)
             : base(server.PacketProcessor)
         {
-            this._readPool = ObjectPool.Create<SocketAsyncEventArgs>();
-            this._server = server;
+            _readPool = ObjectPool.Create<SocketAsyncEventArgs>();
+            _server = server;
         }
 
         /// <inheritdoc />
@@ -29,25 +29,25 @@ namespace Sylver.Network.Server.Internal
 
             socketAsyncEvent.SetBuffer(null, 0, 0);
             socketAsyncEvent.UserToken = null;
-            socketAsyncEvent.Completed -= this.OnCompleted;
+            socketAsyncEvent.Completed -= OnCompleted;
 
-            this._readPool.Return(socketAsyncEvent);
+            _readPool.Return(socketAsyncEvent);
         }
 
         /// <inheritdoc />
         protected override SocketAsyncEventArgs GetSocketEvent()
         {
-            int receiveBufferLength = this._server.ServerConfiguration.ClientBufferSize;
-            SocketAsyncEventArgs socketAsyncEvent = this._readPool.Get();
+            int receiveBufferLength = _server.ServerConfiguration.ClientBufferSize;
+            SocketAsyncEventArgs socketAsyncEvent = _readPool.Get();
 
             socketAsyncEvent.SetBuffer(ArrayPool<byte>.Shared.Rent(receiveBufferLength), 0, receiveBufferLength);
-            socketAsyncEvent.Completed += this.OnCompleted;
+            socketAsyncEvent.Completed += OnCompleted;
 
             return socketAsyncEvent;
         }
 
         /// <inheritdoc />
-        protected override void OnDisconnected(INetUser client) => this._server.DisconnectClient(client.Id);
+        protected override void OnDisconnected(INetUser client) => _server.DisconnectClient(client.Id);
 
         /// <inheritdoc />
         protected override void OnError(INetUser client, SocketError socketError)

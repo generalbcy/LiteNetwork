@@ -12,7 +12,7 @@ namespace Sylver.Network.Tests.Data
 
         public NetPacketTests()
         {
-            this._randomizer = new Randomizer((int)DateTime.UtcNow.Ticks);
+            _randomizer = new Randomizer((int)DateTime.UtcNow.Ticks);
         }
 
         [Fact]
@@ -20,8 +20,8 @@ namespace Sylver.Network.Tests.Data
         {
             const int HeaderSize = sizeof(int);
             const int DataSize = sizeof(short) + sizeof(float);
-            short shortValue = this._randomizer.Short();
-            float floatValue = this._randomizer.Float();
+            short shortValue = _randomizer.Short();
+            float floatValue = _randomizer.Float();
 
             var packet = new NetPacket();
             
@@ -55,8 +55,8 @@ namespace Sylver.Network.Tests.Data
         [Fact]
         public void CreateNetPacketFromBufferTest()
         {
-            short shortValue = this._randomizer.Short();
-            float floatValue = this._randomizer.Float();
+            short shortValue = _randomizer.Short();
+            float floatValue = _randomizer.Float();
             const int contentSize = sizeof(short) + sizeof(float);
             byte[] data = BitConverter.GetBytes(contentSize)
                             .Concat(BitConverter.GetBytes((short)shortValue))

@@ -27,9 +27,9 @@ namespace Sylver.Network.Server.Internal
         /// <param name="server"></param>
         public NetServerAcceptor(INetServer server)
         {
-            this._server = server;
-            this.SocketEvent = new SocketAsyncEventArgs();
-            this.SocketEvent.Completed += this.OnSocketCompleted;
+            _server = server;
+            SocketEvent = new SocketAsyncEventArgs();
+            SocketEvent.Completed += OnSocketCompleted;
         }
 
         /// <summary>
@@ -37,12 +37,14 @@ namespace Sylver.Network.Server.Internal
         /// </summary>
         public void StartAccept()
         {
-            if (this.SocketEvent.AcceptSocket != null)
-                this.SocketEvent.AcceptSocket = null;
-
-            if (!this._server.Socket.AcceptAsync(this.SocketEvent))
+            if (SocketEvent.AcceptSocket != null)
             {
-                this.ProcessAccept(this.SocketEvent);
+                SocketEvent.AcceptSocket = null;
+            }
+
+            if (!_server.Socket.AcceptAsync(SocketEvent))
+            {
+                ProcessAccept(SocketEvent);
             }
         }
 
@@ -54,8 +56,8 @@ namespace Sylver.Network.Server.Internal
         {
             if (socketAsyncEvent.SocketError == SocketError.Success)
             {
-                this.OnClientAccepted?.Invoke(this, socketAsyncEvent);
-                this.StartAccept();
+                OnClientAccepted?.Invoke(this, socketAsyncEvent);
+                StartAccept();
             }
         }
 
@@ -74,7 +76,7 @@ namespace Sylver.Network.Server.Internal
 
             if (e.LastOperation == SocketAsyncOperation.Accept)
             {
-                this.ProcessAccept(e);
+                ProcessAccept(e);
             }
             else
             {

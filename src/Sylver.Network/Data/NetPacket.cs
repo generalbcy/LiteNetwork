@@ -14,13 +14,13 @@ namespace Sylver.Network.Data
         {
             get
             {
-                if (this.State == NetPacketStateType.Write)
+                if (State == NetPacketStateType.Write)
                 {
-                    long oldPosition = this.Position;
+                    long oldPosition = Position;
 
-                    this.Seek(0, SeekOrigin.Begin);
-                    this.Write((int)this.ContentLength);
-                    this.Seek((int)oldPosition, SeekOrigin.Begin);
+                    Seek(0, SeekOrigin.Begin);
+                    Write((int)ContentLength);
+                    Seek((int)oldPosition, SeekOrigin.Begin);
                 }
 
                 return base.Buffer;
@@ -30,14 +30,14 @@ namespace Sylver.Network.Data
         /// <summary>
         /// Gets the packet's content length.
         /// </summary>
-        public long ContentLength => this.Length - HeaderSize;
+        public long ContentLength => Length - HeaderSize;
 
         /// <summary>
         /// Creates a new <see cref="NetPacket"/> in write-only mode.
         /// </summary>
         public NetPacket()
         {
-            this.Write(0); // Packet size
+            Write(0); // Packet size
         }
 
         /// <summary>

@@ -13,15 +13,15 @@ namespace Sylver.Network.Server.Internal
         /// </summary>
         public NetServerSender()
         {
-            this._writePool = ObjectPool.Create<SocketAsyncEventArgs>();
+            _writePool = ObjectPool.Create<SocketAsyncEventArgs>();
         }
 
         /// <inheritdoc />
         protected override SocketAsyncEventArgs GetSocketEvent()
         {
-            SocketAsyncEventArgs socketAsyncEvent = this._writePool.Get();
+            SocketAsyncEventArgs socketAsyncEvent = _writePool.Get();
 
-            socketAsyncEvent.Completed += this.OnSendCompleted;
+            socketAsyncEvent.Completed += OnSendCompleted;
 
             return socketAsyncEvent;
         }
@@ -29,10 +29,10 @@ namespace Sylver.Network.Server.Internal
         /// <inheritdoc />
         protected override void ClearSocketEvent(SocketAsyncEventArgs socketAsyncEvent)
         {
-            socketAsyncEvent.Completed -= this.OnSendCompleted;
+            socketAsyncEvent.Completed -= OnSendCompleted;
             socketAsyncEvent.SetBuffer(null, 0, 0);
 
-            this._writePool.Return(socketAsyncEvent);
+            _writePool.Return(socketAsyncEvent);
         }
     }
 }

@@ -20,25 +20,25 @@ namespace Sylver.Network.Tests.Server.Mocks
         public NetServerMock(params object[] args)
             : base(args)
         {
-            this.SetupMethods();
+            SetupMethods();
         }
 
         public NetServerMock(MockBehavior behavior)
             : base(behavior)
         {
-            this.SetupMethods();
+            SetupMethods();
         }
 
         public NetServerMock(MockBehavior behavior, params object[] args)
             : base(behavior, args)
         {
-            this.SetupMethods();
+            SetupMethods();
         }
 
         public NetServerMock(Expression<Func<NetServer<TClient>>> newExpression, MockBehavior behavior = MockBehavior.Loose)
             : base(newExpression, behavior)
         {
-            this.SetupMethods();
+            SetupMethods();
         }
 
         public void VerifyOnBeforeStart(Times times)
@@ -72,10 +72,10 @@ namespace Sylver.Network.Tests.Server.Mocks
 
         private void SetupMethods()
         {
-            this.Protected().Setup("OnBeforeStart").Callback(() => this.BeforeStartCalled = true);
-            this.Protected().Setup("OnAfterStart").Callback(() => this.AfterStartCalled = true);
-            this.Protected().Setup("OnBeforeStop").Callback(() => this.BeforeStopCalled = true);
-            this.Protected().Setup("OnAfterStop").Callback(() => this.AfterStopCalled = true);
+            this.Protected().Setup("OnBeforeStart").Callback(() => BeforeStartCalled = true);
+            this.Protected().Setup("OnAfterStart").Callback(() => AfterStartCalled = true);
+            this.Protected().Setup("OnBeforeStop").Callback(() => BeforeStopCalled = true);
+            this.Protected().Setup("OnAfterStop").Callback(() => AfterStopCalled = true);
         }
     }
 }

@@ -18,9 +18,9 @@ namespace Sylver.Network.Client.Internal
         public NetClientReceiver(INetClient client)
             : base(client.PacketProcessor)
         {
-            this._client = client;
-            this._socketAsyncEvent = new SocketAsyncEventArgs();
-            this._socketAsyncEvent.Completed += this.OnCompleted;
+            _client = client;
+            _socketAsyncEvent = new SocketAsyncEventArgs();
+            _socketAsyncEvent.Completed += OnCompleted;
         }
 
         /// <inheritdoc />
@@ -35,10 +35,10 @@ namespace Sylver.Network.Client.Internal
         /// <inheritdoc />
         protected override SocketAsyncEventArgs GetSocketEvent()
         {
-            int receiveBufferLength = this._client.ClientConfiguration.BufferSize;
-            this._socketAsyncEvent.SetBuffer(ArrayPool<byte>.Shared.Rent(receiveBufferLength), 0, receiveBufferLength);
+            int receiveBufferLength = _client.ClientConfiguration.BufferSize;
+            _socketAsyncEvent.SetBuffer(ArrayPool<byte>.Shared.Rent(receiveBufferLength), 0, receiveBufferLength);
 
-            return this._socketAsyncEvent;
+            return _socketAsyncEvent;
         }
 
         /// <inheritdoc />

@@ -18,7 +18,9 @@ namespace Sylver.Network.Common
         public static IPAddress BuildIPAddress(string ipOrHost)
         {
             if (string.IsNullOrEmpty(ipOrHost))
+            {
                 return null;
+            }
 
             return IPAddress.TryParse(ipOrHost, out IPAddress address)
                 ? address
@@ -36,7 +38,9 @@ namespace Sylver.Network.Common
             IPAddress address = BuildIPAddress(ipOrHost);
 
             if (port <= IPEndPoint.MinPort || port > IPEndPoint.MaxPort)
+            {
                 throw new ArgumentException($"Invalid port: {port}");
+            }
 
             return new IPEndPoint(address, port);
         }

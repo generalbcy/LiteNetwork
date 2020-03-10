@@ -19,8 +19,8 @@
         /// <param name="data">Message data buffer.</param>
         public NetMessageData(INetConnection connection, byte[] data)
         {
-            this.Connection = connection;
-            this.Data = data;
+            Connection = connection;
+            Data = data;
         }
     }
 }

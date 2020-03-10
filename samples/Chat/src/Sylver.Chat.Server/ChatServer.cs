@@ -1,4 +1,6 @@
-﻿using Sylver.Network.Server;
+﻿using Sylver.Chat.Common;
+using Sylver.Network.Data;
+using Sylver.Network.Server;
 using System;
 
 namespace Sylver.Chat.Server
@@ -24,6 +26,17 @@ namespace Sylver.Chat.Server
         protected override void OnClientConnected(ChatServerClient client)
         {
             Console.WriteLine($"New client '{client.Id}' connected from {client.Socket.RemoteEndPoint.ToString()}");
+
+            for (int i = 0; i < 1000; i++)
+            {
+                using (var packet = new NetPacket())
+                {
+                    packet.Write<byte>((byte)ChatPacketType.Test);
+                    packet.Write<int>(i);
+                    SendTo(client, packet);
+                }
+                Console.WriteLine("Sent test packet: " + i);
+            }
         }
 
         /// <inheritdoc />

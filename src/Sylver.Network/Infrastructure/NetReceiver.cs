@@ -2,15 +2,22 @@
 using Sylver.Network.Data;
 using Sylver.Network.Data.Internal;
 using System;
+using System.Collections.Concurrent;
+using System.Collections.Generic;
 using System.Diagnostics.CodeAnalysis;
+using System.Linq;
 using System.Net.Sockets;
+using System.Threading;
+using System.Threading.Tasks;
 
 namespace Sylver.Network.Infrastructure
 {
     internal abstract class NetReceiver : INetReceiver
     {
         private readonly NetPacketParser _packetParser;
-        private readonly INetMessageDispatcher _messageDispatcher;
+        private readonly BlockingCollection<NetMessageData> _messageQueue;
+        private readonly IPacketProcessor _packetProcessor;
+        private readonly CancellationToken _cancellationToken;
         private bool _disposedValue;
 
         /// <summary>
@@ -19,24 +26,39 @@ namespace Sylver.Network.Infrastructure
         /// <param name="packetProcessor">Default packet processor.</param>
         public NetReceiver(IPacketProcessor packetProcessor)
         {
-            this._packetParser = new NetPacketParser(packetProcessor);
-            this._messageDispatcher = new NetMessageDispatcher(packetProcessor);
+            _packetParser = new NetPacketParser(packetProcessor);
+            _messageQueue = new BlockingCollection<NetMessageData>();
+            _packetProcessor = packetProcessor;
         }
 
         /// <inheritdoc />
         public void SetPacketProcessor(IPacketProcessor packetProcessor)
         {
-            this._packetParser.PacketProcessor = packetProcessor;
-            this._messageDispatcher.PacketProcessor = packetProcessor;
+            _packetParser.PacketProcessor = packetProcessor;
         }
 
         /// <inheritdoc />
         public void Start(INetUser clientConnection)
         {
-            SocketAsyncEventArgs socketAsyncEvent = this.GetSocketEvent();
+            Task.Factory.StartNew(() =>
+            {
+                while (!_cancellationToken.IsCancellationRequested)
+                {
+                    try
+                    {
+                        ProcessReceivedMessages();
+                    }
+                    catch (OperationCanceledException)
+                    {
+                        // The operation has been cancelled: nothing to do
+                    }
+                }
+            }, _cancellationToken, TaskCreationOptions.LongRunning, TaskScheduler.Default);
+
+            SocketAsyncEventArgs socketAsyncEvent = GetSocketEvent();
             socketAsyncEvent.UserToken = new NetToken(clientConnection);
 
-            this.ReceiveData(clientConnection, socketAsyncEvent);
+            ReceiveData(clientConnection, socketAsyncEvent);
         }
 
         /// <summary>
@@ -47,7 +69,9 @@ namespace Sylver.Network.Infrastructure
         private void ReceiveData(INetConnection client, SocketAsyncEventArgs socketAsyncEvent)
         {
             if (!client.Socket.ReceiveAsync(socketAsyncEvent))
-                this.ProcessReceive(socketAsyncEvent.UserToken as NetToken, socketAsyncEvent);
+            {
+                ProcessReceive(socketAsyncEvent.UserToken as NetToken, socketAsyncEvent);
+            }
         }
 
         /// <summary>
@@ -59,31 +83,43 @@ namespace Sylver.Network.Infrastructure
         private void ProcessReceive(NetToken clientToken, SocketAsyncEventArgs socketAsyncEvent)
         {
             if (socketAsyncEvent == null)
-                throw new ArgumentNullException("Cannot receive data from a null socket event.", nameof(socketAsyncEvent));
+            {
+                throw new ArgumentNullException(nameof(socketAsyncEvent), "Cannot receive data from a null socket event.");
+            }
 
             if (socketAsyncEvent.BytesTransferred > 0)
             {
                 if (socketAsyncEvent.SocketError == SocketError.Success)
                 {
-                    this._packetParser.ParseIncomingData(clientToken, socketAsyncEvent.Buffer, socketAsyncEvent.BytesTransferred);
+                    IEnumerable<byte[]> messages = _packetParser.ParseIncomingData(clientToken, socketAsyncEvent.Buffer, socketAsyncEvent.BytesTransferred);
 
-                    if (clientToken.IsMessageComplete)
+                    if (messages.Any())
                     {
-                        this._messageDispatcher.DispatchMessage(clientToken.Client, clientToken);
+                        foreach (byte[] message in messages)
+                        {
+                            if (!_messageQueue.TryAdd(new NetMessageData(clientToken.Client, message)))
+                            {
+                                // TODO: on error
+                            }
+                        }
+                    }
+
+                    if (clientToken.DataStartOffset >= socketAsyncEvent.BytesTransferred)
+                    {
                         clientToken.Reset();
                     }
 
-                    this.ReceiveData(clientToken.Client, socketAsyncEvent);
+                    ReceiveData(clientToken.Client, socketAsyncEvent);
                 }
                 else
                 {
-                    this.OnError(clientToken.Client, socketAsyncEvent.SocketError);
+                    OnError(clientToken.Client, socketAsyncEvent.SocketError);
                 }
             }
             else
             {
-                this.ClearSocketEvent(socketAsyncEvent);
-                this.OnDisconnected(clientToken.Client);
+                ClearSocketEvent(socketAsyncEvent);
+                OnDisconnected(clientToken.Client);
             }
         }
 
@@ -96,12 +132,18 @@ namespace Sylver.Network.Infrastructure
         protected internal void OnCompleted(object sender, SocketAsyncEventArgs e)
         {
             if (sender == null)
+            {
                 throw new ArgumentNullException(nameof(sender));
+            }
 
             if (e.LastOperation == SocketAsyncOperation.Receive)
-                this.ProcessReceive(e.UserToken as NetToken, e);
+            {
+                ProcessReceive(e.UserToken as NetToken, e);
+            }
             else
+            {
                 throw new InvalidOperationException($"Unknown '{e.LastOperation}' socket operation in receiver.");
+            }
         }
 
         /// <summary>
@@ -109,7 +151,7 @@ namespace Sylver.Network.Infrastructure
         /// </summary>
         public void Dispose()
         {
-            this.Dispose(true);
+            Dispose(true);
             GC.SuppressFinalize(this);
         }
 
@@ -119,13 +161,13 @@ namespace Sylver.Network.Infrastructure
         /// <param name="disposing"></param>
         protected virtual void Dispose(bool disposing)
         {
-            if (!this._disposedValue)
+            if (!_disposedValue)
             {
                 if (disposing)
                 {
                     // TODO: dispose managed state (managed objects).
                 }
-                this._disposedValue = true;
+                _disposedValue = true;
             }
         }
 
@@ -153,5 +195,25 @@ namespace Sylver.Network.Infrastructure
         /// <param name="client">Client.</param>
         /// <param name="socketError">Socket error.</param>
         protected abstract void OnError(INetUser client, SocketError socketError);
+
+        /// <summary>
+        /// Process the received message queue.
+        /// </summary>
+        [ExcludeFromCodeCoverage]
+        private void ProcessReceivedMessages()
+        {
+            NetMessageData message = _messageQueue.Take(_cancellationToken);
+
+            if (message != null && message.Connection is INetUser client)
+            {
+                Task.Factory.StartNew(() =>
+                {
+                    using (INetPacketStream packet = _packetProcessor.CreatePacket(message.Data))
+                    {
+                        client.HandleMessage(packet);
+                    }
+                }, _cancellationToken, TaskCreationOptions.DenyChildAttach, TaskScheduler.Default);
+            }
+        }
     }
 }

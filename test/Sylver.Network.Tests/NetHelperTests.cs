@@ -21,9 +21,13 @@ namespace Sylver.Network.Tests
         public void BuildInvalidIPAddressTest(string ipOrHost, bool throwException)
         {
             if (throwException)
+            {
                 Assert.Throws<AggregateException>(() => NetHelper.BuildIPAddress(ipOrHost));
+            }
             else
+            {
                 Assert.Null(NetHelper.BuildIPAddress(ipOrHost));
+            }
         }
 
         [Theory]
@@ -57,9 +61,13 @@ namespace Sylver.Network.Tests
         public void CreateIPEndPointWithInvalidIPOrHost(string host)
         {
             if (host == null)
+            {
                 Assert.Throws<ArgumentNullException>(() => NetHelper.CreateIpEndPoint(host, 4444));
+            }
             else
+            {
                 Assert.Throws<AggregateException>(() => NetHelper.CreateIpEndPoint(host, 4444));
+            }
         }
     }
 }

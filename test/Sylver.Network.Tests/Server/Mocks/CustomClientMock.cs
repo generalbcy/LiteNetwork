@@ -20,9 +20,9 @@ namespace Sylver.Network.Tests.Server.Mocks
         public CustomClientMock()
             : base(null)
         {
-            this.SocketMock = new NetSocketMock();
+            SocketMock = new NetSocketMock();
 
-            this.SetupGet(x => x.Socket).Returns(this.SocketMock);
+            SetupGet(x => x.Socket).Returns(SocketMock);
         }
     }
 }
