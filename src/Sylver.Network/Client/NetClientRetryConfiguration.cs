@@ -23,8 +23,8 @@
         /// <param name="maxAttempts">Maximum retry attempts if more is defined as <see cref="NetClientRetryOption.Limited"/>.</param>
         public NetClientRetryConfiguration(NetClientRetryOption mode, int maxAttempts)
         {
-            this.Mode = mode;
-            this.MaxAttempts = maxAttempts;
+            Mode = mode;
+            MaxAttempts = maxAttempts;
         }
     }
 }

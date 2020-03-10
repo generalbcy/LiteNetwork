@@ -16,7 +16,7 @@ namespace Sylver.Network.Client
         private readonly INetReceiver _receiver;
 
         /// <inheritdoc />
-        public bool IsConnected => this.Socket.IsConnected;
+        public bool IsConnected => Socket.IsConnected;
 
         /// <inheritdoc />
         public NetClientConfiguration ClientConfiguration { get; protected set; }
@@ -24,13 +24,16 @@ namespace Sylver.Network.Client
         /// <inheritdoc />
         public IPacketProcessor PacketProcessor
         {
-            get => this._packetProcessor;
+            get => _packetProcessor;
             set
             {
-                if (this.IsConnected)
+                if (IsConnected)
+                {
                     throw new InvalidOperationException("Cannot update packet processor when the client is already connected.");
-                this._packetProcessor = value;
-                this._receiver.SetPacketProcessor(this._packetProcessor);
+                }
+
+                _packetProcessor = value;
+                _receiver.SetPacketProcessor(_packetProcessor);
             }
         }
 
@@ -49,43 +52,53 @@ namespace Sylver.Network.Client
         public NetClient(NetClientConfiguration clientConfiguration)
             : base(new Socket(AddressFamily.InterNetwork, SocketType.Stream, ProtocolType.Tcp))
         {
-            this.ClientConfiguration = clientConfiguration;
-            this._packetProcessor = new NetPacketProcessor();
-            this._connector = new NetClientConnector(this);
-            this._connector.Connected += this.OnClientConnected;
-            this._connector.Error += this.OnClientConnectionError;
-            this._sender = new NetClientSender();
-            this._receiver = new NetClientReceiver(this);
+            ClientConfiguration = clientConfiguration;
+            _packetProcessor = new NetPacketProcessor();
+            _connector = new NetClientConnector(this);
+            _connector.Connected += OnClientConnected;
+            _connector.Error += OnClientConnectionError;
+            _sender = new NetClientSender();
+            _receiver = new NetClientReceiver(this);
         }
 
         /// <inheritdoc />
         public void Connect()
         {
-            if (this.IsConnected)
+            if (IsConnected)
+            {
                 throw new InvalidOperationException("Client is already connected to remote.");
+            }
 
-            if (this.ClientConfiguration == null)
-                throw new ArgumentNullException("Client configuration is not set.", nameof(this.ClientConfiguration));
+            if (ClientConfiguration == null)
+            {
+                throw new ArgumentNullException("Client configuration is not set.", nameof(ClientConfiguration));
+            }
 
-            if (this.ClientConfiguration.Port <= 0)
-                throw new ArgumentException($"Invalid port number '{this.ClientConfiguration.Port}' in configuration.", nameof(this.ClientConfiguration.Port));
+            if (ClientConfiguration.Port <= 0)
+            {
+                throw new ArgumentException($"Invalid port number '{ClientConfiguration.Port}' in configuration.", nameof(ClientConfiguration.Port));
+            }
 
-            if (NetHelper.BuildIPAddress(this.ClientConfiguration.Host) == null)
-                throw new ArgumentException($"Invalid host address '{this.ClientConfiguration.Host}' in configuration", nameof(this.ClientConfiguration.Host));
+            if (NetHelper.BuildIPAddress(ClientConfiguration.Host) == null)
+            {
+                throw new ArgumentException($"Invalid host address '{ClientConfiguration.Host}' in configuration", nameof(ClientConfiguration.Host));
+            }
 
-            if (this.ClientConfiguration.BufferSize <= 0)
-                throw new ArgumentException($"Invalid buffer size '{this.ClientConfiguration.BufferSize}' in configuration.", nameof(this.ClientConfiguration.BufferSize));
+            if (ClientConfiguration.BufferSize <= 0)
+            {
+                throw new ArgumentException($"Invalid buffer size '{ClientConfiguration.BufferSize}' in configuration.", nameof(ClientConfiguration.BufferSize));
+            }
 
-            this._sender.Start();
-            this._connector.Connect();
+            _sender.Start();
+            _connector.Connect();
         }
 
         /// <inheritdoc />
         public void Disconnect()
         {
-            this._sender.Stop();
-            this.Socket.GetSocket().Disconnect(true);
-            this.OnDisconnected();
+            _sender.Stop();
+            Socket.GetSocket().Disconnect(true);
+            OnDisconnected();
         }
 
         /// <inheritdoc />
@@ -96,7 +109,7 @@ namespace Sylver.Network.Client
                 throw new ArgumentNullException(nameof(packet));
             }
 
-            this._sender.Send(new NetMessageData(this, packet.Buffer));
+            _sender.Send(new NetMessageData(this, packet.Buffer));
         }
 
         /// <inheritdoc />
@@ -111,9 +124,9 @@ namespace Sylver.Network.Client
         /// <param name="disposing"></param>
         protected override void Dispose(bool disposing)
         {
-            this._connector.Dispose();
-            this._sender.Dispose();
-            this._receiver.Dispose();
+            _connector.Dispose();
+            _sender.Dispose();
+            _receiver.Dispose();
             base.Dispose(disposing);
         }
 
@@ -123,8 +136,8 @@ namespace Sylver.Network.Client
 
         private void OnClientConnected(object sender, EventArgs e)
         {
-            this.OnConnected();
-            this._receiver.Start(this);
+            _receiver.Start(this);
+            OnConnected();
         }
 
         private void OnClientConnectionError(object sender, SocketError e)

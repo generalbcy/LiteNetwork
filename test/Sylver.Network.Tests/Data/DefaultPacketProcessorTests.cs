@@ -14,8 +14,8 @@ namespace Sylver.Network.Tests.Data
 
         public DefaultPacketProcessorTests()
         {
-            this._faker = new Faker();
-            this._packetProcessor = new NetPacketProcessor();
+            _faker = new Faker();
+            _packetProcessor = new NetPacketProcessor();
         }
 
         [Theory]
@@ -27,7 +27,7 @@ namespace Sylver.Network.Tests.Data
         public void ParsePacketHeaderTest(int headerValue)
         {
             byte[] headerBuffer = BitConverter.GetBytes(headerValue);
-            int packetSize = this._packetProcessor.GetMessageLength(headerBuffer);
+            int packetSize = _packetProcessor.GetMessageLength(headerBuffer);
 
             Assert.Equal(headerValue, packetSize);
         }
@@ -35,10 +35,10 @@ namespace Sylver.Network.Tests.Data
         [Fact]
         public void CreateNetPacketStreamFromDefaultProcessorTest()
         {
-            string randomString = this._faker.Lorem.Sentence(3);
+            string randomString = _faker.Lorem.Sentence(3);
             byte[] messageData = BitConverter.GetBytes(randomString.Length).Concat(Encoding.UTF8.GetBytes(randomString)).ToArray();
 
-            INetPacketStream packetStream = this._packetProcessor.CreatePacket(messageData);
+            INetPacketStream packetStream = _packetProcessor.CreatePacket(messageData);
 
             Assert.NotNull(packetStream);
             string packetStreamString = packetStream.Read<string>();
@@ -49,7 +49,7 @@ namespace Sylver.Network.Tests.Data
         [Fact]
         public void DefaultPacketProcessorNeverIncludeHeader()
         {
-            Assert.False(this._packetProcessor.IncludeHeader);
+            Assert.False(_packetProcessor.IncludeHeader);
         }
     }
 }

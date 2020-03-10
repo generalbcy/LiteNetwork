@@ -22,21 +22,21 @@ namespace Sylver.Network.Client.Internal
         /// </summary>
         public NetClientConnector(INetClient client)
         {
-            this._client = client;
-            this._socketAsyncEvent = new SocketAsyncEventArgs
+            _client = client;
+            _socketAsyncEvent = new SocketAsyncEventArgs
             {
                 DisconnectReuseSocket = true
             };
-            this._socketAsyncEvent.Completed += this.OnCompleted;
+            _socketAsyncEvent.Completed += OnCompleted;
         }
 
         /// <inheritdoc />
         public void Connect()
         {
-            this._connectionRetryAttempts = 0;
-            this._socketAsyncEvent.RemoteEndPoint = NetHelper.CreateIpEndPoint(this._client.ClientConfiguration.Host, this._client.ClientConfiguration.Port);
+            _connectionRetryAttempts = 0;
+            _socketAsyncEvent.RemoteEndPoint = NetHelper.CreateIpEndPoint(_client.ClientConfiguration.Host, _client.ClientConfiguration.Port);
 
-            this.InternalConnect();
+            InternalConnect();
         }
 
         /// <summary>
@@ -44,7 +44,7 @@ namespace Sylver.Network.Client.Internal
         /// </summary>
         public void Dispose()
         {
-            this._socketAsyncEvent.Dispose();
+            _socketAsyncEvent.Dispose();
         }
 
         /// <summary>
@@ -52,9 +52,9 @@ namespace Sylver.Network.Client.Internal
         /// </summary>
         private void InternalConnect()
         {
-            if (!this._client.Socket.ConnectAsync(this._socketAsyncEvent))
+            if (!_client.Socket.ConnectAsync(_socketAsyncEvent))
             {
-                this.OnCompleted(this, this._socketAsyncEvent);
+                OnCompleted(this, _socketAsyncEvent);
             }
         }
 
@@ -63,27 +63,27 @@ namespace Sylver.Network.Client.Internal
         /// </summary>
         private void RetryConnect()
         {
-            this._connectionRetryAttempts++;
+            _connectionRetryAttempts++;
 
-            switch (this._client.ClientConfiguration.Retry.Mode)
+            switch (_client.ClientConfiguration.Retry.Mode)
             {
                 case NetClientRetryOption.Infinite:
-                    this.InternalConnect();
+                    InternalConnect();
                     break;
                 case NetClientRetryOption.Limited:
-                    if (this._connectionRetryAttempts < this._client.ClientConfiguration.Retry.MaxAttempts)
+                    if (_connectionRetryAttempts < _client.ClientConfiguration.Retry.MaxAttempts)
                     {
-                        this.InternalConnect();
+                        InternalConnect();
                     }
                     break;
                 case NetClientRetryOption.OneTime:
-                    if (this._connectionRetryAttempts > 1)
+                    if (_connectionRetryAttempts > 1)
                     {
-                        this.Error?.Invoke(this, SocketError.HostUnreachable);
+                        Error?.Invoke(this, SocketError.HostUnreachable);
                     }
                     else
                     {
-                        this.InternalConnect();
+                        InternalConnect();
                     }
                     break;
             }
@@ -98,19 +98,19 @@ namespace Sylver.Network.Client.Internal
                     if (e.SocketError == SocketError.Success)
                     {
                         // TODO: create event args ?
-                        this.Connected?.Invoke(this, null);
+                        Connected?.Invoke(this, null);
                     }
                     else
                     {
-                        this.Error?.Invoke(this, e.SocketError);
-                        this.RetryConnect();
+                        Error?.Invoke(this, e.SocketError);
+                        RetryConnect();
                     }
                 }
             }
             catch (StackOverflowException)
             {
                 // TODO: create event args for the errors
-                this.Error?.Invoke(this, SocketError.HostUnreachable);
+                Error?.Invoke(this, SocketError.HostUnreachable);
             }
         }
     }

@@ -30,9 +30,9 @@ namespace Sylver.Network.Tests.Client
         {
             var configuration = new NetClientConfiguration("127.0.0.1", 4444);
 
-            this._socketMock = new NetSocketMock();
-            this._client = new Mock<NetClient>(configuration);
-            this._client.SetupGet(x => x.Socket).Returns(this._socketMock);
+            _socketMock = new NetSocketMock();
+            _client = new Mock<NetClient>(configuration);
+            _client.SetupGet(x => x.Socket).Returns(_socketMock);
         }
 
         [Fact]
@@ -57,55 +57,55 @@ namespace Sylver.Network.Tests.Client
         [Fact]
         public async Task NetClientConnectWithValidConfigurationTest()
         {
-            this._socketMock.ConfigureConnectResult(false); // instance connection
+            _socketMock.ConfigureConnectResult(false); // instance connection
 
-            Assert.False(this._client.Object.IsConnected);
-            this._client.Object.Connect();
+            Assert.False(_client.Object.IsConnected);
+            _client.Object.Connect();
             await Task.Delay(1000).ConfigureAwait(false); // Fake connection
-            Assert.True(this._client.Object.IsConnected);
+            Assert.True(_client.Object.IsConnected);
         }
 
         [Fact]
         public async Task NetClientConnectTwiceTest()
         {
-            this._socketMock.ConfigureConnectResult(false); // instance connection
+            _socketMock.ConfigureConnectResult(false); // instance connection
 
-            Assert.False(this._client.Object.IsConnected);
-            this._client.Object.Connect();
+            Assert.False(_client.Object.IsConnected);
+            _client.Object.Connect();
             await Task.Delay(1000).ConfigureAwait(false); // Fake connection
-            Assert.True(this._client.Object.IsConnected);
+            Assert.True(_client.Object.IsConnected);
 
-            Assert.Throws<InvalidOperationException>(() => this._client.Object.Connect());
+            Assert.Throws<InvalidOperationException>(() => _client.Object.Connect());
         }
 
         [Fact]
         public void ChangePacketProcessorBeforeConnectTest()
         {
-            this._socketMock.ConfigureConnectResult(false); // instance connection
+            _socketMock.ConfigureConnectResult(false); // instance connection
 
-            Assert.NotNull(this._client.Object.PacketProcessor);
-            Assert.IsType<NetPacketProcessor>(this._client.Object.PacketProcessor);
-            this._client.Object.PacketProcessor = new CustomNetPacketProcessor(true);
+            Assert.NotNull(_client.Object.PacketProcessor);
+            Assert.IsType<NetPacketProcessor>(_client.Object.PacketProcessor);
+            _client.Object.PacketProcessor = new CustomNetPacketProcessor(true);
 
-            Assert.IsType<CustomNetPacketProcessor>(this._client.Object.PacketProcessor);
+            Assert.IsType<CustomNetPacketProcessor>(_client.Object.PacketProcessor);
 
-            this._client.Object.Connect();
+            _client.Object.Connect();
 
-            Assert.Equal(sizeof(long), this._client.Object.PacketProcessor.HeaderSize);
-            Assert.True(this._client.Object.PacketProcessor.IncludeHeader);
+            Assert.Equal(sizeof(long), _client.Object.PacketProcessor.HeaderSize);
+            Assert.True(_client.Object.PacketProcessor.IncludeHeader);
         }
 
         [Fact]
         public void ChangePacketProcessorAfterStartTest()
         {
-            this._socketMock.ConfigureConnectResult(false); // instance connection
+            _socketMock.ConfigureConnectResult(false); // instance connection
 
-            Assert.NotNull(this._client.Object.PacketProcessor);
-            Assert.IsType<NetPacketProcessor>(this._client.Object.PacketProcessor);
+            Assert.NotNull(_client.Object.PacketProcessor);
+            Assert.IsType<NetPacketProcessor>(_client.Object.PacketProcessor);
 
-            this._client.Object.Connect();
+            _client.Object.Connect();
 
-            Assert.Throws<InvalidOperationException>(() => this._client.Object.PacketProcessor = new CustomNetPacketProcessor(false));
+            Assert.Throws<InvalidOperationException>(() => _client.Object.PacketProcessor = new CustomNetPacketProcessor(false));
         }
     }
 }

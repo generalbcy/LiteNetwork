@@ -1,4 +1,6 @@
-﻿using System;
+﻿using Sylver.Network.Common;
+using System;
+using System.Collections.Generic;
 
 namespace Sylver.Network.Data.Internal
 {
@@ -18,25 +20,30 @@ namespace Sylver.Network.Data.Internal
         /// <param name="packetProcessor">Net packet processor used to parse the incoming data.</param>
         public NetPacketParser(IPacketProcessor packetProcessor)
         {
-            this.PacketProcessor = packetProcessor;
+            PacketProcessor = packetProcessor;
         }
 
         /// <summary>
-        /// Parses incoming buffer contai
+        /// Parses incoming buffer for a given connection.
         /// </summary>
         /// <param name="token">Client token information.</param>
         /// <param name="buffer">Received buffer.</param>
         /// <param name="bytesTransfered">Number of bytes transfered throught the network.</param>
-        public void ParseIncomingData(NetDataToken token, byte[] buffer, int bytesTransfered)
+        /// <returns>A collection containing all messages as byte arrays.</returns>
+        public IEnumerable<byte[]> ParseIncomingData(NetDataToken token, byte[] buffer, int bytesTransfered)
         {
+            var messages = new List<byte[]>();
+
             while (token.DataStartOffset < bytesTransfered)
             {
-                int headerSize = this.PacketProcessor.HeaderSize;
+                int headerSize = PacketProcessor.HeaderSize;
 
                 if (token.ReceivedHeaderBytesCount < headerSize)
                 {
                     if (token.HeaderData == null)
+                    {
                         token.HeaderData = new byte[headerSize];
+                    }
 
                     int bufferRemainingBytes = bytesTransfered - token.DataStartOffset;
                     int headerRemainingBytes = headerSize - token.ReceivedHeaderBytesCount;
@@ -51,12 +58,19 @@ namespace Sylver.Network.Data.Internal
                 if (token.ReceivedHeaderBytesCount == headerSize && token.HeaderData != null)
                 {
                     if (!token.MessageSize.HasValue)
-                        token.MessageSize = this.PacketProcessor.GetMessageLength(token.HeaderData);
+                    {
+                        token.MessageSize = PacketProcessor.GetMessageLength(token.HeaderData);
+                    }
+
                     if (token.MessageSize.Value < 0)
+                    {
                         throw new InvalidOperationException("Message size cannot be smaller than zero.");
+                    }
 
                     if (token.MessageData == null)
+                    {
                         token.MessageData = new byte[token.MessageSize.Value];
+                    }
 
                     if (token.ReceivedMessageBytesCount < token.MessageSize.Value)
                     {
@@ -73,11 +87,37 @@ namespace Sylver.Network.Data.Internal
 
                 if (token.IsMessageComplete)
                 {
-                    break;
+                    messages.Add(BuildClientMessageData(token));
+                    token.Reset();
                 }
             }
 
             token.DataStartOffset = 0;
+
+            return messages;
+        }
+
+        /// <summary>
+        /// Builds the received message data based on the given data token.
+        /// </summary>
+        /// <param name="token">Client data token.</param>
+        /// <returns>Client received data.</returns>
+        private byte[] BuildClientMessageData(NetDataToken token)
+        {
+            var bufferSize = PacketProcessor.IncludeHeader ? PacketProcessor.HeaderSize + token.MessageSize.Value : token.MessageSize.Value;
+            var buffer = new byte[bufferSize];
+
+            if (PacketProcessor.IncludeHeader)
+            {
+                Array.Copy(token.HeaderData, 0, buffer, 0, PacketProcessor.HeaderSize);
+                Array.Copy(token.MessageData, 0, buffer, PacketProcessor.HeaderSize, token.MessageSize.Value);
+            }
+            else
+            {
+                Array.Copy(token.MessageData, 0, buffer, 0, token.MessageSize.Value);
+            }
+
+            return buffer;
         }
     }
 }

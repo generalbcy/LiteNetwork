@@ -14,7 +14,7 @@ namespace Sylver.Network.Tests.Data
 
         public NetPacketSteramWriterTests()
         {
-            this._randomizer = new Randomizer((int)DateTime.UtcNow.Ticks);
+            _randomizer = new Randomizer((int)DateTime.UtcNow.Ticks);
         }
 
         [Fact]
@@ -29,106 +29,106 @@ namespace Sylver.Network.Tests.Data
         [Fact]
         public void PacketStreamWriteWhenReadOnlyTest()
         {
-            using (INetPacketStream packetStream = new NetPacketStream(this._randomizer.Bytes(this._randomizer.Byte())))
+            using (INetPacketStream packetStream = new NetPacketStream(_randomizer.Bytes(_randomizer.Byte())))
             {
-                Assert.Throws<InvalidOperationException>(() => packetStream.Write<byte>(this._randomizer.Byte()));
+                Assert.Throws<InvalidOperationException>(() => packetStream.Write<byte>(_randomizer.Byte()));
             }
         }
 
         [Fact]
         public void PacketStreamWriteByteTest()
         {
-            byte byteValue = this._randomizer.Byte();
+            byte byteValue = _randomizer.Byte();
 
-            this.PacketStreamWritePrimitive(byteValue, BitConverter.GetBytes(byteValue));
+            PacketStreamWritePrimitive(byteValue, BitConverter.GetBytes(byteValue));
         }
 
         [Fact]
         public void PacketStreamWriteSByteTest()
         {
-            sbyte sbyteValue = this._randomizer.SByte();
+            sbyte sbyteValue = _randomizer.SByte();
 
-            this.PacketStreamWritePrimitive<sbyte>(sbyteValue, BitConverter.GetBytes(sbyteValue));
+            PacketStreamWritePrimitive<sbyte>(sbyteValue, BitConverter.GetBytes(sbyteValue));
         }
 
         [Fact]
         public void PacketStreamWriteBooleanTest()
         {
-            bool booleanValue = this._randomizer.Bool();
+            bool booleanValue = _randomizer.Bool();
 
-            this.PacketStreamWritePrimitive<bool>(booleanValue, BitConverter.GetBytes(booleanValue));
+            PacketStreamWritePrimitive<bool>(booleanValue, BitConverter.GetBytes(booleanValue));
         }
 
         [Fact]
         public void PacketStreamWriteCharTest()
         {
-            char charValue = this._randomizer.Char(max: 'z');
+            char charValue = _randomizer.Char(max: 'z');
 
-            this.PacketStreamWritePrimitive<char>(charValue, BitConverter.GetBytes(charValue));
+            PacketStreamWritePrimitive<char>(charValue, BitConverter.GetBytes(charValue));
         }
 
         [Fact]
         public void PacketStreamWriteShortTest()
         {
-            short shortValue = this._randomizer.Short();
+            short shortValue = _randomizer.Short();
 
-            this.PacketStreamWritePrimitive<short>(shortValue, BitConverter.GetBytes(shortValue));
+            PacketStreamWritePrimitive<short>(shortValue, BitConverter.GetBytes(shortValue));
         }
 
         [Fact]
         public void PacketStreamWriteUShortTest()
         {
-            ushort ushortValue = this._randomizer.UShort();
+            ushort ushortValue = _randomizer.UShort();
 
-            this.PacketStreamWritePrimitive<ushort>(ushortValue, BitConverter.GetBytes(ushortValue));
+            PacketStreamWritePrimitive<ushort>(ushortValue, BitConverter.GetBytes(ushortValue));
         }
 
         [Fact]
         public void PacketStreamWriteIntTest()
         {
-            int intValue = this._randomizer.Int();
+            int intValue = _randomizer.Int();
 
-            this.PacketStreamWritePrimitive<int>(intValue, BitConverter.GetBytes(intValue));
+            PacketStreamWritePrimitive<int>(intValue, BitConverter.GetBytes(intValue));
         }
 
         [Fact]
         public void PacketStreamWriteUIntTest()
         {
-            uint uintValue = this._randomizer.UInt();
+            uint uintValue = _randomizer.UInt();
 
-            this.PacketStreamWritePrimitive<uint>(uintValue, BitConverter.GetBytes(uintValue));
+            PacketStreamWritePrimitive<uint>(uintValue, BitConverter.GetBytes(uintValue));
         }
 
         [Fact]
         public void PacketStreamWriteLongTest()
         {
-            long longValue = this._randomizer.Long();
+            long longValue = _randomizer.Long();
 
-            this.PacketStreamWritePrimitive<long>(longValue, BitConverter.GetBytes(longValue));
+            PacketStreamWritePrimitive<long>(longValue, BitConverter.GetBytes(longValue));
         }
 
         [Fact]
         public void PacketStreamWriteULongTest()
         {
-            ulong ulongValue = this._randomizer.ULong();
+            ulong ulongValue = _randomizer.ULong();
 
-            this.PacketStreamWritePrimitive<ulong>(ulongValue, BitConverter.GetBytes(ulongValue));
+            PacketStreamWritePrimitive<ulong>(ulongValue, BitConverter.GetBytes(ulongValue));
         }
 
         [Fact]
         public void PacketStreamWriteFloatTest()
         {
-            float floatValue = this._randomizer.Float();
+            float floatValue = _randomizer.Float();
 
-            this.PacketStreamWritePrimitive<float>(floatValue, BitConverter.GetBytes(floatValue));
+            PacketStreamWritePrimitive<float>(floatValue, BitConverter.GetBytes(floatValue));
         }
 
         [Fact]
         public void PacketStreamWriteDoubleTest()
         {
-            double doubleValue = this._randomizer.Double();
+            double doubleValue = _randomizer.Double();
 
-            this.PacketStreamWritePrimitive<double>(doubleValue, BitConverter.GetBytes(doubleValue));
+            PacketStreamWritePrimitive<double>(doubleValue, BitConverter.GetBytes(doubleValue));
         }
 
         [Fact]
@@ -137,7 +137,7 @@ namespace Sylver.Network.Tests.Data
             string stringValue = new Faker().Lorem.Sentence();
             byte[] stringValueArray = BitConverter.GetBytes(stringValue.Length).Concat(Encoding.UTF8.GetBytes(stringValue)).ToArray();
 
-            this.PacketStreamWritePrimitive<string>(stringValue, stringValueArray, adjustBuffer: false);
+            PacketStreamWritePrimitive<string>(stringValue, stringValueArray, adjustBuffer: false);
         }
 
         private void PacketStreamWritePrimitive<T>(T valueToWrite, byte[] expectedByteArray, bool adjustBuffer = true)

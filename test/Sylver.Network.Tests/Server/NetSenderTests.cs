@@ -18,57 +18,57 @@ namespace Sylver.Network.Tests.Server
 
         public NetSenderTests()
         {
-            this._randomizer = new Randomizer();
-            this._sender = new NetServerSender();
-            this._clientMock = new CustomClientMock();
+            _randomizer = new Randomizer();
+            _sender = new NetServerSender();
+            _clientMock = new CustomClientMock();
         }
 
         [Fact]
         public void StartAndStopSenderQueueTest()
         {
-            this._sender.Start();
+            _sender.Start();
 
-            Assert.True(this._sender.IsRunning);
+            Assert.True(_sender.IsRunning);
 
-            this._sender.Stop();
+            _sender.Stop();
 
-            Assert.False(this._sender.IsRunning);
+            Assert.False(_sender.IsRunning);
         }
 
         [Fact]
         public async Task SendPacketTest()
         {
-            byte[] message = this._randomizer.Bytes(this._randomizer.Byte());
+            byte[] message = _randomizer.Bytes(_randomizer.Byte());
 
-            this._clientMock.SocketMock.ConfigureSendResult(false); // Instant send
+            _clientMock.SocketMock.ConfigureSendResult(false); // Instant send
 
-            this._sender.Start();
-            this._sender.Send(new NetMessageData(this._clientMock.Object, message));
+            _sender.Start();
+            _sender.Send(new NetMessageData(_clientMock.Object, message));
 
             // Wait 1 second so the sender task can process the previous message.
             await Task.Delay(1000).ConfigureAwait(false);
 
-            this._clientMock.SocketMock.VerifySend(It.IsAny<SocketAsyncEventArgs>(), Times.Once());
+            _clientMock.SocketMock.VerifySend(It.IsAny<SocketAsyncEventArgs>(), Times.Once());
 
-            this._sender.Stop();
-            Assert.False(this._sender.IsRunning);
+            _sender.Stop();
+            Assert.False(_sender.IsRunning);
         }
 
         [Fact]
         public void DisposeSenderTest()
         {
-            this._sender.Start();
+            _sender.Start();
 
-            Assert.True(this._sender.IsRunning);
+            Assert.True(_sender.IsRunning);
 
-            this._sender.Dispose();
+            _sender.Dispose();
 
-            Assert.False(this._sender.IsRunning);
+            Assert.False(_sender.IsRunning);
         }
 
         public void Dispose()
         {
-            this._sender.Dispose();
+            _sender.Dispose();
         }
     }
 }

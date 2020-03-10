@@ -30,16 +30,18 @@ namespace Sylver.Network.Common
         /// <param name="socketConnection">Socket</param>
         protected NetConnection(Socket socketConnection)
         {
-            this.Id = Guid.NewGuid();
-
+            Id = Guid.NewGuid();
+            
             if (socketConnection != null)
-                this.Socket = new NetSocket(socketConnection);
+            {
+                Socket = new NetSocket(socketConnection);
+            }
         }
 
         /// <inheritdoc />
         public void Dispose()
         {
-            this.Dispose(true);
+            Dispose(true);
             GC.SuppressFinalize(this);
         }
 
@@ -49,20 +51,20 @@ namespace Sylver.Network.Common
         /// <param name="disposing"></param>
         protected virtual void Dispose(bool disposing)
         {
-            if (!this._disposedValue)
+            if (!_disposedValue)
             {
                 if (disposing)
                 {
                     // TODO: dispose managed state (managed objects).
                 }
 
-                if (this.Socket != null)
+                if (Socket != null)
                 {
-                    this.Socket.Dispose();
-                    this.Socket = null;
+                    Socket.Dispose();
+                    Socket = null;
                 }
 
-                this._disposedValue = true;
+                _disposedValue = true;
             }
         }
     }

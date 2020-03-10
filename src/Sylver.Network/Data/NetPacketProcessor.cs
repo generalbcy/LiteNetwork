@@ -18,8 +18,8 @@ namespace Sylver.Network.Data
         public int GetMessageLength(byte[] buffer)
         {
             return BitConverter.ToInt32(BitConverter.IsLittleEndian
-                ? buffer.Take(this.HeaderSize).ToArray()
-                : buffer.Take(this.HeaderSize).Reverse().ToArray(), 0);
+                ? buffer.Take(HeaderSize).ToArray()
+                : buffer.Take(HeaderSize).Reverse().ToArray(), 0);
         }
 
         /// <inheritdoc />

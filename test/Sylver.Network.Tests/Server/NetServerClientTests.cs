@@ -21,87 +21,89 @@ namespace Sylver.Network.Tests.Server
 
         public NetServerClientTests()
         {
-            this._randomizer = new Randomizer((int)DateTime.UtcNow.Ticks);
-            this._serverConfiguration = new NetServerConfiguration("127.0.0.1", 4444);
-            this._serverMock = new NetServerMock<CustomClient>(this._serverConfiguration);
-            this._customClient = new CustomClient(null)
+            _randomizer = new Randomizer((int)DateTime.UtcNow.Ticks);
+            _serverConfiguration = new NetServerConfiguration("127.0.0.1", 4444);
+            _serverMock = new NetServerMock<CustomClient>(_serverConfiguration);
+            _customClient = new CustomClient(null)
             {
-                Server = this._serverMock.Object
+                Server = _serverMock.Object
             };
-            this._otherClient = new CustomClient(null);
-            this._customClientsList = Enumerable.Repeat(new CustomClient(null), this._randomizer.Byte());
-            this._packet = new NetPacket();
-            this._packet.Write(this._randomizer.String(this._randomizer.Byte()));
+            _otherClient = new CustomClient(null);
+            _customClientsList = Enumerable.Repeat(new CustomClient(null), _randomizer.Byte());
+            _packet = new NetPacket();
+            _packet.Write(_randomizer.String(_randomizer.Byte()));
         }
 
         [Fact]
         public void SendPacketToItSelftTest()
         {
-            this._customClient.Send(this._packet);
+            _customClient.Send(_packet);
         }
 
         [Fact]
         public void SendNullPacketToItSelfTest()
         {
-            Assert.Throws<ArgumentNullException>(() => this._customClient.Send(null));
+            Assert.Throws<ArgumentNullException>(() => _customClient.Send(null));
         }
 
         [Fact]
         public void SendPacketToOtherClientTest()
         {
-            this._customClient.SendTo(this._otherClient, this._packet);
+            _customClient.SendTo(_otherClient, _packet);
         }
 
         [Fact]
         public void SendNullPacketToOtherClientTest()
         {
-            Assert.Throws<ArgumentNullException>(() => this._customClient.SendTo(this._otherClient, null));
+            Assert.Throws<ArgumentNullException>(() => _customClient.SendTo(_otherClient, null));
         }
 
         [Fact]
         public void SendPacketToNullClient()
         {
-            Assert.Throws<ArgumentNullException>(() => this._customClient.SendTo(client: null, this._packet));
+            Assert.Throws<ArgumentNullException>(() => _customClient.SendTo(client: null, _packet));
         }
 
         [Fact]
         public void SendPacketToListOfClientsTest()
         {
-            this._customClient.SendTo(this._customClientsList, this._packet);
+            _customClient.SendTo(_customClientsList, _packet);
         }
 
         [Fact]
         public void SendNullPacketToListOfClientsTest()
         {
-            Assert.Throws<ArgumentNullException>(() => this._customClient.SendTo(this._customClientsList, null));
+            Assert.Throws<ArgumentNullException>(() => _customClient.SendTo(_customClientsList, null));
         }
 
         [Fact]
         public void SendPacketToAnUndefinedListOfClientsTest()
         {
-            Assert.Throws<ArgumentNullException>(() => this._customClient.SendTo(clients: null, this._packet));
+            Assert.Throws<ArgumentNullException>(() => _customClient.SendTo(clients: null, _packet));
         }
 
         [Fact]
         public void SendPacketToAllTest()
         {
-            this._customClient.SendToAll(this._packet);
+            _customClient.SendToAll(_packet);
         }
 
         [Fact]
         public void SendNullPacketToAllTest()
         {
-            Assert.Throws<ArgumentNullException>(() => this._customClient.SendToAll(null));
+            Assert.Throws<ArgumentNullException>(() => _customClient.SendToAll(null));
         }
 
         public void Dispose()
         {
-            this._packet.Dispose();
-            this._customClient.Dispose();
-            this._otherClient.Dispose();
+            _packet.Dispose();
+            _customClient.Dispose();
+            _otherClient.Dispose();
 
-            foreach (IDisposable disposableObject in this._customClientsList)
+            foreach (IDisposable disposableObject in _customClientsList)
+            {
                 disposableObject.Dispose();
+            }
         }
     }
 }

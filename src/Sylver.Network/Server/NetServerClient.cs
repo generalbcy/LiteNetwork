@@ -27,25 +27,25 @@ namespace Sylver.Network.Server
         /// <inheritdoc />
         public virtual void Send(INetPacketStream packet)
         {
-            this.Server.SendTo(this, packet);
+            Server.SendTo(this, packet);
         }
 
         /// <inheritdoc />
         public virtual void SendTo(INetConnection client, INetPacketStream packet)
         {
-            this.Server.SendTo(client, packet);
+            Server.SendTo(client, packet);
         }
 
         /// <inheritdoc />
         public virtual void SendTo(IEnumerable<INetConnection> clients, INetPacketStream packet)
         {
-            this.Server.SendTo(clients, packet);
+            Server.SendTo(clients, packet);
         }
 
         /// <inheritdoc />
         public virtual void SendToAll(INetPacketStream packet)
         {
-            this.Server.SendToAll(packet);
+            Server.SendToAll(packet);
         }
     }
 }

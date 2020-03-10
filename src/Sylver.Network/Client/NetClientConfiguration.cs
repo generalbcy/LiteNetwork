@@ -57,10 +57,10 @@
         /// <param name="retryConfiguration">Retry configuration for connection.</param>
         public NetClientConfiguration(string host, int port, int bufferSize, NetClientRetryConfiguration retryConfiguration)
         {
-            this.Host = host;
-            this.Port = port;
-            this.BufferSize = bufferSize;
-            this.Retry = retryConfiguration;
+            Host = host;
+            Port = port;
+            BufferSize = bufferSize;
+            Retry = retryConfiguration;
         }
     }
 }

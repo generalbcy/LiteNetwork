@@ -17,24 +17,24 @@ namespace Sylver.Network.Tests.Server
 
         public NetReceiverTests()
         {
-            this._serverConfiguration = new NetServerConfiguration("127.0.0.1", 4444);
-            this._server = new NetServerMock<CustomClient>(this._serverConfiguration);
-            this._serverReceiver = new NetServerReceiver(this._server.Object);
-            this._clientMock = new CustomClientMock();
+            _serverConfiguration = new NetServerConfiguration("127.0.0.1", 4444);
+            _server = new NetServerMock<CustomClient>(_serverConfiguration);
+            _serverReceiver = new NetServerReceiver(_server.Object);
+            _clientMock = new CustomClientMock();
         }
 
         [Fact]
         public void StartReceivingDataTest()
         {
-            this._clientMock.SocketMock.ConfigureReceiveResult(false);
-            this._serverReceiver.Start(this._clientMock.Object);
+            _clientMock.SocketMock.ConfigureReceiveResult(false);
+            _serverReceiver.Start(_clientMock.Object);
 
-            this._clientMock.SocketMock.VerifyReceive(It.IsAny<SocketAsyncEventArgs>(), Times.Once());
+            _clientMock.SocketMock.VerifyReceive(It.IsAny<SocketAsyncEventArgs>(), Times.Once());
         }
 
         public void Dispose()
         {
-            this._serverReceiver.Dispose();
+            _serverReceiver.Dispose();
         }
     }
 }

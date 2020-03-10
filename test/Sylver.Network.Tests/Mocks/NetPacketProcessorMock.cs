@@ -11,8 +11,8 @@ namespace Sylver.Network.Tests.Mocks
         /// <param name="includeHeader">Include packet header.</param>
         public NetPacketProcessorMock(bool includeHeader)
         {
-            this.SetupGet(x => x.HeaderSize).Returns(sizeof(int));
-            this.SetupGet(x => x.IncludeHeader).Returns(includeHeader);
+            SetupGet(x => x.HeaderSize).Returns(sizeof(int));
+            SetupGet(x => x.IncludeHeader).Returns(includeHeader);
         }
     }
 }

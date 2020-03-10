@@ -19,121 +19,121 @@ namespace Sylver.Network.Tests.Mocks
 
         public NetSocketMock()
         {
-            this._socket = new Socket(AddressFamily.InterNetwork, SocketType.Stream, ProtocolType.Tcp);
-            this.SocketMock = new Mock<INetSocket>();
-            this.SocketMock.Setup(x => x.GetSocket()).Returns(this._socket);
+            _socket = new Socket(AddressFamily.InterNetwork, SocketType.Stream, ProtocolType.Tcp);
+            SocketMock = new Mock<INetSocket>();
+            SocketMock.Setup(x => x.GetSocket()).Returns(_socket);
         }
 
         public void ConfigureAcceptResult(bool result)
         {
-            this.SocketMock.Setup(x => x.AcceptAsync(It.IsAny<SocketAsyncEventArgs>())).Returns<SocketAsyncEventArgs>(x => result);
+            SocketMock.Setup(x => x.AcceptAsync(It.IsAny<SocketAsyncEventArgs>())).Returns<SocketAsyncEventArgs>(x => result);
         }
 
         public bool AcceptAsync(SocketAsyncEventArgs socketAsyncEvent)
         {
-            return this.SocketMock.Object.AcceptAsync(socketAsyncEvent);
+            return SocketMock.Object.AcceptAsync(socketAsyncEvent);
         }
 
         public void Bind(EndPoint localEP)
         {
-            this.SocketMock.Object.Bind(localEP);
+            SocketMock.Object.Bind(localEP);
         }
 
         public void Dispose()
         {
-            this.SocketMock.Object.Dispose();
+            SocketMock.Object.Dispose();
         }
 
         public int GetAvailable()
         {
-            return this.SocketMock.Object.GetAvailable();
+            return SocketMock.Object.GetAvailable();
         }
 
         public Socket GetSocket()
         {
-            return this.SocketMock.Object.GetSocket();
+            return SocketMock.Object.GetSocket();
         }
 
         public void Listen(int backlog)
         {
-            this.SocketMock.Object.Listen(backlog);
+            SocketMock.Object.Listen(backlog);
         }
 
         public void ConfigureReceiveResult(bool result)
         {
-            this.SocketMock.Setup(x => x.ReceiveAsync(It.IsAny<SocketAsyncEventArgs>())).Returns<SocketAsyncEventArgs>(x => result);
+            SocketMock.Setup(x => x.ReceiveAsync(It.IsAny<SocketAsyncEventArgs>())).Returns<SocketAsyncEventArgs>(x => result);
         }
 
         public bool ReceiveAsync(SocketAsyncEventArgs socketAsyncEvent)
         {
-            return this.SocketMock.Object.ReceiveAsync(It.IsAny<SocketAsyncEventArgs>());
+            return SocketMock.Object.ReceiveAsync(It.IsAny<SocketAsyncEventArgs>());
         }
 
         public void ConfigureSendResult(bool result)
         {
-            this.SocketMock.Setup(x => x.SendAsync(It.IsAny<SocketAsyncEventArgs>())).Returns<SocketAsyncEventArgs>(x => result);
+            SocketMock.Setup(x => x.SendAsync(It.IsAny<SocketAsyncEventArgs>())).Returns<SocketAsyncEventArgs>(x => result);
         }
 
         public bool SendAsync(SocketAsyncEventArgs socketAsyncEvent)
         {
-            return this.SocketMock.Object.SendAsync(It.IsAny<SocketAsyncEventArgs>());
+            return SocketMock.Object.SendAsync(It.IsAny<SocketAsyncEventArgs>());
         }
 
         public void SetSocketOption(SocketOptionLevel optionLevel, SocketOptionName optionName, int optionValue)
         {
-            this.SocketMock.Object.SetSocketOption(optionLevel, optionName, optionValue);
+            SocketMock.Object.SetSocketOption(optionLevel, optionName, optionValue);
         }
 
         public void VerifyAccept(SocketAsyncEventArgs socketAsyncEvent, Times times)
         {
-            this.SocketMock.Verify(x => x.AcceptAsync(socketAsyncEvent), times);
+            SocketMock.Verify(x => x.AcceptAsync(socketAsyncEvent), times);
         }
 
         public void VerifyBind(EndPoint localEP)
         {
-            this.SocketMock.Verify(x => x.Bind(localEP), Times.Once);
+            SocketMock.Verify(x => x.Bind(localEP), Times.Once);
         }
 
         public void VerifyDispose()
         {
-            this.SocketMock.Verify(x => x.Dispose(), Times.Once);
+            SocketMock.Verify(x => x.Dispose(), Times.Once);
         }
 
         public void VerifyGetSocket()
         {
-            this.SocketMock.Verify(x => x.GetSocket(), Times.Once);
+            SocketMock.Verify(x => x.GetSocket(), Times.Once);
         }
 
         public void VerifyGetAvailable()
         {
-            this.SocketMock.Verify(x => x.GetAvailable(), Times.Once);
+            SocketMock.Verify(x => x.GetAvailable(), Times.Once);
         }
 
         public void VerifyListen(int backlog)
         {
-            this.SocketMock.Verify(x => x.Listen(backlog), Times.Once);
+            SocketMock.Verify(x => x.Listen(backlog), Times.Once);
         }
 
         public void VerifyReceive(SocketAsyncEventArgs socketAsyncEvent, Times times)
         {
-            this.SocketMock.Verify(x => x.ReceiveAsync(socketAsyncEvent), times);
+            SocketMock.Verify(x => x.ReceiveAsync(socketAsyncEvent), times);
         }
 
         public void VerifySend(SocketAsyncEventArgs socketAsyncEvent, Times times)
         {
-            this.SocketMock.Verify(x => x.SendAsync(socketAsyncEvent), times);
+            SocketMock.Verify(x => x.SendAsync(socketAsyncEvent), times);
         }
 
         public void VerifySetSocketOptions(SocketOptionLevel optionLevel, SocketOptionName optionName, int optionValue)
         {
-            this.SocketMock.Verify(x => x.SetSocketOption(optionLevel, optionName, optionValue), Times.Once);
+            SocketMock.Verify(x => x.SetSocketOption(optionLevel, optionName, optionValue), Times.Once);
         }
 
         public void ConfigureConnectResult(bool result)
         {
-            this.SocketMock.Setup(x => x.ConnectAsync(It.IsAny<SocketAsyncEventArgs>())).Returns<SocketAsyncEventArgs>(x =>
+            SocketMock.Setup(x => x.ConnectAsync(It.IsAny<SocketAsyncEventArgs>())).Returns<SocketAsyncEventArgs>(x =>
             {
-                this.IsConnected = !result;
+                IsConnected = !result;
 
                 return result;
             });
@@ -141,7 +141,7 @@ namespace Sylver.Network.Tests.Mocks
 
         public bool ConnectAsync(SocketAsyncEventArgs socketAsyncEvent)
         {
-            return this.SocketMock.Object.ConnectAsync(It.IsAny<SocketAsyncEventArgs>());
+            return SocketMock.Object.ConnectAsync(It.IsAny<SocketAsyncEventArgs>());
         }
     }
 }

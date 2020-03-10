@@ -16,7 +16,7 @@ namespace Sylver.Network.Infrastructure
         /// <param name="client">Client connection attached to this token.</param>
         public NetToken(INetUser client)
         {
-            this.Client = client;
+            Client = client;
         }
     }
 }

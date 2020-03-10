@@ -18,82 +18,82 @@ namespace Sylver.Network.Tests.Server
 
         public NetServerTests()
         {
-            this._socketMock = new NetSocketMock();
-            this._socketMock.ConfigureAcceptResult(true);
+            _socketMock = new NetSocketMock();
+            _socketMock.ConfigureAcceptResult(true);
 
-            this._serverConfiguration = new NetServerConfiguration("127.0.0.1", 4444);
+            _serverConfiguration = new NetServerConfiguration("127.0.0.1", 4444);
 
-            this._server = new NetServerMock<CustomClient>(this._serverConfiguration);
-            this._server.SetupGet(x => x.Socket).Returns(this._socketMock);
+            _server = new NetServerMock<CustomClient>(_serverConfiguration);
+            _server.SetupGet(x => x.Socket).Returns(_socketMock);
         }
 
         [Fact]
         public void StartServerTest()
         {
-            this._server.Object.Start();
+            _server.Object.Start();
 
-            Assert.True(this._server.Object.IsRunning);
-            Assert.Equal(this._serverConfiguration.Host, this._server.Object.ServerConfiguration.Host);
-            Assert.Equal(this._serverConfiguration.Port, this._server.Object.ServerConfiguration.Port);
-            Assert.Equal(this._serverConfiguration.Backlog, this._server.Object.ServerConfiguration.Backlog);
-            Assert.Equal(this._serverConfiguration.ClientBufferSize, this._server.Object.ServerConfiguration.ClientBufferSize);
+            Assert.True(_server.Object.IsRunning);
+            Assert.Equal(_serverConfiguration.Host, _server.Object.ServerConfiguration.Host);
+            Assert.Equal(_serverConfiguration.Port, _server.Object.ServerConfiguration.Port);
+            Assert.Equal(_serverConfiguration.Backlog, _server.Object.ServerConfiguration.Backlog);
+            Assert.Equal(_serverConfiguration.ClientBufferSize, _server.Object.ServerConfiguration.ClientBufferSize);
 
-            this._socketMock.VerifySetSocketOptions(SocketOptionLevel.Socket, SocketOptionName.ReuseAddress, 1);
-            this._socketMock.VerifyBind(NetHelper.CreateIpEndPoint(this._serverConfiguration.Host, this._serverConfiguration.Port));
-            this._socketMock.VerifyListen(this._serverConfiguration.Backlog);
-            this._server.VerifyOnBeforeStart(Times.Once());
-            this._server.VerifyOnAfterStart(Times.Once());
-            Assert.True(this._server.BeforeStartCalled);
-            Assert.True(this._server.AfterStartCalled);
+            _socketMock.VerifySetSocketOptions(SocketOptionLevel.Socket, SocketOptionName.ReuseAddress, 1);
+            _socketMock.VerifyBind(NetHelper.CreateIpEndPoint(_serverConfiguration.Host, _serverConfiguration.Port));
+            _socketMock.VerifyListen(_serverConfiguration.Backlog);
+            _server.VerifyOnBeforeStart(Times.Once());
+            _server.VerifyOnAfterStart(Times.Once());
+            Assert.True(_server.BeforeStartCalled);
+            Assert.True(_server.AfterStartCalled);
         }
 
         [Fact]
         public void StartServerTwiceTest()
         {
-            this._server.Object.Start();
+            _server.Object.Start();
 
-            Assert.True(this._server.Object.IsRunning);
-            Assert.Throws<InvalidOperationException>(() => this._server.Object.Start());
+            Assert.True(_server.Object.IsRunning);
+            Assert.Throws<InvalidOperationException>(() => _server.Object.Start());
         }
 
         [Fact]
         public void StopServerTest()
         {
-            this._server.Object.Start();
-            Assert.True(this._server.Object.IsRunning);
-            this._server.Object.Stop();
-            Assert.False(this._server.Object.IsRunning);
-            this._socketMock.VerifyDispose();
-            this._server.VerifyOnBeforeStop(Times.Once());
-            this._server.VerifyOnAfterStop(Times.Once());
-            Assert.True(this._server.BeforeStopCalled);
-            Assert.True(this._server.AfterStopCalled);
+            _server.Object.Start();
+            Assert.True(_server.Object.IsRunning);
+            _server.Object.Stop();
+            Assert.False(_server.Object.IsRunning);
+            _socketMock.VerifyDispose();
+            _server.VerifyOnBeforeStop(Times.Once());
+            _server.VerifyOnAfterStop(Times.Once());
+            Assert.True(_server.BeforeStopCalled);
+            Assert.True(_server.AfterStopCalled);
         }
 
         [Fact]
         public void ChangePacketProcessorBeforeStartTest()
         {
-            Assert.NotNull(this._server.Object.PacketProcessor);
-            Assert.IsType<NetPacketProcessor>(this._server.Object.PacketProcessor);
-            this._server.Object.PacketProcessor = new CustomNetPacketProcessor(false);
+            Assert.NotNull(_server.Object.PacketProcessor);
+            Assert.IsType<NetPacketProcessor>(_server.Object.PacketProcessor);
+            _server.Object.PacketProcessor = new CustomNetPacketProcessor(false);
 
-            Assert.IsType<CustomNetPacketProcessor>(this._server.Object.PacketProcessor);
+            Assert.IsType<CustomNetPacketProcessor>(_server.Object.PacketProcessor);
 
-            this._server.Object.Start();
+            _server.Object.Start();
 
-            Assert.Equal(sizeof(long), this._server.Object.PacketProcessor.HeaderSize);
-            Assert.False(this._server.Object.PacketProcessor.IncludeHeader);
+            Assert.Equal(sizeof(long), _server.Object.PacketProcessor.HeaderSize);
+            Assert.False(_server.Object.PacketProcessor.IncludeHeader);
         }
 
         [Fact]
         public void ChangePacketProcessorAfterStartTest()
         {
-            Assert.NotNull(this._server.Object.PacketProcessor);
-            Assert.IsType<NetPacketProcessor>(this._server.Object.PacketProcessor);
+            Assert.NotNull(_server.Object.PacketProcessor);
+            Assert.IsType<NetPacketProcessor>(_server.Object.PacketProcessor);
 
-            this._server.Object.Start();
+            _server.Object.Start();
 
-            Assert.Throws<InvalidOperationException>(() => this._server.Object.PacketProcessor = new CustomNetPacketProcessor(false));
+            Assert.Throws<InvalidOperationException>(() => _server.Object.PacketProcessor = new CustomNetPacketProcessor(false));
         }
     }
 }
