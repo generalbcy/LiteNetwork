@@ -199,6 +199,7 @@ namespace Sylver.Network.Infrastructure
         /// <summary>
         /// Process the received message queue.
         /// </summary>
+        [ExcludeFromCodeCoverage]
         private void ProcessReceivedMessages()
         {
             NetMessageData message = _messageQueue.Take(_cancellationToken);
