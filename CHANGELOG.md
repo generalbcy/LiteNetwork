@@ -1,6 +1,13 @@
-﻿# [1.2.0](https://github.com/Eastrall/Sylver.Network/releases/tag/v1.1) (2020-03-31)
+﻿# [1.2.0](https://github.com/Eastrall/Sylver.Network/releases/tag/v1.1) (2020-03-11)
 
-...
+### Features
+
+- **NetPacketStream** : Add encoding for `Read/WriteChar()` (PR [#4](https://github.com/Eastrall/Sylver.Network/pull/4))
+
+### Fixes
+
+- **NetReceiver** : Introducing Producer-Consumer pattern for received messages (PR [#6](https://github.com/Eastrall/Sylver.Network/pull/6))
+- **NetReceiver** : Fix `NetReceiver` packet parsing algorithm when server or client sends multiple packets at once. (PR [#6](https://github.com/Eastrall/Sylver.Network/pull/6))
 
 # [1.1.0](https://github.com/Eastrall/Sylver.Network/releases/tag/v1.1) (2019-10-31)
 
