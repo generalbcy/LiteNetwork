@@ -2,22 +2,17 @@
 using Sylver.Network.Data;
 using Sylver.Network.Data.Internal;
 using System;
-using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Diagnostics.CodeAnalysis;
 using System.Linq;
 using System.Net.Sockets;
-using System.Threading;
-using System.Threading.Tasks;
 
 namespace Sylver.Network.Infrastructure
 {
     internal abstract class NetReceiver : INetReceiver
     {
         private readonly NetPacketParser _packetParser;
-        private readonly BlockingCollection<NetMessageData> _messageQueue;
         private readonly IPacketProcessor _packetProcessor;
-        private readonly CancellationToken _cancellationToken;
         private bool _disposedValue;
 
         /// <summary>
@@ -27,7 +22,6 @@ namespace Sylver.Network.Infrastructure
         public NetReceiver(IPacketProcessor packetProcessor)
         {
             _packetParser = new NetPacketParser(packetProcessor);
-            _messageQueue = new BlockingCollection<NetMessageData>();
             _packetProcessor = packetProcessor;
         }
 
@@ -40,21 +34,6 @@ namespace Sylver.Network.Infrastructure
         /// <inheritdoc />
         public void Start(INetUser clientConnection)
         {
-            Task.Factory.StartNew(() =>
-            {
-                while (!_cancellationToken.IsCancellationRequested)
-                {
-                    try
-                    {
-                        ProcessReceivedMessages();
-                    }
-                    catch (OperationCanceledException)
-                    {
-                        // The operation has been cancelled: nothing to do
-                    }
-                }
-            }, _cancellationToken, TaskCreationOptions.LongRunning, TaskScheduler.Default);
-
             SocketAsyncEventArgs socketAsyncEvent = GetSocketEvent();
             socketAsyncEvent.UserToken = new NetToken(clientConnection);
 
@@ -97,10 +76,7 @@ namespace Sylver.Network.Infrastructure
                     {
                         foreach (byte[] message in messages)
                         {
-                            if (!_messageQueue.TryAdd(new NetMessageData(clientToken.Client, message)))
-                            {
-                                // TODO: on error
-                            }
+                            ProcessReceivedMessage(clientToken.Client, message);
                         }
                     }
 
@@ -197,22 +173,16 @@ namespace Sylver.Network.Infrastructure
         protected abstract void OnError(INetUser client, SocketError socketError);
 
         /// <summary>
-        /// Process the received message queue.
+        /// Process a received message.
         /// </summary>
+        /// <param name="client">Current client.</param>
+        /// <param name="messageBuffer">Current message data buffer.</param>
         [ExcludeFromCodeCoverage]
-        private void ProcessReceivedMessages()
+        private void ProcessReceivedMessage(INetUser client, byte[] messageBuffer)
         {
-            NetMessageData message = _messageQueue.Take(_cancellationToken);
-
-            if (message != null && message.Connection is INetUser client)
+            using (INetPacketStream packet = _packetProcessor.CreatePacket(messageBuffer))
             {
-                Task.Factory.StartNew(() =>
-                {
-                    using (INetPacketStream packet = _packetProcessor.CreatePacket(message.Data))
-                    {
-                        client.HandleMessage(packet);
-                    }
-                }, _cancellationToken, TaskCreationOptions.DenyChildAttach, TaskScheduler.Default);
+                client.HandleMessage(packet);
             }
         }
     }
