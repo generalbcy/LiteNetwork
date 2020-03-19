@@ -3,7 +3,7 @@ using Sylver.Network.Data.Internal;
 
 namespace Sylver.Network.Infrastructure
 {
-    internal sealed class NetToken : NetDataToken
+    internal class NetToken : NetDataToken
     {
         /// <summary>
         /// Gets or sets the client connection attached to the current token.

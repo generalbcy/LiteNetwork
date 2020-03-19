@@ -7,7 +7,7 @@ namespace Sylver.Network.Data.Internal
     /// <summary>
     /// Provides methods to parse incoming packets.
     /// </summary>
-    internal sealed class NetPacketParser
+    internal class NetPacketParser
     {
         /// <summary>
         /// Gets or sets the packet processor.

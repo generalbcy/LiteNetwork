@@ -38,6 +38,7 @@ namespace Sylver.Network.Server
                 {
                     throw new InvalidOperationException("Cannot update packet processor when server is running.");
                 }
+
                 _packetProcessor = value;
                 _receiver.SetPacketProcessor(_packetProcessor);
             }

@@ -4,7 +4,7 @@ using System.Net.Sockets;
 
 namespace Sylver.Network.Server.Internal
 {
-    internal sealed class NetServerClientFactory<TClient>
+    internal class NetServerClientFactory<TClient>
         where TClient : class, INetServerClient
     {
         private readonly ObjectFactory _clientFactory;

@@ -3,7 +3,7 @@ using System.Net.Sockets;
 
 namespace Sylver.Network.Client.Internal
 {
-    internal sealed class NetClientSender : NetSender
+    internal class NetClientSender : NetSender
     {
         private readonly SocketAsyncEventArgs _socketAsyncEvent;
 
