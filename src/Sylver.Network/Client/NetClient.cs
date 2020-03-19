@@ -7,6 +7,9 @@ using System.Net.Sockets;
 
 namespace Sylver.Network.Client
 {
+    /// <summary>
+    /// Provides a mechanism to connect to a remote TCP server.
+    /// </summary>
     public class NetClient : NetConnection, INetClient
     {
         private IPacketProcessor _packetProcessor;
@@ -71,7 +74,7 @@ namespace Sylver.Network.Client
 
             if (ClientConfiguration == null)
             {
-                throw new ArgumentNullException("Client configuration is not set.", nameof(ClientConfiguration));
+                throw new ArgumentNullException(nameof(ClientConfiguration), "Client configuration is not set.");
             }
 
             if (ClientConfiguration.Port <= 0)
@@ -130,14 +133,20 @@ namespace Sylver.Network.Client
             base.Dispose(disposing);
         }
 
+        /// <summary>
+        /// Method called when the client is connected to the remote server.
+        /// </summary>
         protected virtual void OnConnected() { }
 
+        /// <summary>
+        /// Method called when the client is disconnected from the remote server.
+        /// </summary>
         protected virtual void OnDisconnected() { }
 
         private void OnClientConnected(object sender, EventArgs e)
         {
-            _receiver.Start(this);
             OnConnected();
+            _receiver.Start(this);
         }
 
         private void OnClientConnectionError(object sender, SocketError e)
