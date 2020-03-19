@@ -16,6 +16,5 @@ namespace Sylver.Network.Infrastructure
         /// </summary>
         /// <param name="clientConnection">Client connection.</param>
         void Start(INetUser clientConnection);
-
     }
 }

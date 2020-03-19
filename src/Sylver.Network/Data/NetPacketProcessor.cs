@@ -6,7 +6,7 @@ namespace Sylver.Network.Data
     /// <summary>
     /// Default Sylver packet processor.
     /// </summary>
-    internal sealed class NetPacketProcessor : IPacketProcessor
+    internal class NetPacketProcessor : IPacketProcessor
     {
         /// <inheritdoc />
         public int HeaderSize => sizeof(int);

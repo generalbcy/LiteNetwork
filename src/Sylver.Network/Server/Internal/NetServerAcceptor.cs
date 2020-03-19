@@ -22,7 +22,7 @@ namespace Sylver.Network.Server.Internal
         public event EventHandler<SocketAsyncEventArgs> OnClientAccepted;
 
         /// <summary>
-        /// Creates a new <see cref="NetServerAcceptor{TUser}"/> instance.
+        /// Creates a new <see cref="NetServerAcceptor"/> instance.
         /// </summary>
         /// <param name="server"></param>
         public NetServerAcceptor(INetServer server)

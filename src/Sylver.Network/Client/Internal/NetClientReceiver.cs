@@ -6,7 +6,7 @@ using System.Net.Sockets;
 
 namespace Sylver.Network.Client.Internal
 {
-    internal sealed class NetClientReceiver : NetReceiver
+    internal class NetClientReceiver : NetReceiver
     {
         private readonly INetClient _client;
         private readonly SocketAsyncEventArgs _socketAsyncEvent;

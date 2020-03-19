@@ -5,8 +5,11 @@ namespace Sylver.Network.Data
     /// <summary>
     /// Represents a Sylver built-in packet.
     /// </summary>
-    public sealed class NetPacket : NetPacketStream
+    public class NetPacket : NetPacketStream
     {
+        /// <summary>
+        /// Gets the default <see cref="NetPacket"/> header size. (4 bytes)
+        /// </summary>
         public const int HeaderSize = sizeof(int);
 
         /// <inheritdoc />
@@ -37,7 +40,7 @@ namespace Sylver.Network.Data
         /// </summary>
         public NetPacket()
         {
-            Write(0); // Packet size
+            Write(0); // Packet size (int: 4 bytes)
         }
 
         /// <summary>

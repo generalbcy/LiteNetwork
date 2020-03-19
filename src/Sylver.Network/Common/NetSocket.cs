@@ -5,7 +5,7 @@ using System.Net.Sockets;
 namespace Sylver.Network.Common
 {
     [ExcludeFromCodeCoverage]
-    internal sealed class NetSocket : INetSocket
+    internal class NetSocket : INetSocket
     {
         private readonly Socket _socket;
 

@@ -1,6 +1,6 @@
 ﻿namespace Sylver.Network.Common
 {
-    internal sealed class NetMessageData
+    internal class NetMessageData
     {
         /// <summary>
         /// Gets the message owner.
