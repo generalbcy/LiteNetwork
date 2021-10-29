@@ -1,4 +1,4 @@
-﻿using LiteNetwork.Common;
+﻿using LiteNetwork.Internal;
 using System;
 using Xunit;
 

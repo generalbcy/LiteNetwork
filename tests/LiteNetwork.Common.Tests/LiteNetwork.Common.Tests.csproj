@@ -22,7 +22,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\..\src\LiteNetwork.Common\LiteNetwork.Common.csproj" />
+    <ProjectReference Include="..\..\src\LiteNetwork\LiteNetwork.csproj" />
   </ItemGroup>
 
 </Project>
