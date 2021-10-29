@@ -11,7 +11,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\..\..\src\LiteNetwork.Server\LiteNetwork.Server.csproj" />
+    <ProjectReference Include="..\..\..\src\LiteNetwork\LiteNetwork.csproj" />
   </ItemGroup>
 
 </Project>

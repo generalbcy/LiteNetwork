@@ -1,4 +1,4 @@
-﻿using LiteNetwork.Common.Hosting;
+﻿using LiteNetwork.Hosting;
 using LiteNetwork.Server.Hosting;
 using Microsoft.Extensions.Hosting;
 using System;
