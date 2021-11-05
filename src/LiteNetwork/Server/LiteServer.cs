@@ -29,13 +29,10 @@ namespace LiteNetwork.Server
         private readonly LiteServerAcceptor _acceptor;
         private readonly LiteServerReceiver _receiver;
 
-        /// <inheritdoc />
         public bool IsRunning { get; private set; }
 
-        /// <inheritdoc />
         public LiteServerOptions Options { get; }
 
-        /// <inheritdoc />
         public IEnumerable<TUser> ConnectedUsers => _connectedUsers.Values;
 
         /// <summary>
@@ -81,13 +78,10 @@ namespace LiteNetwork.Server
             _receiver.Error += OnReceiverError;
         }
 
-        /// <inheritdoc />
         public TUser? GetUser(Guid userId) => TryGetUser(userId, out TUser? user) ? user : default;
 
-        /// <inheritdoc />
         public bool TryGetUser(Guid userId, out TUser? user) => _connectedUsers.TryGetValue(userId, out user);
 
-        /// <inheritdoc />
         public async void Start()
         {
             if (IsRunning)
@@ -106,19 +100,16 @@ namespace LiteNetwork.Server
             OnAfterStart();
         }
 
-        /// <inheritdoc />
         public Task StartAsync(CancellationToken cancellationToken)
         {
             return Task.Factory.StartNew(Start, cancellationToken, TaskCreationOptions.LongRunning, TaskScheduler.Default);
         }
 
-        /// <inheritdoc />
         public Task StartAsync()
         {
             return Task.Factory.StartNew(Start, CancellationToken.None, TaskCreationOptions.LongRunning, TaskScheduler.Default);
         }
 
-        /// <inheritdoc />
         public void Stop()
         {
             if (!IsRunning)
@@ -139,19 +130,16 @@ namespace LiteNetwork.Server
             OnAfterStop();
         }
 
-        /// <inheritdoc />
         public Task StopAsync(CancellationToken cancellationToken)
         {
             return Task.Factory.StartNew(Stop, cancellationToken, TaskCreationOptions.LongRunning, TaskScheduler.Default);
         }
 
-        /// <inheritdoc />
         public Task StopAsync()
         {
             return Task.Factory.StartNew(Stop, CancellationToken.None, TaskCreationOptions.LongRunning, TaskScheduler.Default);
         }
 
-        /// <inheritdoc />
         public void DisconnectUser(Guid userId)
         {
             if (!_connectedUsers.TryRemove(userId, out TUser user))
@@ -165,7 +153,6 @@ namespace LiteNetwork.Server
             user.Dispose();
         }
 
-        /// <inheritdoc />
         public void SendTo(TUser user, ILitePacketStream packet)
         {
             if (user is null)
@@ -181,7 +168,6 @@ namespace LiteNetwork.Server
             user.Send(packet);
         }
 
-        /// <inheritdoc />
         public void SendTo(IEnumerable<TUser> users, ILitePacketStream packet)
         {
             if (users is null)
@@ -200,7 +186,6 @@ namespace LiteNetwork.Server
             }
         }
 
-        /// <inheritdoc />
         public void SendToAll(ILitePacketStream packet) => SendTo(_connectedUsers.Values, packet);
 
         /// <summary>

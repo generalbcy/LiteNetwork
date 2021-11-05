@@ -7,6 +7,8 @@ namespace LiteNetwork.Sample.Echo.Server
     {
         static void Main(string[] args)
         {
+            Console.WriteLine("=== ECHO SERVER ===");
+            
             var configuration = new LiteServerOptions()
             {
                 Host = "127.0.0.1",

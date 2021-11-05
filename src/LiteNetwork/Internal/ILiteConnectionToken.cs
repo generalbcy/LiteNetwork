@@ -2,12 +2,12 @@
 using System;
 using System.Collections.Generic;
 
-namespace LiteNetwork
+namespace LiteNetwork.Internal
 {
     /// <summary>
     /// Provides a structure to used in receiver process.
     /// </summary>
-    public interface ILiteConnectionToken : IDisposable
+    internal interface ILiteConnectionToken : IDisposable
     {
         /// <summary>
         /// Gets the connection attached to the current token.

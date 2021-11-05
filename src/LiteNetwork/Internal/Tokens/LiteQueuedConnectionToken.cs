@@ -5,7 +5,7 @@ using System.Collections.Generic;
 using System.Threading;
 using System.Threading.Tasks;
 
-namespace LiteNetwork.Internal
+namespace LiteNetwork.Internal.Tokens
 {
     /// <summary>
     /// Provides a mechanism used for the receive process.
@@ -72,7 +72,6 @@ namespace LiteNetwork.Internal
             }
         }
 
-        /// <inheritdoc />
         public void ProcessReceivedMessages(IEnumerable<byte[]> messages)
         {
             foreach (byte[] message in messages)

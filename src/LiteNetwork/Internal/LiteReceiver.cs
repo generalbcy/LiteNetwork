@@ -1,4 +1,5 @@
 ﻿using LiteNetwork.Exceptions;
+using LiteNetwork.Internal.Tokens;
 using LiteNetwork.Protocol.Abstractions;
 using LiteNetwork.Protocol.Internal;
 using System;

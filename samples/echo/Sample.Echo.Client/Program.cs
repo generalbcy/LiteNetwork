@@ -9,6 +9,8 @@ namespace Sample.Echo.Client
     {
         static async Task Main()
         {
+            Console.WriteLine("=== ECHO CLIENT ===");
+
             LiteClientOptions options = new()
             {
                 Host = "127.0.0.1",

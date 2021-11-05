@@ -3,7 +3,7 @@ using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 
-namespace LiteNetwork.Internal
+namespace LiteNetwork.Internal.Tokens
 {
     /// <summary>
     /// Provides a data structure representing a lite connection token used for the receive process.

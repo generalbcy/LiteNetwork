@@ -9,13 +9,10 @@ namespace LiteNetwork.Protocol
     /// </summary>
     public class LitePacketProcessor : ILitePacketProcessor
     {
-        /// <inheritdoc />
         public virtual int HeaderSize { get; protected set; } = sizeof(int);
 
-        /// <inheritdoc />
         public virtual bool IncludeHeader { get; protected set; }
 
-        /// <inheritdoc />
         public virtual int GetMessageLength(byte[] buffer)
         {
             return BitConverter.ToInt32(BitConverter.IsLittleEndian
@@ -23,10 +20,8 @@ namespace LiteNetwork.Protocol
                 : buffer.Take(HeaderSize).Reverse().ToArray(), 0);
         }
 
-        /// <inheritdoc />
         public virtual ILitePacketStream CreatePacket(byte[] buffer) => new LitePacket(buffer);
 
-        /// <inheritdoc />
         public virtual bool ParseHeader(LiteDataToken token, byte[] buffer, int bytesTransfered)
         {
             if (token.HeaderData is null)

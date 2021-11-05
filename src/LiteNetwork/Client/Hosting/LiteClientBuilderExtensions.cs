@@ -22,11 +22,10 @@ namespace LiteNetwork.Client.Hosting
 
             builder.Services.AddSingleton<ILiteClient, LiteClient>(serviceProvider =>
             {
-                var liteClientOptions = new LiteClientOptions();
-                configure(liteClientOptions);
+                LiteClientOptions options = new();
+                configure(options);
 
-                var client = new LiteClient(liteClientOptions, serviceProvider);
-                return client;
+                return new LiteClient(options, serviceProvider);
             });
 
 
@@ -55,17 +54,19 @@ namespace LiteNetwork.Client.Hosting
 
             builder.Services.AddSingleton(serviceProvider =>
             {
-                var liteClientOptions = new LiteClientOptions();
-                configure(liteClientOptions);
+                LiteClientOptions options = new();
+                configure(options);
 
-                return ActivatorUtilities.CreateInstance<TLiteClient>(serviceProvider, liteClientOptions);
+                return ActivatorUtilities.CreateInstance<TLiteClient>(serviceProvider, options);
             });
 
             builder.Services.AddHostedService(serviceProvider =>
             {
-                var serverInstance = serviceProvider.GetRequiredService<TLiteClient>();
-                return new LiteClientHostedService(serverInstance);
+                var clientInstance = serviceProvider.GetRequiredService<TLiteClient>();
+
+                return new LiteClientHostedService(clientInstance);
             });
+
             return builder;
         }
 
@@ -88,10 +89,10 @@ namespace LiteNetwork.Client.Hosting
 
             builder.Services.AddSingleton<TLiteClient, TLiteClientImplementation>(serviceProvider =>
             {
-                var liteClientOptions = new LiteClientOptions();
-                configure(liteClientOptions);
+                LiteClientOptions options = new();
+                configure(options);
 
-                return ActivatorUtilities.CreateInstance<TLiteClientImplementation>(serviceProvider, liteClientOptions);
+                return ActivatorUtilities.CreateInstance<TLiteClientImplementation>(serviceProvider, options);
             });
 
             builder.Services.AddSingleton<ILiteClient, TLiteClientImplementation>(serviceProvider =>
@@ -101,9 +102,11 @@ namespace LiteNetwork.Client.Hosting
 
             builder.Services.AddHostedService(serviceProvider =>
             {
-                var serverInstance = serviceProvider.GetRequiredService<ILiteClient>();
-                return new LiteClientHostedService(serverInstance);
+                var clientInstance = serviceProvider.GetRequiredService<ILiteClient>();
+                
+                return new LiteClientHostedService(clientInstance);
             });
+
             return builder;
         }
     }
