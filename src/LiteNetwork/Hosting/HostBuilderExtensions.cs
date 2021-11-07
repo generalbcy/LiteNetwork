@@ -27,7 +27,7 @@ namespace LiteNetwork.Hosting
         /// <returns>A <see cref="IHostBuilder"/> configured.</returns>
         public static IHostBuilder ConfigureLiteNetwork(this IHostBuilder hostBuilder, Action<ILiteBuilder> configureLite)
         {
-            return hostBuilder.ConfigureServices((context, collection) => collection.UseLiteNetwork(builder => configureLite(builder)));
+            return hostBuilder.ConfigureServices((_, collection) => collection.UseLiteNetwork(builder => configureLite(builder)));
         }
     }
 }

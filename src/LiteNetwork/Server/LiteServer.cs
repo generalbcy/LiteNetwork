@@ -22,7 +22,6 @@ namespace LiteNetwork.Server
     public class LiteServer<TUser> : ILiteServer<TUser> where TUser : LiteServerUser
     {
         private readonly ILogger<LiteServer<TUser>>? _logger;
-        private readonly ILitePacketProcessor _packetProcessor;
         private readonly IServiceProvider _serviceProvider;
         private readonly ConcurrentDictionary<Guid, TUser> _connectedUsers;
         private readonly Socket _socket;
@@ -58,7 +57,6 @@ namespace LiteNetwork.Server
             }
 
             Options = options;
-            _packetProcessor = options.PacketProcessor;
             _serviceProvider = serviceProvider!;
             _connectedUsers = new ConcurrentDictionary<Guid, TUser>();
             _socket = new Socket(AddressFamily.InterNetwork, SocketType.Stream, ProtocolType.Tcp);
@@ -73,7 +71,7 @@ namespace LiteNetwork.Server
             _acceptor.OnClientAccepted += OnClientAccepted;
             _acceptor.OnError += OnAcceptorError;
 
-            _receiver = new LiteServerReceiver(_packetProcessor, Options.ReceiveStrategy, Options.ClientBufferSize);
+            _receiver = new LiteServerReceiver(options.PacketProcessor, Options.ReceiveStrategy, Options.ClientBufferSize);
             _receiver.Disconnected += OnDisconnected;
             _receiver.Error += OnReceiverError;
         }

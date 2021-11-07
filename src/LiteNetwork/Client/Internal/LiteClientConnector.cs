@@ -21,6 +21,7 @@ namespace LiteNetwork.Client.Internal
         private readonly Socket _socket;
         private readonly string _host;
         private readonly int _port;
+        private readonly object _lockObject = new();
 
         /// <summary>
         /// Gets the current connection state.
@@ -53,7 +54,7 @@ namespace LiteNetwork.Client.Internal
         /// Returns True if the client has been connected successfully, otherwise, False.</returns>
         public Task<bool> ConnectAsync()
         {
-            lock (this)
+            lock (_lockObject)
             {
                 if (State != LiteClientStateType.Disconnected)
                 {
@@ -93,7 +94,7 @@ namespace LiteNetwork.Client.Internal
         /// Returns True if the client has been disconnected successfully, otherwise, False.</returns>
         public Task<bool> DisconnectAsync()
         {
-            lock (this)
+            lock (_lockObject)
             {
                 if (State != LiteClientStateType.Connected)
                 {
