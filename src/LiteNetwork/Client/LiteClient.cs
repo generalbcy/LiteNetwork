@@ -22,19 +22,21 @@ namespace LiteNetwork.Client
         /// </summary>
         public event EventHandler? Disconnected;
 
+        /// <summary>
+        /// The event used when the client has encountered an error.
+        /// </summary>
+        public event EventHandler<Exception>? Error;
+
         private readonly IServiceProvider _serviceProvider = null!;
         private readonly ILogger<LiteClient>? _logger;
         private readonly LiteClientConnector _connector;
         private readonly LiteSender _sender;
         private readonly LiteClientReceiver _receiver;
 
-        /// <inheritdoc />
         public Guid Id { get; }
 
-        /// <inheritdoc />
         public Socket Socket { get; }
 
-        /// <inheritdoc />
         public LiteClientOptions Options { get; }
 
         /// <summary>
@@ -56,6 +58,7 @@ namespace LiteNetwork.Client
             _connector = new LiteClientConnector(Socket, Options.Host, Options.Port);
             _sender = new LiteSender(this);
             _receiver = new LiteClientReceiver(options.PacketProcessor, options.ReceiveStrategy, options.BufferSize);
+            _receiver.Error += (s, e) => OnError(e);
 
             if (_serviceProvider is not null)
             {
@@ -63,21 +66,18 @@ namespace LiteNetwork.Client
             }
         }
 
-        /// <inheritdoc />
         public virtual Task HandleMessageAsync(ILitePacketStream incomingPacketStream)
         {
             return Task.CompletedTask;
         }
 
-        /// <inheritdoc />
         public virtual void Send(ILitePacketStream packet) => _sender.Send(packet.Buffer);
 
-        /// <inheritdoc />
         public virtual void Send(byte[] packetBuffer) => _sender.Send(packetBuffer);
 
-        /// <inheritdoc />
         public async Task ConnectAsync()
         {
+            _logger?.LogTrace($"Connecting to {Options.Host}:{Options.Port}.");
             bool isConnected = await _connector.ConnectAsync();
 
             if (isConnected)
@@ -85,18 +85,20 @@ namespace LiteNetwork.Client
                 _sender.Start();
                 _receiver.StartReceiving(this);
                 OnConnected();
+                _logger?.LogTrace($"Connected to {Options.Host}:{Options.Port}.");
             }
         }
 
-        /// <inheritdoc />
         public async Task DisconnectAsync()
         {
+            _logger?.LogTrace($"Disconnecting from {Options.Host}:{Options.Port}.");
             bool isDisconnected = await _connector.DisconnectAsync();
 
             if (isDisconnected)
             {
                 _sender.Stop();
                 OnDisconnected();
+                _logger?.LogTrace($"Disconnected from {Options.Host}:{Options.Port}.");
             }
         }
 
@@ -114,6 +116,15 @@ namespace LiteNetwork.Client
         protected virtual void OnDisconnected()
         {
             Disconnected?.Invoke(this, null);
+        }
+
+        /// <summary>
+        /// Fired when the client has encountered an error.
+        /// </summary>
+        /// <param name="exception">Exception with the error.</param>
+        protected virtual void OnError(Exception exception)
+        {
+            Error?.Invoke(this, exception);
         }
 
         /// <summary>
