@@ -3,7 +3,7 @@
 	<PropertyGroup>
 		<TargetFrameworks>netstandard2.0;net5.0;net6.0</TargetFrameworks>
 		<LangVersion>9.0</LangVersion>
-		<Version>1.0.1</Version>
+		<Version>1.0.2</Version>
 		<Authors>Filipe GOMES PEIXOTO</Authors>
 		<Product>LiteNetwork</Product>
 		<Copyright>Filipe GOMES PEIXOTO © 2019-2021</Copyright>
@@ -15,26 +15,26 @@
 		<PackageLicenseFile>LICENSE</PackageLicenseFile>
 		<PackageTags>socket,server,tcp,network,networking,lite,packet,client</PackageTags>
 		<Configurations>Debug;Release;Package</Configurations>
-		<Description>LiteNetwork is a simple and fast networking library built with C# and compatible with .NET Standard 2. Its main goal is to simply the creation of basic socket servers over the TCP/IP protocol. It has been initialy developed for game development networking, but can also be used for other purposes.</Description>
+		<Description>LiteNetwork is a simple and fast networking library built with C# and compatible with .NET Standard 2, .NET 5 and 6. Its main goal is to simply the creation of basic socket servers over the TCP/IP protocol. It has been initialy developed for game development networking, but can also be used for other purposes.</Description>
 		<PackageIcon>icon.png</PackageIcon>
 		<PackageReadmeFile>README.md</PackageReadmeFile>
 		<NeutralLanguage>en-001</NeutralLanguage>
-		<AssemblyVersion>1.0.1</AssemblyVersion>
-		<FileVersion>1.0.1</FileVersion>
+		<AssemblyVersion>1.0.2</AssemblyVersion>
+		<FileVersion>1.0.2</FileVersion>
 	</PropertyGroup>
 
 	<ItemGroup Condition="('$(TargetFramework)' == 'netstandard2.0')">
-		<PackageReference Include="Microsoft.Extensions.DependencyInjection" Version="[3.1,6)" />
-		<PackageReference Include="Microsoft.Extensions.Hosting.Abstractions" Version="[3.1,6)" />
-		<PackageReference Include="Microsoft.Extensions.Logging.Abstractions" Version="[3.1,6)" />
-		<PackageReference Include="Microsoft.Extensions.ObjectPool" Version="[3.1,6)" />
+		<PackageReference Include="Microsoft.Extensions.DependencyInjection" Version="[3.1.10,5)" />
+		<PackageReference Include="Microsoft.Extensions.Hosting.Abstractions" Version="[3.1.10,5)" />
+		<PackageReference Include="Microsoft.Extensions.Logging.Abstractions" Version="[3.1.10,5)" />
+		<PackageReference Include="Microsoft.Extensions.ObjectPool" Version="[3.1.10,5)" />
 	</ItemGroup>
 
 	<ItemGroup Condition="('$(TargetFramework)' == 'net5.0')">
-		<PackageReference Include="Microsoft.Extensions.DependencyInjection" Version="5.0.0" />
-		<PackageReference Include="Microsoft.Extensions.Hosting.Abstractions" Version="5.0.0" />
-		<PackageReference Include="Microsoft.Extensions.Logging.Abstractions" Version="5.0.0" />
-		<PackageReference Include="Microsoft.Extensions.ObjectPool" Version="5.0.0" />
+		<PackageReference Include="Microsoft.Extensions.DependencyInjection" Version="[5.0.0,6.0.0)" />
+		<PackageReference Include="Microsoft.Extensions.Hosting.Abstractions" Version="[5.0.0,6)" />
+		<PackageReference Include="Microsoft.Extensions.Logging.Abstractions" Version="[5.0.0,6)" />
+		<PackageReference Include="Microsoft.Extensions.ObjectPool" Version="[5.0.0,6.0.0)" />
 	</ItemGroup>
 	
 	<ItemGroup Condition="('$(TargetFramework)' == 'net6.0')">
