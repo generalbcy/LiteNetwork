@@ -136,8 +136,11 @@ Then, once your host is setup and running, you can configure the `LiteServer` se
 
 ```csharp
 // Using minimal API
+using LiteNetwork.Hosting;
+using LiteNetwork.Server.Hosting;
 using Microsoft.Extensions.Hosting;
 using System;
+using System.Threading.Tasks;
 
 var host = new HostBuilder()
     // Configures the LiteNetwork context.
