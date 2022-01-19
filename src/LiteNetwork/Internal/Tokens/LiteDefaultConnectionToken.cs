@@ -27,7 +27,7 @@ namespace LiteNetwork.Internal.Tokens
         {
             Connection = connection;
             _handlerAction = handlerAction;
-            DataToken = new LiteDataToken();
+            DataToken = new LiteDataToken(Connection);
         }
 
         /// <inheritdoc />
