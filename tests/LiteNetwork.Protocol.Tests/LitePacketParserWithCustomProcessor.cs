@@ -1,5 +1,6 @@
 ﻿using LiteNetwork.Protocol.Internal;
 using LiteNetwork.Protocol.Tests.Processors;
+using Moq;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -84,7 +85,8 @@ namespace LiteNetwork.Protocol.Tests
 
         public LitePacketParserWithCustomProcessor()
         {
-            _token = new LiteDataToken();
+            var connection = new Mock<ILiteConnection>();
+            _token = new LiteDataToken(connection.Object);
             _packetParser = new LitePacketParser(new CustomVariablePacketProcessor());
         }
 

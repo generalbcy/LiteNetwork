@@ -1,4 +1,6 @@
-﻿namespace LiteNetwork.Protocol
+﻿using System;
+
+namespace LiteNetwork.Protocol
 {
     /// <summary>
     /// Provides a data structure that defines a lite packet data.
@@ -44,6 +46,21 @@
         /// Gets a value that indicates if the message is complete.
         /// </summary>
         public bool IsMessageComplete => MessageSize.HasValue && ReceivedMessageBytesCount == MessageSize.Value;
+
+        /// <summary>
+        /// Gets the connection attached to the current data token.
+        /// </summary>
+        public ILiteConnection Connection { get; }
+
+        /// <summary>
+        /// Creates a new <see cref="LiteDataToken"/> instance.
+        /// </summary>
+        /// <param name="connection">Current connection attached to this data token.</param>
+        /// <exception cref="ArgumentNullException">Thrown when the given connection is null.</exception>
+        public LiteDataToken(ILiteConnection connection)
+        {
+            Connection = connection ?? throw new ArgumentNullException(nameof(connection));
+        }
 
         /// <summary>
         /// Reset the token data properties.

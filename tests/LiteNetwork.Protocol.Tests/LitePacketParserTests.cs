@@ -2,6 +2,7 @@
 using LiteNetwork.Protocol.Abstractions;
 using LiteNetwork.Protocol.Internal;
 using LiteNetwork.Protocol.Tests.Processors;
+using Moq;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -42,7 +43,8 @@ namespace LiteNetwork.Protocol.Tests
         public void ParseIncomingDataTest(int bytesTransfered)
         {
             _packetParser = new LitePacketParser(_packetProcessor);
-            var token = new LiteDataToken();
+            var connection = new Mock<ILiteConnection>();
+            var token = new LiteDataToken(connection.Object);
             var numberOfReceivesNeeded = _buffer.Length / bytesTransfered + 1;
             var receviedMessages = new List<byte[]>();
 
@@ -73,7 +75,8 @@ namespace LiteNetwork.Protocol.Tests
         {
             _packetParser = new LitePacketParser(new DefaultLitePacketProcessor(includeHeader: true));
 
-            var token = new LiteDataToken();
+            var connection = new Mock<ILiteConnection>();
+            var token = new LiteDataToken(connection.Object);
             var numberOfReceivesNeeded = _buffer.Length / bytesTransfered + 1;
             var receviedMessages = new List<byte[]>();
 
@@ -99,7 +102,8 @@ namespace LiteNetwork.Protocol.Tests
         public void ParseIncomingDataWithInvalidSizeTest()
         {
             _packetParser = new LitePacketParser(_packetProcessor);
-            var token = new LiteDataToken();
+            var connection = new Mock<ILiteConnection>();
+            var token = new LiteDataToken(connection.Object);
 
             Assert.Throws<InvalidOperationException>(() => _packetParser.ParseIncomingData(token, _invalidBuffer, 32));
         }

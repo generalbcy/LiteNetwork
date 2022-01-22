@@ -32,7 +32,7 @@ namespace LiteNetwork.Internal.Tokens
         {
             Connection = connection;
             _handlerAction = handlerAction;
-            DataToken = new LiteDataToken();
+            DataToken = new LiteDataToken(Connection);
             _receiveMessageQueue = new BlockingCollection<byte[]>();
             _receiveCancellationTokenSource = new CancellationTokenSource();
             _receiveCancellationToken = _receiveCancellationTokenSource.Token;
