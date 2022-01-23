@@ -22,11 +22,12 @@ namespace LiteNetwork.Server
     public class LiteServer<TUser> : ILiteServer<TUser> where TUser : LiteServerUser
     {
         private readonly ILogger<LiteServer<TUser>>? _logger;
-        private readonly IServiceProvider _serviceProvider;
         private readonly ConcurrentDictionary<Guid, TUser> _connectedUsers;
         private readonly Socket _socket;
         private readonly LiteServerAcceptor _acceptor;
         private readonly LiteServerReceiver _receiver;
+
+        private IServiceProvider _serviceProvider;
 
         public bool IsRunning { get; private set; }
 
@@ -57,14 +58,14 @@ namespace LiteNetwork.Server
             }
 
             Options = options;
-            _serviceProvider = serviceProvider!;
+            _serviceProvider = serviceProvider ?? new ServiceCollection().BuildServiceProvider();
             _connectedUsers = new ConcurrentDictionary<Guid, TUser>();
             _socket = new Socket(AddressFamily.InterNetwork, SocketType.Stream, ProtocolType.Tcp);
             _socket.SetSocketOption(SocketOptionLevel.Socket, SocketOptionName.ReuseAddress, 1);
 
-            if (serviceProvider is not null)
+            if (_serviceProvider is not null)
             {
-                _logger = serviceProvider.GetService<ILogger<LiteServer<TUser>>>();
+                _logger = _serviceProvider.GetService<ILogger<LiteServer<TUser>>>();
             }
 
             _acceptor = new LiteServerAcceptor(_socket);
@@ -142,11 +143,11 @@ namespace LiteNetwork.Server
         {
             if (!_connectedUsers.TryRemove(userId, out TUser user))
             {
-                _logger?.LogError($"Cannot find user with id '{user.Id}'.");
+                _logger?.LogError($"Cannot find user with id '{userId}'.");
                 return;
             }
 
-            _logger?.LogTrace($"User with id '{user.Id}' disconnected.");
+            _logger?.LogTrace($"User with id '{userId}' disconnected.");
             user.OnDisconnected();
             user.Dispose();
         }
@@ -278,6 +279,11 @@ namespace LiteNetwork.Server
         private void OnDisconnected(object? sender, ILiteConnection e)
         {
             DisconnectUser(e.Id);
+        }
+
+        internal void SetServiceProvider(IServiceProvider serviceProvider)
+        {
+            _serviceProvider = serviceProvider;
         }
     }
 }

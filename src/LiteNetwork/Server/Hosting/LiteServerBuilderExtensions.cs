@@ -61,7 +61,15 @@ namespace LiteNetwork.Server.Hosting
             {
                 var liteServerOptions = new LiteServerOptions();
                 configure(liteServerOptions);
-                return ActivatorUtilities.CreateInstance<TLiteServer>(serviceProvider, liteServerOptions);
+                
+                TLiteServer server = ActivatorUtilities.CreateInstance<TLiteServer>(serviceProvider, liteServerOptions);
+
+                if (server is LiteServer<TLiteServerUser> serverInstance)
+                {
+                    serverInstance.SetServiceProvider(serviceProvider);
+                }
+
+                return server;
             });
 
             builder.Services.AddHostedService(serviceProvider =>
@@ -97,7 +105,14 @@ namespace LiteNetwork.Server.Hosting
                 var liteServerOptions = new LiteServerOptions();
                 configure(liteServerOptions);
 
-                return ActivatorUtilities.CreateInstance<TLiteServerImplementation>(serviceProvider, liteServerOptions);
+                var server = ActivatorUtilities.CreateInstance<TLiteServerImplementation>(serviceProvider, liteServerOptions);
+
+                if (server is LiteServer<TLiteServerUser> serverInstance)
+                {
+                    serverInstance.SetServiceProvider(serviceProvider);
+                }
+
+                return server;
             });
 
             builder.Services.AddSingleton<ILiteServer<TLiteServerUser>, TLiteServerImplementation>(serviceProvider =>
