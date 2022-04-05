@@ -1,7 +1,5 @@
 ﻿using LiteNetwork.Exceptions;
 using LiteNetwork.Internal;
-using LiteNetwork.Protocol.Abstractions;
-using LiteNetwork.Server.Abstractions;
 using LiteNetwork.Server.Internal;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
@@ -16,10 +14,10 @@ using System.Threading.Tasks;
 namespace LiteNetwork.Server
 {
     /// <summary>
-    /// Provides a basic <see cref="ILiteServer{TUser}"/> implementation.
+    /// Provides a basic TCP server implementation handling users of type <see cref="TUser"/>.
     /// </summary>
-    /// <typeparam name="TUser">The user type that the server will be use.</typeparam>
-    public class LiteServer<TUser> : ILiteServer<TUser> where TUser : LiteServerUser
+    /// <typeparam name="TUser">The user type that the server will handle.</typeparam>
+    public class LiteServer<TUser> where TUser : LiteServerUser
     {
         private readonly ILogger<LiteServer<TUser>>? _logger;
         private readonly ConcurrentDictionary<Guid, TUser> _connectedUsers;
@@ -152,7 +150,7 @@ namespace LiteNetwork.Server
             user.Dispose();
         }
 
-        public void SendTo(TUser user, ILitePacketStream packet)
+        public void SendTo(TUser user, byte[] packet)
         {
             if (user is null)
             {
@@ -167,7 +165,7 @@ namespace LiteNetwork.Server
             user.Send(packet);
         }
 
-        public void SendTo(IEnumerable<TUser> users, ILitePacketStream packet)
+        public void SendTo(IEnumerable<TUser> users, byte[] packet)
         {
             if (users is null)
             {
@@ -185,7 +183,7 @@ namespace LiteNetwork.Server
             }
         }
 
-        public void SendToAll(ILitePacketStream packet) => SendTo(_connectedUsers.Values, packet);
+        public void SendToAll(byte[] packet) => SendTo(_connectedUsers.Values, packet);
 
         /// <summary>
         /// Dispose the server resources and disconnects all the connected users.

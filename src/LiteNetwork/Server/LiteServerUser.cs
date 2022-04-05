@@ -1,5 +1,4 @@
 ﻿using LiteNetwork.Internal;
-using LiteNetwork.Protocol.Abstractions;
 using System;
 using System.Net.Sockets;
 using System.Threading.Tasks;
@@ -30,16 +29,11 @@ namespace LiteNetwork.Server
             _sender = new LiteSender(this);
         }
 
-        /// <inheritdoc />
-        public virtual Task HandleMessageAsync(ILitePacketStream incomingPacketStream)
+        public virtual Task HandleMessageAsync(byte[] packetBuffer)
         {
             return Task.CompletedTask;
         }
 
-        /// <inheritdoc />
-        public virtual void Send(ILitePacketStream packet) => _sender.Send(packet.Buffer);
-
-        /// <inheritdoc />
         public virtual void Send(byte[] packetBuffer) => _sender.Send(packetBuffer);
 
         /// <summary>

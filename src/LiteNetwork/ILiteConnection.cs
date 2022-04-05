@@ -1,5 +1,4 @@
-﻿using LiteNetwork.Protocol.Abstractions;
-using System;
+﻿using System;
 using System.Net.Sockets;
 using System.Threading.Tasks;
 
@@ -21,17 +20,11 @@ namespace LiteNetwork
         Socket Socket { get; }
 
         /// <summary>
-        /// Handle an incoming <see cref="ILitePacketStream"/> asynchronously.
+        /// Handle an incoming packet message asynchronously.
         /// </summary>
-        /// <param name="incomingPacketStream">Incoming packet.</param>
+        /// <param name="packetBuffer">Incoming packet buffer.</param>
         /// <returns>A <see cref="Task"/> that completes when finished the handle message operation.</returns>
-        Task HandleMessageAsync(ILitePacketStream incomingPacketStream);
-
-        /// <summary>
-        /// Sends an <see cref="ILitePacketStream"/> to the remote end point.
-        /// </summary>
-        /// <param name="packet">Packet stream.</param>
-        void Send(ILitePacketStream packet);
+        Task HandleMessageAsync(byte[] packetBuffer);
 
         /// <summary>
         /// Sends a raw <see cref="byte[]" /> buffer to the remote end point.

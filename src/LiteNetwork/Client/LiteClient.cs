@@ -66,12 +66,10 @@ namespace LiteNetwork.Client
             }
         }
 
-        public virtual Task HandleMessageAsync(ILitePacketStream incomingPacketStream)
+        public virtual Task HandleMessageAsync(byte[] packetBuffer)
         {
             return Task.CompletedTask;
         }
-
-        public virtual void Send(ILitePacketStream packet) => _sender.Send(packet.Buffer);
 
         public virtual void Send(byte[] packetBuffer) => _sender.Send(packetBuffer);
 
