@@ -1,5 +1,4 @@
-﻿using LiteNetwork.Client.Abstractions;
-using LiteNetwork.Hosting;
+﻿using LiteNetwork.Hosting;
 using Microsoft.Extensions.DependencyInjection;
 using System;
 
@@ -8,36 +7,6 @@ namespace LiteNetwork.Client.Hosting
     public static class LiteClientBuilderExtensions
     {
         /// <summary>
-        /// Initializes a basic <see cref="LiteClient"/>.
-        /// </summary>
-        /// <param name="builder">A <see cref="ILiteBuilder"/> to add the client.</param>
-        /// <param name="configure">Delegate to configure a <see cref="LiteClientOptions"/>.</param>
-        /// <returns>The <see cref="ILiteBuilder"/>.</returns>
-        public static ILiteBuilder AddLiteClient(this ILiteBuilder builder, Action<LiteClientOptions> configure)
-        {
-            if (builder is null)
-            {
-                throw new ArgumentNullException(nameof(builder));
-            }
-
-            builder.Services.AddSingleton<ILiteClient, LiteClient>(serviceProvider =>
-            {
-                LiteClientOptions options = new();
-                configure(options);
-
-                return new LiteClient(options, serviceProvider);
-            });
-
-
-            builder.Services.AddHostedService(serviceProvider =>
-            {
-                var serverInstance = serviceProvider.GetRequiredService<ILiteClient>();
-                return new LiteClientHostedService(serverInstance);
-            });
-            return builder;
-        }
-
-        /// <summary>
         /// Initializes a custom <see cref="ILiteClient"/>.
         /// </summary>
         /// <typeparam name="TLiteClient">Custom client type.</typeparam>
@@ -45,7 +14,7 @@ namespace LiteNetwork.Client.Hosting
         /// <param name="configure">Delegate to configure a <see cref="LiteClientOptions"/>.</param>
         /// <returns>The <see cref="ILiteBuilder"/>.</returns>
         public static ILiteBuilder AddLiteClient<TLiteClient>(this ILiteBuilder builder, Action<LiteClientOptions> configure)
-            where TLiteClient : class, ILiteClient
+            where TLiteClient : LiteClient
         {
             if (builder is null)
             {
@@ -60,12 +29,7 @@ namespace LiteNetwork.Client.Hosting
                 return ActivatorUtilities.CreateInstance<TLiteClient>(serviceProvider, options);
             });
 
-            builder.Services.AddHostedService(serviceProvider =>
-            {
-                var clientInstance = serviceProvider.GetRequiredService<TLiteClient>();
-
-                return new LiteClientHostedService(clientInstance);
-            });
+            builder.Services.AddLiteClientHostedService<TLiteClient>();
 
             return builder;
         }
@@ -80,7 +44,7 @@ namespace LiteNetwork.Client.Hosting
         /// <returns>The <see cref="ILiteBuilder"/>.</returns>
         public static ILiteBuilder AddLiteClient<TLiteClient, TLiteClientImplementation>(this ILiteBuilder builder, Action<LiteClientOptions> configure)
             where TLiteClient : class
-            where TLiteClientImplementation : class, TLiteClient, ILiteClient
+            where TLiteClientImplementation : LiteClient, TLiteClient
         {
             if (builder is null)
             {
@@ -95,19 +59,15 @@ namespace LiteNetwork.Client.Hosting
                 return ActivatorUtilities.CreateInstance<TLiteClientImplementation>(serviceProvider, options);
             });
 
-            builder.Services.AddSingleton<ILiteClient, TLiteClientImplementation>(serviceProvider =>
-            {
-                return (TLiteClientImplementation)serviceProvider.GetRequiredService<TLiteClient>();
-            });
-
-            builder.Services.AddHostedService(serviceProvider =>
-            {
-                var clientInstance = serviceProvider.GetRequiredService<ILiteClient>();
-                
-                return new LiteClientHostedService(clientInstance);
-            });
+            builder.Services.AddLiteClientHostedService<TLiteClientImplementation>();
 
             return builder;
+        }
+
+        private static void AddLiteClientHostedService<TLiteClient>(this IServiceCollection services)
+            where TLiteClient : LiteClient
+        {
+            services.AddHostedService(serviceProvider => new LiteClientHostedService(serviceProvider.GetRequiredService<TLiteClient>()));
         }
     }
 }

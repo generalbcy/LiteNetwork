@@ -1,5 +1,4 @@
-﻿using LiteNetwork.Client.Abstractions;
-using Microsoft.Extensions.Hosting;
+﻿using Microsoft.Extensions.Hosting;
 using System.Threading;
 using System.Threading.Tasks;
 
@@ -10,13 +9,13 @@ namespace LiteNetwork.Client.Hosting
     /// </summary>
     internal class LiteClientHostedService : IHostedService
     {
-        private readonly ILiteClient _client;
+        private readonly LiteClient _client;
 
         /// <summary>
         /// Creates a new <see cref="LiteClientHostedService"/> with the given server.
         /// </summary>
         /// <param name="client">Client to host.</param>
-        public LiteClientHostedService(ILiteClient client)
+        public LiteClientHostedService(LiteClient client)
         {
             _client = client;
         }

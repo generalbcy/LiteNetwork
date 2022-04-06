@@ -29,20 +29,17 @@ namespace LiteNetwork.Client.Internal
             _socketEvent.SetBuffer(_buffer, 0, _buffer.Length);
         }
 
-        /// <inheritdoc />
         protected override void ClearSocketEvent(SocketAsyncEventArgs socketAsyncEvent)
         {
             Array.Clear(_buffer, 0, _buffer.Length);
             _socketEvent.UserToken = null;
         }
 
-        /// <inheritdoc />
         protected override SocketAsyncEventArgs GetSocketEvent()
         {
             return _socketEvent;
         }
 
-        /// <inheritdoc />
         public void Dispose()
         {
             _socketEvent.SetBuffer(null, 0, 0);

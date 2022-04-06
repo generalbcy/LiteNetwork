@@ -1,7 +1,5 @@
-﻿using LiteNetwork.Client.Abstractions;
-using LiteNetwork.Client.Internal;
+﻿using LiteNetwork.Client.Internal;
 using LiteNetwork.Internal;
-using LiteNetwork.Protocol.Abstractions;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using System;
@@ -10,7 +8,7 @@ using System.Threading.Tasks;
 
 namespace LiteNetwork.Client
 {
-    public class LiteClient : ILiteClient
+    public class LiteClient : ILiteConnection
     {
         /// <summary>
         /// The event used when the client has been connected.

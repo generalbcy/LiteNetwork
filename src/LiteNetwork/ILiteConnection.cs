@@ -7,7 +7,7 @@ namespace LiteNetwork
     /// <summary>
     /// Provides an abstraction that represents a living connection.
     /// </summary>
-    public interface ILiteConnection
+    public interface ILiteConnection : IDisposable
     {
         /// <summary>
         /// Gets the connection unique identifier.
