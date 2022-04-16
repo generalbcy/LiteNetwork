@@ -1,4 +1,5 @@
 ﻿using Microsoft.Extensions.Hosting;
+using System;
 using System.Threading;
 using System.Threading.Tasks;
 
@@ -17,17 +18,11 @@ namespace LiteNetwork.Client.Hosting
         /// <param name="client">Client to host.</param>
         public LiteClientHostedService(LiteClient client)
         {
-            _client = client;
+            _client = client ?? throw new ArgumentNullException(nameof(client), "Failed to inject client.");
         }
 
-        public Task StartAsync(CancellationToken cancellationToken)
-        {
-            return _client.ConnectAsync();
-        }
+        public async Task StartAsync(CancellationToken cancellationToken) => await _client.ConnectAsync();
 
-        public Task StopAsync(CancellationToken cancellationToken)
-        {
-            return _client.DisconnectAsync();
-        }
+        public async Task StopAsync(CancellationToken cancellationToken) => await _client.DisconnectAsync();
     }
 }

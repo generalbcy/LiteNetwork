@@ -1,12 +1,13 @@
 ﻿using LiteNetwork.Client.Hosting;
 using LiteNetwork.Hosting;
+using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 
 namespace LiteNetwork.Samples.Hosting.Server
 {
     class Program
     {
-        static Task Main(string[] args)
+        static async Task Main(string[] args)
         {
             Console.Title = "LiteNetwork Hosting Sample (Client)";
 
@@ -22,7 +23,32 @@ namespace LiteNetwork.Samples.Hosting.Server
                 .UseConsoleLifetime()
                 .Build();
 
-            return host.RunAsync();
+            // Run the host build services in background.
+            await Task.Factory.StartNew(async () => await host.RunAsync()).ConfigureAwait(false);
+
+            // Process user input.
+            bool isRunning = true;
+            var client  = host.Services.GetRequiredService<Client>();
+            while (isRunning)
+            {
+                if (!client.IsConnected)
+                {
+                    Console.WriteLine("Waiting for connection...");
+                    await Task.Delay(1000);
+                    continue;
+                }
+
+                string? message = Console.ReadLine();
+
+                if (!string.IsNullOrEmpty(message))
+                {
+                    client.SendMessage(message);
+                }
+                else
+                {
+                    isRunning = false;
+                }
+            }
         }
     }
 }

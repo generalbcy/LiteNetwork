@@ -15,7 +15,7 @@ namespace LiteNetwork.Server.Tests.Hosting
             IHost host = new HostBuilder()
                 .ConfigureLiteNetwork(builder =>
                 {
-                    builder.AddLiteServer<CustomServer, CustomUser>(options =>
+                    builder.AddLiteServer<CustomServer>(options =>
                     {
                         options.Host = "127.0.0.1";
                         options.Port = 4444;

@@ -4,8 +4,9 @@
 [![Codacy Badge](https://app.codacy.com/project/badge/Grade/0865f75d0fa2498e936a6853c1117b97)](https://www.codacy.com/gh/Eastrall/LiteNetwork/dashboard?utm_source=github.com&amp;utm_medium=referral&amp;utm_content=Eastrall/LiteNetwork&amp;utm_campaign=Badge_Grade)
 [![NuGet](https://img.shields.io/nuget/v/LiteNetwork.svg)](https://www.nuget.org/packages/LiteNetwork/)
 
-`LiteNetwork` is a simple and fast networking library built with C# and compatible with .NET Standard 2. Its main goal is to simply the creation of basic socket servers over the TCP/IP protocol.
-It has been initialy developed for game development networking, but can also be used for other purposes.
+`LiteNetwork` is a simple and fast networking library built with C# and compatible with .NET Standard 2, .NET 5 and .NET 6. Its main goal is to simply the creation of basic socket servers over the TCP/IP protocol.
+
+Initially, LiteNetwork has been initialy developed for game development networking, but can also be used for other purposes.
 
 ## How to install
 
@@ -49,11 +50,11 @@ You can also be notified when the client connects to the server or disconnects.
 using LiteNetwork.Protocol.Abstractions;
 using LiteNetwork.Server;
 
-public class ClientUser : LiteServerUser
+public class TcpUser : LiteServerUser
 {
-    public override Task HandleMessageAsync(ILitePacketStream incomingPacketStream)
+    public override Task HandleMessageAsync(byte[] packetBuffer)
     {
-        // Handle incoming messages thanks to the ILitePacketStream interface.
+        // Handle incoming messages using a BinaryReader or any other solution for reading a byte[].
     }
 
     protected override void OnConnected()
@@ -68,14 +69,14 @@ public class ClientUser : LiteServerUser
 }
 ```
 
-Once the server user is ready, you can create the server itself that will handle this `ClientUser` type of users.
-Create another new `class`, and implement the `LiteServer<T>` class where `T` is the previously created `ClientUser`.
+Once the server user is ready, you can create the server itself that will handle this `TcpUser` type of users.
+Create another new `class`, and implement the `LiteServer<T>` class where `T` is the previously created `TcpUser`.
 
 ```csharp
-public class MyTcpServer : LiteServer<ClientUser>
+public class MyTcpServer : LiteServer<TcpUser>
 {
-    public MyTcpServer(LiteServerOptions options)
-        : base(options)
+    public MyTcpServer(LiteServerOptions options, IServiceProvider serviceProvider = null)
+        : base(options, serviceProvider)
     {
     }
 }
@@ -146,8 +147,8 @@ var host = new HostBuilder()
     // Configures the LiteNetwork context.
     .ConfigureLiteNetwork((context, builder) =>
     {
-        // Adds a LiteServer instance based on the MyTcpServer and ClientUser.
-        builder.AddLiteServer<MyTcpServer, ClientUser>(options =>
+        // Adds a LiteServer instance for the MyTcpServer class.
+        builder.AddLiteServer<MyTcpServer>(options =>
         {
             // This configures the server's LiteServerOptions instance.
             options.Host = "127.0.0.1";
@@ -167,7 +168,11 @@ Also, since you are using a .NET generic host, it also provides dependency injec
 
 ### Create a client
 
-### Protocol
+TBA.
+
+## Protocol
+
+### Packet Processor
 
 TBA.
 

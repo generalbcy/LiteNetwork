@@ -1,5 +1,6 @@
 ﻿using LiteNetwork.Exceptions;
 using LiteNetwork.Internal;
+using LiteNetwork.Server.Abstractions;
 using LiteNetwork.Server.Internal;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
@@ -17,7 +18,7 @@ namespace LiteNetwork.Server
     /// Provides a basic TCP server implementation handling users of type <see cref="TUser"/>.
     /// </summary>
     /// <typeparam name="TUser">The user type that the server will handle.</typeparam>
-    public class LiteServer<TUser> : IDisposable
+    public class LiteServer<TUser> : ILiteServer
         where TUser : LiteServerUser
     {
         private readonly ILogger<LiteServer<TUser>>? _logger;
@@ -35,21 +36,12 @@ namespace LiteNetwork.Server
         public IEnumerable<TUser> ConnectedUsers => _connectedUsers.Values;
 
         /// <summary>
-        /// Creates a new <see cref="LiteServer{TUser}"/> instance with a server configuration.
-        /// </summary>
-        /// <param name="options">Server configuration options.</param>
-        public LiteServer(LiteServerOptions options)
-            : this(options, null)
-        {
-        }
-
-        /// <summary>
         /// Creates a new <see cref="LiteServer{TUser}"/> instance with a server configuration 
         /// and a service provider.
         /// </summary>
         /// <param name="options">Server configuration options.</param>
         /// <param name="serviceProvider">Service provider to use.</param>
-        public LiteServer(LiteServerOptions options, IServiceProvider? serviceProvider)
+        public LiteServer(LiteServerOptions options, IServiceProvider? serviceProvider = null)
         {
             if (options is null)
             {
@@ -58,14 +50,11 @@ namespace LiteNetwork.Server
 
             Options = options;
             _serviceProvider = serviceProvider ?? new ServiceCollection().BuildServiceProvider();
+            _logger = _serviceProvider.GetService<ILogger<LiteServer<TUser>>>();
+
             _connectedUsers = new ConcurrentDictionary<Guid, TUser>();
             _socket = new Socket(AddressFamily.InterNetwork, SocketType.Stream, ProtocolType.Tcp);
             _socket.SetSocketOption(SocketOptionLevel.Socket, SocketOptionName.ReuseAddress, 1);
-
-            if (_serviceProvider is not null)
-            {
-                _logger = _serviceProvider.GetService<ILogger<LiteServer<TUser>>>();
-            }
 
             _acceptor = new LiteServerAcceptor(_socket);
             _acceptor.OnClientAccepted += OnClientAccepted;
@@ -279,11 +268,6 @@ namespace LiteNetwork.Server
         private void OnDisconnected(object? sender, LiteConnection e)
         {
             DisconnectUser(e.Id);
-        }
-
-        internal void SetServiceProvider(IServiceProvider serviceProvider)
-        {
-            _serviceProvider = serviceProvider;
         }
     }
 }

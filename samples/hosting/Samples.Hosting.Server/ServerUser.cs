@@ -1,42 +1,45 @@
-﻿using LiteNetwork.Protocol;
-using LiteNetwork.Protocol.Abstractions;
-using LiteNetwork.Server;
+﻿using LiteNetwork.Server;
 using System;
+using System.IO;
 using System.Threading.Tasks;
 
 namespace LiteNetwork.Samples.Hosting.Server
 {
     public class ServerUser : LiteServerUser
     {
-        private readonly ICustomServer _server;
-
-        public ServerUser(ICustomServer server)
+        public override Task HandleMessageAsync(byte[] packetBuffer)
         {
-            _server = server;
-        }
-
-        public override Task HandleMessageAsync(ILitePacketStream incomingPacketStream)
-        {
-            string receivedMessage = incomingPacketStream.ReadString();
+            using var memoryStream = new MemoryStream(packetBuffer);
+            using var binaryReader = new BinaryReader(memoryStream);
+            string receivedMessage = binaryReader.ReadString();
 
             Console.WriteLine($"Received from '{Id}': {receivedMessage}");
 
-            return base.HandleMessageAsync(incomingPacketStream);
+            return Task.CompletedTask;
         }
 
         protected override void OnConnected()
         {
             Console.WriteLine($"New client connected with id: {Id}");
 
-            using var welcomePacket = new LitePacket();
-            welcomePacket.WriteString($"Hello {Id}!");
+            using Stream welcomePacketStream = BuildWelcomePacket();
 
-            Send(welcomePacket);
+            Send(welcomePacketStream);
         }
 
         protected override void OnDisconnected()
         {
             Console.WriteLine($"Client '{Id}' disconnected.");
+        }
+
+        private Stream BuildWelcomePacket()
+        {
+            var stream = new MemoryStream();
+            var writer = new BinaryWriter(stream);
+
+            writer.Write($"Hello {Id}!");
+
+            return stream;
         }
     }
 }

@@ -1,0 +1,45 @@
+name: LiteNetwork Build
+
+on:
+  push:
+    branches: [ main ]
+  pull_request:
+    branches: [ main ]
+
+jobs:
+  build-library:
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v2
+
+    - name: Setup .NET
+      uses: actions/setup-dotnet@v1
+      with:
+        dotnet-version: 6.0.x
+
+    - name: Restore dependencies
+      run: dotnet restore
+
+    - name: Build library
+      run: dotnet build --no-restore
+
+    - name: Run unit tests
+      run: dotnet test --no-build --verbosity normal
+
+  build-samples:
+    runs-on: ubuntu-latest
+    needs: build-library
+    steps:
+    - name: Checkout repository
+      uses: actions/checkout@v2
+    
+    - name: Setup .NET
+      uses: actions/setup-dotnet@v1
+      with:
+        dotnet-version: 6.0.x
+
+    - name: Build samples
+      run: |
+        dotnet build samples/echo/LiteNetwork.Sample.Echo.sln -c Release
+        dotnet build samples/hosting/LiteNetwork.Sample.Hosting.sln -c Release
+
