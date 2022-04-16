@@ -64,6 +64,14 @@ namespace LiteNetwork
         }
 
         /// <summary>
+        /// Triggered when an error occured related with the current <see cref="LiteConnection"/>.
+        /// </summary>
+        /// <param name="exception"></param>
+        protected virtual void OnError(object sender, Exception exception)
+        {
+        }
+
+        /// <summary>
         /// Initialize the <see cref="LiteConnection"/> sender.
         /// </summary>
         /// <param name="packetProcessor">Packet processor.</param>
@@ -72,6 +80,7 @@ namespace LiteNetwork
             if (_sender is null)
             {
                 _sender = new LiteSender(this, packetProcessor);
+                _sender.Error += OnError;
             }
 
             _sender.Start();
@@ -97,7 +106,12 @@ namespace LiteNetwork
             {
                 if (disposing)
                 {
-                    _sender?.Dispose();
+                    if (_sender != null)
+                    {
+                        _sender.Error -= OnError;
+                        _sender.Dispose();
+                    }
+
                     Socket?.Dispose();
                 }
 

@@ -32,6 +32,9 @@ namespace LiteNetwork.Server
 
         public LiteServerOptions Options { get; }
 
+        /// <summary>
+        /// Gets a collection that contains all the connected <typeparamref name="TUser"/>.
+        /// </summary>
         public IEnumerable<TUser> ConnectedUsers => _connectedUsers.Values;
 
         /// <summary>
@@ -64,10 +67,25 @@ namespace LiteNetwork.Server
             _receiver.Error += OnReceiverError;
         }
 
+        /// <summary>
+        /// Gets a connected <typeparamref name="TUser"/> associated with the specified id.
+        /// </summary>
+        /// <param name="userId">User id to get.</param>
+        /// <returns>A <typeparamref name="TUser"/> with the specified id if the id has found;
+        /// otherwise, null.</returns>
         public TUser? GetUser(Guid userId) => TryGetUser(userId, out TUser? user) ? user : default;
 
+        /// <summary>
+        /// Attempts to get the <typeparamref name="TUser"/> associated with the specified id.
+        /// </summary>
+        /// <param name="userId">User id to get.</param>
+        /// <param name="user">If the operation completed returns the user associated with the specified id,
+        /// or null if the operaton failed.
+        /// </param>
+        /// <returns>True if the user id has found; otherwise, false.</returns>
         public bool TryGetUser(Guid userId, out TUser? user) => _connectedUsers.TryGetValue(userId, out user);
 
+        [Obsolete("This method is obsolete. Consider using StartAsync() instead.")]
         public async void Start()
         {
             if (IsRunning)
@@ -86,16 +104,41 @@ namespace LiteNetwork.Server
             OnAfterStart();
         }
 
-        public Task StartAsync(CancellationToken cancellationToken)
+        /// <summary>
+        /// Starts to listening and accept users asynchronously.
+        /// </summary>
+        /// <returns>A <see cref="Task"/> that completes when the <see cref="LiteServer{TUser}"/> starts.</returns>
+        public async Task StartAsync()
         {
-            return Task.Factory.StartNew(Start, cancellationToken, TaskCreationOptions.LongRunning, TaskScheduler.Default);
+            await StartAsync(CancellationToken.None);
         }
 
-        public Task StartAsync()
+        /// <summary>
+        /// Starts to listening and accept users asynchronously with the specified <see cref="CancellationToken"/>.
+        /// </summary>
+        /// <param name="cancellationToken">Used to indicate when stop should no longer be successfully.</param>
+        /// <returns>A <see cref="Task"/> that completes when the <see cref="LiteServer{TUser}"/> starts.</returns>
+        public async Task StartAsync(CancellationToken cancellationToken)
         {
-            return Task.Factory.StartNew(Start, CancellationToken.None, TaskCreationOptions.LongRunning, TaskScheduler.Default);
+            if (IsRunning)
+            {
+                throw new InvalidOperationException("Server is already running.");
+            }
+
+            OnBeforeStart();
+
+            IPEndPoint localEndPoint = await LiteNetworkHelpers.CreateIpEndPointAsync(Options.Host, Options.Port).ConfigureAwait(false);
+            _socket.Bind(localEndPoint);
+            _socket.Listen(Options.Backlog);
+            _acceptor.StartAccept();
+            IsRunning = true;
+
+            OnAfterStart();
         }
 
+        /// <summary>
+        /// Stop listening and disconnect all connectected users.
+        /// </summary>
         public void Stop()
         {
             if (!IsRunning)
@@ -116,16 +159,29 @@ namespace LiteNetwork.Server
             OnAfterStop();
         }
 
+        /// <summary>
+        /// Attempt to stop the server asynchronously with the specified <see cref="CancellationToken"/>.
+        /// </summary>
+        /// <param name="cancellationToken">Used to indicate when stop should no longer be successfully.</param>
+        /// <returns>A <see cref="Task"/> that completes when the <see cref="LiteServer{TUser}"/> stops.</returns>
         public Task StopAsync(CancellationToken cancellationToken)
         {
             return Task.Factory.StartNew(Stop, cancellationToken, TaskCreationOptions.LongRunning, TaskScheduler.Default);
         }
 
+        /// <summary>
+        /// Attempt to stop the server asynchronously.
+        /// </summary>
+        /// <returns>A <see cref="Task"/> that completes when the <see cref="LiteServer{TUser}"/> stops.</returns>
         public Task StopAsync()
         {
             return Task.Factory.StartNew(Stop, CancellationToken.None, TaskCreationOptions.LongRunning, TaskScheduler.Default);
         }
 
+        /// <summary>
+        /// Disconnects an <typeparamref name="TUser"/> with the specified user id.
+        /// </summary>
+        /// <param name="userId">User id to disconnect.</param>
         public void DisconnectUser(Guid userId)
         {
             if (!_connectedUsers.TryRemove(userId, out TUser? user))
@@ -139,6 +195,11 @@ namespace LiteNetwork.Server
             user.Dispose();
         }
 
+        /// <summary>
+        /// Send a packet to the given <typeparamref name="TUser"/>.
+        /// </summary>
+        /// <param name="user">Target user.</param>
+        /// <param name="packet">Packet message to send.</param>
         public void SendTo(TUser user, byte[] packet)
         {
             if (user is null)
@@ -154,6 +215,11 @@ namespace LiteNetwork.Server
             user.Send(packet);
         }
 
+        /// <summary>
+        /// Send a packet to a given collection of <typeparamref name="TUser"/>.
+        /// </summary>
+        /// <param name="users">Collection of <typeparamref name="TUser"/>.</param>
+        /// <param name="packet">Packet message to send.</param>
         public void SendTo(IEnumerable<TUser> users, byte[] packet)
         {
             if (users is null)
@@ -172,6 +238,10 @@ namespace LiteNetwork.Server
             }
         }
 
+        /// <summary>
+        /// Send a packet to all connected <typeparamref name="TUser"/>.
+        /// </summary>
+        /// <param name="packet">Packet message data to send.</param>
         public void SendToAll(byte[] packet) => SendTo(_connectedUsers.Values, packet);
 
         /// <summary>

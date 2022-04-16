@@ -20,6 +20,8 @@ namespace LiteNetwork.Internal
         private readonly SocketAsyncEventArgs _socketAsyncEvent;
         private bool _disposedValue;
 
+        public event EventHandler<Exception>? Error;
+
         /// <summary>
         /// Gets a boolean value that indiciates if the sender process is running.
         /// </summary>
@@ -98,6 +100,10 @@ namespace LiteNetwork.Internal
                 catch (OperationCanceledException)
                 {
                     // The operation has been cancelled: nothing to do
+                }
+                catch (Exception e)
+                {
+                    Error?.Invoke(this, e);
                 }
             }
         }
