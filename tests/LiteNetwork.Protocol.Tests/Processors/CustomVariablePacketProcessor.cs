@@ -22,7 +22,7 @@ namespace LiteNetwork.Protocol.Tests.Processors
             return length;
         }
 
-        public override bool ParseHeader(LiteDataToken token, byte[] buffer, int bytesTransfered)
+        public override bool ReadHeader(LiteDataToken token, byte[] buffer, int bytesTransfered)
         {
             int bufferRemainingBytes = bytesTransfered - token.DataStartOffset;
 

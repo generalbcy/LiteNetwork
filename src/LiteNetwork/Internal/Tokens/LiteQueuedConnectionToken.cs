@@ -12,23 +12,23 @@ namespace LiteNetwork.Internal.Tokens
     /// </summary>
     internal class LiteQueuedConnectionToken : ILiteConnectionToken
     {
-        private readonly Action<ILiteConnection, byte[]> _handlerAction;
+        private readonly Action<LiteConnection, byte[]> _handlerAction;
         private readonly BlockingCollection<byte[]> _receiveMessageQueue;
         private readonly CancellationToken _receiveCancellationToken;
         private readonly CancellationTokenSource _receiveCancellationTokenSource;
 
         /// <inheritdoc />
-        public ILiteConnection Connection { get; }
+        public LiteConnection Connection { get; }
 
         /// <inheritdoc />
         public LiteDataToken DataToken { get; }
 
         /// <summary>
-        /// Creates a new <see cref="LiteDefaultConnectionToken"/> instance with a <see cref="ILiteConnection"/>.
+        /// Creates a new <see cref="LiteDefaultConnectionToken"/> instance with a <see cref="LiteConnection"/>.
         /// </summary>
         /// <param name="connection">Current connection.</param>
         /// <param name="handlerAction">Action to execute when a packet message is being processed.</param>
-        public LiteQueuedConnectionToken(ILiteConnection connection, Action<ILiteConnection, byte[]> handlerAction)
+        public LiteQueuedConnectionToken(LiteConnection connection, Action<LiteConnection, byte[]> handlerAction)
         {
             Connection = connection;
             _handlerAction = handlerAction;

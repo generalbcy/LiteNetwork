@@ -85,7 +85,7 @@ namespace LiteNetwork.Protocol.Tests
 
         public LitePacketParserWithCustomProcessor()
         {
-            var connection = new Mock<ILiteConnection>();
+            var connection = new Mock<LiteConnection>();
             _token = new LiteDataToken(connection.Object);
             _packetParser = new LitePacketParser(new CustomVariablePacketProcessor());
         }

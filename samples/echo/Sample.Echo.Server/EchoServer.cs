@@ -3,7 +3,7 @@ using System;
 
 namespace LiteNetwork.Sample.Echo.Server
 {
-    public class EchoServer : LiteServer<ClientUser>
+    public class EchoServer : LiteServer<EchoUser>
     {
         public EchoServer(LiteServerOptions options)
             : base(options)

@@ -1,5 +1,4 @@
 ﻿using LiteNetwork.Hosting;
-using LiteNetwork.Server.Abstractions;
 using LiteNetwork.Server.Hosting;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
@@ -10,28 +9,6 @@ namespace LiteNetwork.Server.Tests.Hosting
 {
     public class LiteServerHostingTests
     {
-        [Fact]
-        public void SetupDefaultLiteServerHostTest()
-        {
-            IHost host = new HostBuilder()
-                .ConfigureLiteNetwork(builder =>
-                {
-                    builder.AddLiteServer<CustomUser>(options =>
-                    {
-                        options.Host = "127.0.0.1";
-                        options.Port = 4444;
-                    });
-                })
-                .Build();
-
-            using (host)
-            {
-                var server = host.Services.GetRequiredService<ILiteServer<CustomUser>>();
-
-                Assert.IsType<LiteServer<CustomUser>>(server);
-            }
-        }
-
         [Fact]
         public void SetupCustomLiteServerHostTest()
         {
@@ -50,8 +27,9 @@ namespace LiteNetwork.Server.Tests.Hosting
             {
                 var server = host.Services.GetRequiredService<CustomServer>();
 
+                Assert.NotNull(server);
                 Assert.IsType<CustomServer>(server);
-                Assert.True(server is ILiteServer<CustomUser>);
+                Assert.True(server is LiteServer<CustomUser>);
             }
         }
 

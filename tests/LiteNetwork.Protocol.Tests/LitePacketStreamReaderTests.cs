@@ -1,5 +1,4 @@
 ﻿using Bogus;
-using LiteNetwork.Protocol.Abstractions;
 using System;
 using System.Linq;
 using System.Runtime.InteropServices;
@@ -249,7 +248,7 @@ namespace LiteNetwork.Protocol.Tests
         {
             var adjustedBuffer = adjustBuffer ? valueAsBytes.Take(Marshal.SizeOf<T>()).ToArray() : valueAsBytes;
 
-            using (ILitePacketStream packetStream = new LitePacketStream(adjustedBuffer))
+            using (LitePacketStream packetStream = new LitePacketStream(adjustedBuffer))
             {
                 Assert.Equal(LitePacketMode.Read, packetStream.Mode);
                 Assert.False(packetStream.IsEndOfStream);
@@ -261,11 +260,11 @@ namespace LiteNetwork.Protocol.Tests
             }
         }
 
-        private void PacketStreamReadMethod<T>(Func<ILitePacketStream, T> method, T expectedValue, byte[] valueAsBytes, bool adjustBuffer = true)
+        private void PacketStreamReadMethod<T>(Func<LitePacketStream, T> method, T expectedValue, byte[] valueAsBytes, bool adjustBuffer = true)
         {
             var adjustedBuffer = adjustBuffer ? valueAsBytes.Take(Marshal.SizeOf<T>()).ToArray() : valueAsBytes;
 
-            using (ILitePacketStream packetStream = new LitePacketStream(adjustedBuffer))
+            using (LitePacketStream packetStream = new LitePacketStream(adjustedBuffer))
             {
                 Assert.Equal(LitePacketMode.Read, packetStream.Mode);
                 Assert.False(packetStream.IsEndOfStream);

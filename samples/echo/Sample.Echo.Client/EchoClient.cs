@@ -1,6 +1,6 @@
 ﻿using LiteNetwork.Client;
-using LiteNetwork.Protocol.Abstractions;
 using System;
+using System.IO;
 using System.Threading.Tasks;
 
 namespace Sample.Echo.Client
@@ -12,9 +12,12 @@ namespace Sample.Echo.Client
         {
         }
 
-        public override Task HandleMessageAsync(ILitePacketStream incomingPacketStream)
+        public override Task HandleMessageAsync(byte[] packetBuffer)
         {
-            string message = incomingPacketStream.ReadString();
+            using var incomingPacketStream = new MemoryStream(packetBuffer);
+            using var packetReader = new BinaryReader(incomingPacketStream);
+
+            string message = packetReader.ReadString();
 
             Console.WriteLine($"Received from server: {message}");
 

@@ -17,7 +17,8 @@ namespace LiteNetwork.Server
     /// Provides a basic TCP server implementation handling users of type <see cref="TUser"/>.
     /// </summary>
     /// <typeparam name="TUser">The user type that the server will handle.</typeparam>
-    public class LiteServer<TUser> where TUser : LiteServerUser
+    public class LiteServer<TUser> : IDisposable
+        where TUser : LiteServerUser
     {
         private readonly ILogger<LiteServer<TUser>>? _logger;
         private readonly ConcurrentDictionary<Guid, TUser> _connectedUsers;
@@ -25,7 +26,7 @@ namespace LiteNetwork.Server
         private readonly LiteServerAcceptor _acceptor;
         private readonly LiteServerReceiver _receiver;
 
-        private IServiceProvider _serviceProvider;
+        private IServiceProvider? _serviceProvider;
 
         public bool IsRunning { get; private set; }
 
@@ -225,7 +226,7 @@ namespace LiteNetwork.Server
         /// </summary>
         /// <param name="connection">Connection where the error occured.</param>
         /// <param name="exception">Error exception.</param>
-        protected virtual void OnError(ILiteConnection? connection, Exception exception)
+        protected virtual void OnError(LiteConnection? connection, Exception exception)
         {
             if (connection is null)
             {
@@ -239,7 +240,7 @@ namespace LiteNetwork.Server
 
         private void OnClientAccepted(object? sender, SocketAsyncEventArgs e)
         {
-            TUser user = ActivatorUtilities.CreateInstance<TUser>(_serviceProvider);
+            TUser user = _serviceProvider != null ? ActivatorUtilities.CreateInstance<TUser>(_serviceProvider) : Activator.CreateInstance<TUser>();
 
             if (!_connectedUsers.TryAdd(user.Id, user))
             {
@@ -251,7 +252,8 @@ namespace LiteNetwork.Server
                 throw new LiteNetworkException($"The accepted socket is null.");
             }
 
-            user.Initialize(e.AcceptSocket);
+            user.Socket = e.AcceptSocket;
+            user.InitializeSender(Options.PacketProcessor);
             _logger?.LogInformation($"New user connected from '{user.Socket.RemoteEndPoint}' with id '{user.Id}'.");
             user.OnConnected();
             _receiver.StartReceiving(user);
@@ -274,7 +276,7 @@ namespace LiteNetwork.Server
             }
         }
 
-        private void OnDisconnected(object? sender, ILiteConnection e)
+        private void OnDisconnected(object? sender, LiteConnection e)
         {
             DisconnectUser(e.Id);
         }

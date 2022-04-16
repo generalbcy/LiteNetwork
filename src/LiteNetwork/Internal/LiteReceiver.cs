@@ -27,7 +27,7 @@ namespace LiteNetwork.Internal
         /// <summary>
         /// The event used when a client has been disconnected.
         /// </summary>
-        public event EventHandler<ILiteConnection>? Disconnected;
+        public event EventHandler<LiteConnection>? Disconnected;
 
         /// <summary>
         /// The event used when an error has been occurred.
@@ -50,7 +50,7 @@ namespace LiteNetwork.Internal
         /// Starts the receive process for the given connection and socket.
         /// </summary>
         /// <param name="connection">User connection.</param>
-        public void StartReceiving(ILiteConnection connection)
+        public void StartReceiving(LiteConnection connection)
         {
             ILiteConnectionToken token = BuildConnectionToken(connection);
             SocketAsyncEventArgs socketAsyncEvent = GetSocketEvent();
@@ -66,7 +66,7 @@ namespace LiteNetwork.Internal
         /// <param name="socketAsyncEvent">Socket async event arguments.</param>
         private void ReceiveData(ILiteConnectionToken userConnectionToken, SocketAsyncEventArgs socketAsyncEvent)
         {
-            if (!userConnectionToken.Connection.Socket.ReceiveAsync(socketAsyncEvent))
+            if (userConnectionToken.Connection.Socket != null && !userConnectionToken.Connection.Socket.ReceiveAsync(socketAsyncEvent))
             {
                 ProcessReceive(userConnectionToken, socketAsyncEvent);
             }
@@ -174,7 +174,7 @@ namespace LiteNetwork.Internal
         /// Called when a client has been disconnected.
         /// </summary>
         /// <param name="client">Disconnected client.</param>
-        private void OnDisconnected(ILiteConnection client) => Disconnected?.Invoke(this, client);
+        private void OnDisconnected(LiteConnection client) => Disconnected?.Invoke(this, client);
 
         /// <summary>
         /// Called when an exeption has been thrown during the receive process.
@@ -187,7 +187,7 @@ namespace LiteNetwork.Internal
         /// </summary>
         /// <param name="connection">Connection that received the message.</param>
         /// <param name="messageData">Message data.</param>
-        internal async void ProcessReceivedMessage(ILiteConnection connection, byte[] messageData)
+        internal async void ProcessReceivedMessage(LiteConnection connection, byte[] messageData)
         {
             try
             {
@@ -200,11 +200,11 @@ namespace LiteNetwork.Internal
         }
 
         /// <summary>
-        /// Builds an user connection token with the given <see cref="ILiteConnection"/>.
+        /// Builds an user connection token with the given <see cref="LiteConnection"/>.
         /// </summary>
         /// <param name="connection">The connection associated with the token.</param>
         /// <returns>A new connection token implementation.</returns>
-        private ILiteConnectionToken BuildConnectionToken(ILiteConnection connection)
+        private ILiteConnectionToken BuildConnectionToken(LiteConnection connection)
             => ReceiveStrategy switch
             {
                 ReceiveStrategyType.Default => new LiteDefaultConnectionToken(connection, ProcessReceivedMessage),

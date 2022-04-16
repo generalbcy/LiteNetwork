@@ -1,6 +1,8 @@
 ﻿using LiteNetwork.Client;
 using LiteNetwork.Protocol;
 using System;
+using System.IO;
+using System.Net.Sockets;
 using System.Threading.Tasks;
 
 namespace Sample.Echo.Client
@@ -32,10 +34,12 @@ namespace Sample.Echo.Client
                     break;
                 }
 
-                using var packet = new LitePacket();
-                packet.WriteString(messageToSend);
+                using var packetStream = new MemoryStream();
+                using var packet = new BinaryWriter(packetStream);
 
-                client.Send(packet);
+                packet.Write(messageToSend);
+
+                client.Send(packet.BaseStream);
             }
 
             Console.WriteLine("Leaving program.");

@@ -1,5 +1,4 @@
 ﻿using Bogus;
-using LiteNetwork.Protocol.Abstractions;
 using System;
 using System.Linq;
 using System.Runtime.InteropServices;
@@ -20,7 +19,7 @@ namespace LiteNetwork.Protocol.Tests
         [Fact]
         public void PacketStreamWriteNonPrimitiveTest()
         {
-            using ILitePacketStream packetStream = new LitePacketStream();
+            using LitePacketStream packetStream = new LitePacketStream();
 
             Assert.Throws<NotImplementedException>(() => packetStream.Write<object>(new object()));
         }
@@ -28,7 +27,7 @@ namespace LiteNetwork.Protocol.Tests
         [Fact]
         public void PacketStreamWriteWhenReadOnlyTest()
         {
-            using (ILitePacketStream packetStream = new LitePacketStream(_randomizer.Bytes(_randomizer.Byte())))
+            using (LitePacketStream packetStream = new LitePacketStream(_randomizer.Bytes(_randomizer.Byte())))
             {
                 Assert.Throws<InvalidOperationException>(() => packetStream.Write<byte>(_randomizer.Byte()));
             }
@@ -254,7 +253,7 @@ namespace LiteNetwork.Protocol.Tests
 
         private void PacketStreamWritePrimitive<T>(T valueToWrite, byte[] expectedByteArray, bool adjustBuffer = true)
         {
-            using (ILitePacketStream packetStream = new LitePacketStream())
+            using (LitePacketStream packetStream = new LitePacketStream())
             {
                 Assert.Equal(LitePacketMode.Write, packetStream.Mode);
 
@@ -266,9 +265,9 @@ namespace LiteNetwork.Protocol.Tests
             }
         }
 
-        private void PacketStreamWritePrimitiveMethod<T>(Action<ILitePacketStream, T> method, T valueToWrite, byte[] expectedByteArray, bool adjustBuffer = true)
+        private void PacketStreamWritePrimitiveMethod<T>(Action<LitePacketStream, T> method, T valueToWrite, byte[] expectedByteArray, bool adjustBuffer = true)
         {
-            using (ILitePacketStream packetStream = new LitePacketStream())
+            using (LitePacketStream packetStream = new LitePacketStream())
             {
                 Assert.Equal(LitePacketMode.Write, packetStream.Mode);
 

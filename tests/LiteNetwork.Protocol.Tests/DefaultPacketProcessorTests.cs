@@ -33,20 +33,6 @@ namespace LiteNetwork.Protocol.Tests
         }
 
         [Fact]
-        public void CreatePacketStreamFromDefaultProcessorTest()
-        {
-            string randomString = _faker.Lorem.Sentence(3);
-            var messageData = BitConverter.GetBytes(randomString.Length).Concat(Encoding.UTF8.GetBytes(randomString)).ToArray();
-
-            ILitePacketStream packetStream = _packetProcessor.CreatePacket(messageData);
-
-            Assert.NotNull(packetStream);
-            string packetStreamString = packetStream.Read<string>();
-            Assert.NotNull(packetStreamString);
-            Assert.Equal(randomString, packetStreamString);
-        }
-
-        [Fact]
         public void DefaultPacketProcessorNeverIncludeHeaderTest()
         {
             Assert.False(_packetProcessor.IncludeHeader);

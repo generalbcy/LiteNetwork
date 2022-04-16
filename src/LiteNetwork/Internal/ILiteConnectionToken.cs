@@ -12,7 +12,7 @@ namespace LiteNetwork.Internal
         /// <summary>
         /// Gets the connection attached to the current token.
         /// </summary>
-        ILiteConnection Connection { get; }
+        LiteConnection Connection { get; }
 
         /// <summary>
         /// Gets the data token.

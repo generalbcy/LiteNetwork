@@ -1,4 +1,5 @@
-﻿using System;
+﻿using LiteNetwork.Protocol.Abstractions;
+using System;
 using System.Collections.Concurrent;
 using System.Net.Sockets;
 using System.Threading;
@@ -14,7 +15,8 @@ namespace LiteNetwork.Internal
         private readonly BlockingCollection<byte[]> _sendingCollection;
         private readonly CancellationTokenSource _cancellationTokenSource;
         private readonly CancellationToken _cancellationToken;
-        private readonly ILiteConnection _connection;
+        private readonly LiteConnection _connection;
+        private readonly ILitePacketProcessor _packetProcessor;
         private readonly SocketAsyncEventArgs _socketAsyncEvent;
         private bool _disposedValue;
 
@@ -26,12 +28,13 @@ namespace LiteNetwork.Internal
         /// <summary>
         /// Creates and initializes a new <see cref="LiteSender"/> base instance.
         /// </summary>
-        public LiteSender(ILiteConnection connection)
+        public LiteSender(LiteConnection connection, ILitePacketProcessor packetProcessor)
         {
             _sendingCollection = new BlockingCollection<byte[]>();
             _cancellationTokenSource = new CancellationTokenSource();
             _cancellationToken = _cancellationTokenSource.Token;
             _connection = connection;
+            _packetProcessor = packetProcessor;
             _socketAsyncEvent = new SocketAsyncEventArgs();
             _socketAsyncEvent.Completed += OnSendCompleted;
         }
@@ -83,10 +86,11 @@ namespace LiteNetwork.Internal
                 try
                 {
                     byte[] message = _sendingCollection.Take(_cancellationToken);
+                    message = _packetProcessor.AppendHeander(message);
 
                     _socketAsyncEvent.SetBuffer(message, 0, message.Length);
 
-                    if (!_connection.Socket.SendAsync(_socketAsyncEvent))
+                    if (_connection.Socket != null && !_connection.Socket.SendAsync(_socketAsyncEvent))
                     {
                         OnSendCompleted(this, _socketAsyncEvent);
                     }

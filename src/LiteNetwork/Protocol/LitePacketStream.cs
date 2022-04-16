@@ -1,5 +1,4 @@
-﻿using LiteNetwork.Protocol.Abstractions;
-using System;
+﻿using System;
 using System.Globalization;
 using System.IO;
 using System.Linq;
@@ -8,20 +7,17 @@ using System.Text;
 namespace LiteNetwork.Protocol
 {
     /// <summary>
-    /// Provides a basic <see cref="ILitePacketStream"/> implementation.
+    /// Provides a basic and buil-in packet stream mechanism.
     /// </summary>
-    public class LitePacketStream : MemoryStream, ILitePacketStream
+    public class LitePacketStream : MemoryStream
     {
         private readonly BinaryReader _reader = null!;
         private readonly BinaryWriter _writer = null!;
 
-        /// <inheritdoc />
         public LitePacketMode Mode { get; }
 
-        /// <inheritdoc />
         public bool IsEndOfStream => Position >= Length;
-
-        /// <inheritdoc />
+        
         public virtual byte[] Buffer => TryGetBuffer(out ArraySegment<byte> buffer) ? buffer.ToArray() : Array.Empty<byte>();
 
         /// <summary>
@@ -60,49 +56,96 @@ namespace LiteNetwork.Protocol
             Mode = LitePacketMode.Read;
         }
 
-        /// <inheritdoc />
+        /// <summary>
+        /// Reads the next byte from the current packet stream and advances the current position of the packet stream by one byte.
+        /// </summary>
+        /// <returns>The next byte read from the current stream.</returns>
         public virtual new byte ReadByte() => Read<byte>();
 
-        /// <inheritdoc />
+        /// <summary>
+        /// Reads the next signed byte from the current packet stream and advances the current position of the packet stream by one byte.
+        /// </summary>
+        /// <returns></returns>
         public virtual sbyte ReadSByte() => Read<sbyte>();
 
-        /// <inheritdoc />
+        /// <summary>
+        /// Reads the next character from the current packet stream and advances the current position of the packet stream by one byte.
+        /// </summary>
+        /// <returns></returns>
         public virtual char ReadChar() => Read<char>();
 
-        /// <inheritdoc />
+        /// <summary>
+        /// Reads the next boolean value from the current packet stream and advances the current position of the packet stream by one byte.
+        /// </summary>
+        /// <returns>True if non-zero; false otherwise.</returns>
         public virtual bool ReadBoolean() => Read<bool>();
 
-        /// <inheritdoc />
+        /// <summary>
+        /// Reads a 2-bytes signed numeric value from the current packet stream and advances the current position of the packet stream by two bytes.
+        /// </summary>
+        /// <returns></returns>
         public virtual short ReadInt16() => Read<short>();
 
-        /// <inheritdoc />
+        /// <summary>
+        /// Reads a 2-bytes unsigned numeric value from the current packet stream and advances the current position of the packet stream by two bytes.
+        /// </summary>
+        /// <returns></returns>
         public virtual ushort ReadUInt16() => Read<ushort>();
 
-        /// <inheritdoc />
+        /// <summary>
+        /// Reads a 4-bytes signed numeric value from the current packet stream and advances the current position of the packet stream by four bytes.
+        /// </summary>
+        /// <returns></returns>
         public virtual int ReadInt32() => Read<int>();
 
-        /// <inheritdoc />
+        /// <summary>
+        /// Reads a 4-bytes unsigned numeric value from the current packet stream and advances the current position of the packet stream by four bytes.
+        /// </summary>
+        /// <returns></returns>
         public virtual uint ReadUInt32() => Read<uint>();
 
-        /// <inheritdoc />
+        /// <summary>
+        /// Reads a 8-bytes signed numeric value from the current packet stream and advances the current position of the packet stream by eight bytes.
+        /// </summary>
+        /// <returns></returns>
         public virtual long ReadInt64() => Read<long>();
 
-        /// <inheritdoc />
+        /// <summary>
+        /// Reads a 8-bytes unsigned numeric value from the current packet stream and advances the current position of the packet stream by eight bytes.
+        /// </summary>
+        /// <returns></returns>
         public virtual ulong ReadUInt64() => Read<ulong>();
 
-        /// <inheritdoc />
+        /// <summary>
+        /// Reads a 4-bytes floating numeric value from the current packet stream and advances the current position of the packet stream by four bytes.
+        /// </summary>
+        /// <returns></returns>
         public virtual float ReadSingle() => Read<float>();
 
-        /// <inheritdoc />
+        /// <summary>
+        /// Reads a 8-bytes floating numeric value from the current packet stream and advances the current position of the packet stream by eight bytes.
+        /// </summary>
+        /// <returns></returns>
         public virtual double ReadDouble() => Read<double>();
 
-        /// <inheritdoc />
+        /// <summary>
+        /// Reads a string from the current packet stream, where the first 4-byte represents the string length, then advances the current position of the packet stream by the length of the string plus four bytes.
+        /// </summary>
+        /// <returns></returns>
         public virtual string ReadString() => Read<string>();
 
-        /// <inheritdoc />
+        /// <summary>
+        /// Reads a given amount of bytes from the current packet stream and advances the current position of the packet stream by the number of read bytes.
+        /// </summary>
+        /// <param name="count">Byte amount to read.</param>
+        /// <returns></returns>
         public virtual byte[] ReadBytes(int count) => _reader.ReadBytes(count);
 
-        /// <inheritdoc />
+        /// <summary>
+        /// Reads a <typeparamref name="T"/> value from the packet stream.
+        /// </summary>
+        /// <typeparam name="T">Type of the value to read.</typeparam>
+        /// <returns>The value read and converted to the type.</returns>
         public virtual T Read<T>()
         {
             if (Mode != LitePacketMode.Read)
@@ -120,7 +163,12 @@ namespace LiteNetwork.Protocol
             throw new NotImplementedException($"Cannot read a {typeof(T)} value from the packet stream.");
         }
 
-        /// <inheritdoc />
+        /// <summary>
+        /// Reads an array of <typeparamref name="T"/> value from the packet.
+        /// </summary>
+        /// <typeparam name="T">Value type.</typeparam>
+        /// <param name="amount">Amount to read.</param>
+        /// <returns>An array of type <typeparamref name="T"/>.</returns>
         public virtual T[] Read<T>(int amount)
         {
             if (Mode != LitePacketMode.Read)
@@ -148,46 +196,90 @@ namespace LiteNetwork.Protocol
             return array;
         }
 
-        /// <inheritdoc />
+
+        /// <summary>
+        /// Writes a signed byte to the current packet stream and advances the current packet stream position by one byte.
+        /// </summary>
+        /// <param name="value"></param>
         public virtual void WriteSByte(sbyte value) => Write(value);
 
-        /// <inheritdoc />
+        /// <summary>
+        /// Writes a character to the current packet stream and advances the current packet stream position by one byte.
+        /// </summary>
+        /// <param name="value"></param>
         public virtual void WriteChar(char value) => Write(value);
 
-        /// <inheritdoc />
+        /// <summary>
+        /// Writes a boolean value to the current packet stream and advances the current packet stream position by one byte.
+        /// </summary>
+        /// <param name="value"></param>
         public virtual void WriteBoolean(bool value) => Write(value);
 
-        /// <inheritdoc />
+        /// <summary>
+        /// Writes a 2-bytes signed numeric value to the current packet stream and advances the current packet stream position byte two bytes.
+        /// </summary>
+        /// <param name="value"></param>
         public virtual void WriteInt16(short value) => Write(value);
 
-        /// <inheritdoc />
+        /// <summary>
+        /// Writes a 2-bytes unsigned numeric value to the current packet stream and advances the current packet stream position byte two bytes.
+        /// </summary>
+        /// <param name="value"></param>
         public virtual void WriteUInt16(ushort value) => Write(value);
 
-        /// <inheritdoc />
+        /// <summary>
+        /// Writes a 4-bytes signed numeric value to the current packet stream and advances the current packet stream position byte four bytes.
+        /// </summary>
+        /// <param name="value"></param>
         public virtual void WriteInt32(int value) => Write(value);
 
-        /// <inheritdoc />
+        /// <summary>
+        /// Writes a 4-bytes signed numeric value to the current packet stream and advances the current packet stream position byte four bytes.
+        /// </summary>
+        /// <param name="value"></param>
         public virtual void WriteUInt32(uint value) => Write(value);
 
-        /// <inheritdoc />
+        /// <summary>
+        /// Writes a 4-bytes floating numeric value to the current packet stream and advances the current packet stream position byte four bytes.
+        /// </summary>
+        /// <param name="value"></param>
         public virtual void WriteSingle(float value) => Write(value);
 
-        /// <inheritdoc />
+        /// <summary>
+        /// Writes a 8-bytes floating numeric value to the current packet stream and advances the current packet stream position byte eight bytes.
+        /// </summary>
+        /// <param name="value"></param>
         public virtual void WriteDouble(double value) => Write(value);
 
-        /// <inheritdoc />
+        /// <summary>
+        /// Writes a 8-bytes floating signed value to the current packet stream and advances the current packet stream position byte eight bytes.
+        /// </summary>
+        /// <param name="value"></param>
         public virtual void WriteInt64(long value) => Write(value);
 
-        /// <inheritdoc />
+        /// <summary>
+        /// Writes a 8-bytes unsigned numeric value to the current packet stream and advances the current packet stream position byte eight bytes.
+        /// </summary>
+        /// <param name="value"></param>
         public virtual void WriteUInt64(ulong value) => Write(value);
 
-        /// <inheritdoc />
+        /// <summary>
+        /// Writes a string to the current packet stream, where the first four bytes represents the string length and advances the current packet stream position by the string length + four bytes.
+        /// </summary>
+        /// <param name="value"></param>
         public virtual void WriteString(string value) => Write(value);
 
-        /// <inheritdoc />
+        /// <summary>
+        /// Writes a given byte array to the current packet stream and advances the current packet stream position by the array length.
+        /// </summary>
+        /// <param name="values"></param>
         public virtual void WriteBytes(byte[] values) => _writer.Write(values);
 
-        /// <inheritdoc />
+        /// <summary>
+        /// Writes a <typeparamref name="T"/> value in the packet stream.
+        /// </summary>
+        /// <typeparam name="T">Type of the value.</typeparam>
+        /// <param name="value">Value to write in the packet stream.</param>
         public virtual void Write<T>(T value)
         {
             if (Mode != LitePacketMode.Write)
@@ -298,18 +390,16 @@ namespace LiteNetwork.Protocol
                     break;
                 case TypeCode.String:
                     {
-                        if (value == null)
+                        if (value != null)
                         {
-                            return;
-                        }
+                            string stringValue = value.ToString();
 
-                        string stringValue = value.ToString();
+                            _writer.Write(stringValue.Length);
 
-                        _writer.Write(stringValue.Length);
-
-                        if (stringValue.Length > 0)
-                        {
-                            _writer.Write(WriteEncoding.GetBytes(stringValue));
+                            if (stringValue.Length > 0)
+                            {
+                                _writer.Write(WriteEncoding.GetBytes(stringValue));
+                            }
                         }
                     }
                     break;

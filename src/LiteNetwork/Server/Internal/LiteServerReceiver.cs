@@ -28,10 +28,12 @@ namespace LiteNetwork.Server.Internal
             _clientBufferSize = clientBufferSize;
         }
 
-        /// <inheritdoc />
         protected override void ClearSocketEvent(SocketAsyncEventArgs socketAsyncEvent)
         {
-            ArrayPool<byte>.Shared.Return(socketAsyncEvent.Buffer, true);
+            if (socketAsyncEvent.Buffer != null)
+            {
+                ArrayPool<byte>.Shared.Return(socketAsyncEvent.Buffer, true);
+            }
 
             socketAsyncEvent.SetBuffer(null, 0, 0);
             socketAsyncEvent.UserToken = null;
@@ -40,7 +42,6 @@ namespace LiteNetwork.Server.Internal
             _readPool.Return(socketAsyncEvent);
         }
 
-        /// <inheritdoc />
         protected override SocketAsyncEventArgs GetSocketEvent()
         {
             SocketAsyncEventArgs socketAsyncEvent = _readPool.Get();

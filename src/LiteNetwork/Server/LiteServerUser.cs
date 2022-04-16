@@ -1,49 +1,17 @@
-﻿using LiteNetwork.Internal;
-using System;
-using System.Net.Sockets;
-using System.Threading.Tasks;
+﻿using System.Threading.Tasks;
 
 namespace LiteNetwork.Server
 {
     /// <summary>
     /// Provides a basic user implementation that can be used for a <see cref="LiteServer{TUser}"/>.
     /// </summary>
-    public class LiteServerUser : ILiteConnection, IDisposable
+    public class LiteServerUser : LiteConnection
     {
-        private readonly LiteSender _sender;
-        private bool _disposed;
-
-        /// <inheritdoc />
-        public Guid Id { get; } = Guid.NewGuid();
-
-        /// <summary>
-        /// Gets or sets the user's connection socket
-        /// </summary>
-        public Socket Socket { get; internal set; } = null!;
-
         /// <summary>
         /// Creates a new <see cref="LiteServerUser"/> instance.
         /// </summary>
         public LiteServerUser()
         {
-            _sender = new LiteSender(this);
-        }
-
-        public virtual Task HandleMessageAsync(byte[] packetBuffer)
-        {
-            return Task.CompletedTask;
-        }
-
-        public virtual void Send(byte[] packetBuffer) => _sender.Send(packetBuffer);
-
-        /// <summary>
-        /// Initialize the <see cref="LiteServerUser"/> with the given <see cref="System.Net.Sockets.Socket"/>.
-        /// </summary>
-        /// <param name="socket">Socket connection.</param>
-        internal void Initialize(Socket socket)
-        {
-            Socket = socket;
-            _sender.Start();
         }
 
         /// <summary>
@@ -60,19 +28,6 @@ namespace LiteNetwork.Server
         {
         }
 
-        /// <summary>
-        /// Dispose a <see cref="LiteServerUser"/> resources.
-        /// </summary>
-        public virtual void Dispose()
-        {
-            if (!_disposed)
-            {
-                _disposed = true;
-                _sender.Dispose();
-                Socket.Dispose();
-            }
-
-            GC.SuppressFinalize(this);
-        }
+        public override Task HandleMessageAsync(byte[] packetBuffer) => Task.CompletedTask;
     }
 }

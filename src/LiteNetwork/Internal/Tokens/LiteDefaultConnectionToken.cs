@@ -10,20 +10,20 @@ namespace LiteNetwork.Internal.Tokens
     /// </summary>
     internal class LiteDefaultConnectionToken : ILiteConnectionToken
     {
-        private readonly Action<ILiteConnection, byte[]> _handlerAction;
+        private readonly Action<LiteConnection, byte[]> _handlerAction;
 
         /// <inheritdoc />
-        public ILiteConnection Connection { get; }
+        public LiteConnection Connection { get; }
 
         /// <inheritdoc />
         public LiteDataToken DataToken { get; }
 
         /// <summary>
-        /// Creates a new <see cref="LiteDefaultConnectionToken"/> instance with a <see cref="ILiteConnection"/>.
+        /// Creates a new <see cref="LiteDefaultConnectionToken"/> instance with a <see cref="LiteConnection"/>.
         /// </summary>
         /// <param name="connection">Current connection.</param>
         /// <param name="handlerAction">Action to execute when a packet message is being processed.</param>
-        public LiteDefaultConnectionToken(ILiteConnection connection, Action<ILiteConnection, byte[]> handlerAction)
+        public LiteDefaultConnectionToken(LiteConnection connection, Action<LiteConnection, byte[]> handlerAction)
         {
             Connection = connection;
             _handlerAction = handlerAction;
