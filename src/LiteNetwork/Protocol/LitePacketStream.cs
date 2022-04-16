@@ -289,7 +289,7 @@ namespace LiteNetwork.Protocol
 
             if (value is null)
             {
-                throw new ArgumentNullException("Cannot write a null value into the packet stream.");
+                throw new ArgumentNullException(nameof(value), "Cannot write a null value into the packet stream.");
             }
 
             if (typeof(T).IsPrimitive || typeof(T) == typeof(string))
@@ -392,11 +392,12 @@ namespace LiteNetwork.Protocol
                     {
                         if (value != null)
                         {
-                            string stringValue = value.ToString();
+                            string stringValue = value?.ToString() ?? string.Empty;
+                            int stringLength = stringValue.Length;
 
-                            _writer.Write(stringValue.Length);
+                            _writer.Write(stringLength);
 
-                            if (stringValue.Length > 0)
+                            if (stringLength > 0)
                             {
                                 _writer.Write(WriteEncoding.GetBytes(stringValue));
                             }

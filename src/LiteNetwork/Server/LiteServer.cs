@@ -22,12 +22,11 @@ namespace LiteNetwork.Server
         where TUser : LiteServerUser
     {
         private readonly ILogger<LiteServer<TUser>>? _logger;
+        private readonly IServiceProvider? _serviceProvider;
         private readonly ConcurrentDictionary<Guid, TUser> _connectedUsers;
         private readonly Socket _socket;
         private readonly LiteServerAcceptor _acceptor;
         private readonly LiteServerReceiver _receiver;
-
-        private IServiceProvider? _serviceProvider;
 
         public bool IsRunning { get; private set; }
 
@@ -129,7 +128,7 @@ namespace LiteNetwork.Server
 
         public void DisconnectUser(Guid userId)
         {
-            if (!_connectedUsers.TryRemove(userId, out TUser user))
+            if (!_connectedUsers.TryRemove(userId, out TUser? user))
             {
                 _logger?.LogError($"Cannot find user with id '{userId}'.");
                 return;
