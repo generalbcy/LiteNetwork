@@ -67,7 +67,7 @@ namespace LiteNetwork
         /// Triggered when an error occured related with the current <see cref="LiteConnection"/>.
         /// </summary>
         /// <param name="exception"></param>
-        protected virtual void OnError(object sender, Exception exception)
+        protected virtual void OnError(object? sender, Exception exception)
         {
         }
 

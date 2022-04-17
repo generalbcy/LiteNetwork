@@ -11,7 +11,7 @@ namespace LiteNetwork.Protocol
     {
         public virtual int HeaderSize { get; protected set; } = sizeof(int);
 
-        public virtual bool IncludeHeader { get; protected set; } = false;
+        public virtual bool IncludeHeader { get; protected set; }
 
         public virtual int GetMessageLength(byte[] buffer)
         {

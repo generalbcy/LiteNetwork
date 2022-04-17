@@ -108,10 +108,7 @@ namespace LiteNetwork.Server
         /// Starts to listening and accept users asynchronously.
         /// </summary>
         /// <returns>A <see cref="Task"/> that completes when the <see cref="LiteServer{TUser}"/> starts.</returns>
-        public async Task StartAsync()
-        {
-            await StartAsync(CancellationToken.None);
-        }
+        public async Task StartAsync() => await StartAsync(CancellationToken.None).ConfigureAwait(false);
 
         /// <summary>
         /// Starts to listening and accept users asynchronously with the specified <see cref="CancellationToken"/>.

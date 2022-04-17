@@ -12,15 +12,13 @@ namespace LiteNetwork.Internal.Tokens
     /// </summary>
     internal class LiteQueuedConnectionToken : ILiteConnectionToken
     {
-        private readonly Action<LiteConnection, byte[]> _handlerAction;
+        private readonly Func<LiteConnection, byte[], Task> _handlerAction;
         private readonly BlockingCollection<byte[]> _receiveMessageQueue;
         private readonly CancellationToken _receiveCancellationToken;
         private readonly CancellationTokenSource _receiveCancellationTokenSource;
 
-        /// <inheritdoc />
         public LiteConnection Connection { get; }
 
-        /// <inheritdoc />
         public LiteDataToken DataToken { get; }
 
         /// <summary>
@@ -28,7 +26,7 @@ namespace LiteNetwork.Internal.Tokens
         /// </summary>
         /// <param name="connection">Current connection.</param>
         /// <param name="handlerAction">Action to execute when a packet message is being processed.</param>
-        public LiteQueuedConnectionToken(LiteConnection connection, Action<LiteConnection, byte[]> handlerAction)
+        public LiteQueuedConnectionToken(LiteConnection connection, Func<LiteConnection, byte[], Task> handlerAction)
         {
             Connection = connection;
             _handlerAction = handlerAction;
@@ -42,7 +40,6 @@ namespace LiteNetwork.Internal.Tokens
                 TaskScheduler.Default);
         }
 
-        /// <inheritdoc />
         public void Dispose()
         {
             _receiveCancellationTokenSource.Cancel();
@@ -56,14 +53,14 @@ namespace LiteNetwork.Internal.Tokens
         /// <summary>
         /// Processes the received message queue until cancellation is requested.
         /// </summary>
-        private void OnProcessMessageQueue()
+        private async Task OnProcessMessageQueue()
         {
             while (!_receiveCancellationToken.IsCancellationRequested)
             {
                 try
                 {
                     byte[] message = _receiveMessageQueue.Take(_receiveCancellationToken);
-                    _handlerAction(Connection, message);
+                    await _handlerAction(Connection, message).ConfigureAwait(false);
                 }
                 catch (OperationCanceledException)
                 {

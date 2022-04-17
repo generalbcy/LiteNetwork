@@ -7,6 +7,7 @@ using System.Collections.Generic;
 using System.Diagnostics.CodeAnalysis;
 using System.Linq;
 using System.Net.Sockets;
+using System.Threading.Tasks;
 
 namespace LiteNetwork.Internal
 {
@@ -186,7 +187,7 @@ namespace LiteNetwork.Internal
         /// </summary>
         /// <param name="connection">Connection that received the message.</param>
         /// <param name="messageData">Message data.</param>
-        internal async void ProcessReceivedMessage(LiteConnection connection, byte[] messageData)
+        internal async Task ProcessReceivedMessage(LiteConnection connection, byte[] messageData)
         {
             try
             {
