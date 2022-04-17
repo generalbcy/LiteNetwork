@@ -85,25 +85,6 @@ namespace LiteNetwork.Server
         /// <returns>True if the user id has found; otherwise, false.</returns>
         public bool TryGetUser(Guid userId, out TUser? user) => _connectedUsers.TryGetValue(userId, out user);
 
-        [Obsolete("This method is obsolete. Consider using StartAsync() instead.")]
-        public async void Start()
-        {
-            if (IsRunning)
-            {
-                throw new InvalidOperationException("Server is already running.");
-            }
-
-            OnBeforeStart();
-
-            IPEndPoint localEndPoint = await LiteNetworkHelpers.CreateIpEndPointAsync(Options.Host, Options.Port).ConfigureAwait(false);
-            _socket.Bind(localEndPoint);
-            _socket.Listen(Options.Backlog);
-            _acceptor.StartAccept();
-            IsRunning = true;
-
-            OnAfterStart();
-        }
-
         /// <summary>
         /// Starts to listening and accept users asynchronously.
         /// </summary>
@@ -134,45 +115,19 @@ namespace LiteNetwork.Server
         }
 
         /// <summary>
-        /// Stop listening and disconnect all connectected users.
+        /// Attempt to stop the server asynchronously.
         /// </summary>
-        public void Stop()
+        /// <returns>A <see cref="Task"/> that completes when the <see cref="LiteServer{TUser}"/> stops.</returns>
+        public Task StopAsync()
         {
             if (!IsRunning)
             {
                 throw new InvalidOperationException("Server is not running.");
             }
 
-            OnBeforeStop();
-
-            foreach (var connectedUser in _connectedUsers)
-            {
-                DisconnectUser(connectedUser.Key);
-            }
-
-            _connectedUsers.Clear();
-
-            IsRunning = false;
-            OnAfterStop();
-        }
-
-        /// <summary>
-        /// Attempt to stop the server asynchronously with the specified <see cref="CancellationToken"/>.
-        /// </summary>
-        /// <param name="cancellationToken">Used to indicate when stop should no longer be successfully.</param>
-        /// <returns>A <see cref="Task"/> that completes when the <see cref="LiteServer{TUser}"/> stops.</returns>
-        public Task StopAsync(CancellationToken cancellationToken)
-        {
-            return Task.Factory.StartNew(Stop, cancellationToken, TaskCreationOptions.LongRunning, TaskScheduler.Default);
-        }
-
-        /// <summary>
-        /// Attempt to stop the server asynchronously.
-        /// </summary>
-        /// <returns>A <see cref="Task"/> that completes when the <see cref="LiteServer{TUser}"/> stops.</returns>
-        public Task StopAsync()
-        {
-            return Task.Factory.StartNew(Stop, CancellationToken.None, TaskCreationOptions.LongRunning, TaskScheduler.Default);
+            StopServer();
+            
+            return Task.CompletedTask;
         }
 
         /// <summary>
@@ -248,7 +203,7 @@ namespace LiteNetwork.Server
         {
             if (IsRunning)
             {
-                Stop();
+                StopServer();
             }
 
             _socket.Dispose();
@@ -334,6 +289,24 @@ namespace LiteNetwork.Server
         private void OnDisconnected(object? sender, LiteConnection e)
         {
             DisconnectUser(e.Id);
+        }
+
+        private void DisconnectAllUsers()
+        {
+            foreach (var connectedUser in _connectedUsers)
+            {
+                DisconnectUser(connectedUser.Key);
+            }
+
+            _connectedUsers.Clear();
+        }
+
+        private void StopServer()
+        {
+            OnBeforeStop();
+            DisconnectAllUsers();
+            IsRunning = false;
+            OnAfterStop();
         }
     }
 }

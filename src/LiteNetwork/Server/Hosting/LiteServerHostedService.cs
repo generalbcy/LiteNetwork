@@ -25,6 +25,6 @@ namespace LiteNetwork.Server.Hosting
 
         public async Task StartAsync(CancellationToken cancellationToken) => await _server.StartAsync(cancellationToken);
 
-        public async Task StopAsync(CancellationToken cancellationToken) => await _server.StopAsync(cancellationToken);
+        public async Task StopAsync(CancellationToken _) => await _server.StopAsync();
     }
 }

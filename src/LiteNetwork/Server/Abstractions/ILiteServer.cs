@@ -37,12 +37,5 @@ namespace LiteNetwork.Server.Abstractions
         /// </summary>
         /// <returns></returns>
         Task StopAsync();
-
-        /// <summary>
-        /// Stops the server with a cancellation token.
-        /// </summary>
-        /// <param name="cancellationToken"></param>
-        /// <returns></returns>
-        Task StopAsync(CancellationToken cancellationToken);
     }
 }

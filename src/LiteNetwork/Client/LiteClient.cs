@@ -116,6 +116,8 @@ namespace LiteNetwork.Client
             if (disposing)
             {
                 _connector.Dispose();
+
+                _receiver.Error -= OnError;
                 _receiver.Dispose();
             }
 

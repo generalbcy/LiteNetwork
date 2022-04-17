@@ -16,7 +16,6 @@ namespace LiteNetwork.Internal
     /// </summary>
     internal abstract class LiteReceiver
     {
-        private readonly ILitePacketProcessor _packetProcessor;
         private readonly LitePacketParser _packetParser;
 
         /// <summary>
@@ -41,9 +40,8 @@ namespace LiteNetwork.Internal
         /// <param name="receiveStrategy">A <see cref="ReceiveStrategyType"/> to use.</param>
         protected LiteReceiver(ILitePacketProcessor packetProcessor, ReceiveStrategyType receiveStrategy)
         {
-            _packetProcessor = packetProcessor;
             ReceiveStrategy = receiveStrategy;
-            _packetParser = new LitePacketParser(_packetProcessor);
+            _packetParser = new LitePacketParser(packetProcessor);
         }
 
         /// <summary>
