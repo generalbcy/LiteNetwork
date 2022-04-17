@@ -9,9 +9,9 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "lib", "lib", "{245D6146-164
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "LiteNetwork", "..\..\src\LiteNetwork\LiteNetwork.csproj", "{2004F4CA-93A3-45F1-A395-08C37A005AC3}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Samples.Hosting.Server", "Samples.Hosting.Server\Samples.Hosting.Server.csproj", "{260B4157-1A88-4F7E-88F6-0BF44CA17F6D}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Sample.Hosting.Server", "Sample.Hosting.Server\Sample.Hosting.Server.csproj", "{260B4157-1A88-4F7E-88F6-0BF44CA17F6D}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Samples.Hosting.Client", "Samples.Hosting.Client\Samples.Hosting.Client.csproj", "{7B6A4B4B-930F-441D-B349-25E75E63371F}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Sample.Hosting.Client", "Sample.Hosting.Client\Sample.Hosting.Client.csproj", "{7B6A4B4B-930F-441D-B349-25E75E63371F}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
