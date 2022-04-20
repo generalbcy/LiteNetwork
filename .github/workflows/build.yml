@@ -42,4 +42,5 @@ jobs:
       run: |
         dotnet build samples/echo/LiteNetwork.Sample.Echo.sln -c Release
         dotnet build samples/hosting/LiteNetwork.Sample.Hosting.sln -c Release
+        dotnet build samples/custom-packet-reader-writer/LiteNetwork.Sample.CustomPacketReaderWriter.sln -c Release
 
