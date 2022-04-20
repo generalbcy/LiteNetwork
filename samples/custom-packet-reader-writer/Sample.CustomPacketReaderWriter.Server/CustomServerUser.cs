@@ -1,16 +1,15 @@
 ﻿using LiteNetwork.Server;
+using Sample.CustomPacketReaderWriter.Protocol;
 using System;
-using System.IO;
 using System.Threading.Tasks;
 
-namespace LiteNetwork.Sample.Echo.Server
+namespace Sample.CustomPacketReaderWriter.Server
 {
-    public class EchoUser : LiteServerUser
+    public class CustomServerUser : LiteServerUser
     {
         public override Task HandleMessageAsync(byte[] packetBuffer)
         {
-            using var incomingPacketStream = new MemoryStream(packetBuffer);
-            using var packetReader = new BinaryReader(incomingPacketStream);
+            using var packetReader = new CustomPacketReader(packetBuffer);
 
             string receivedMessage = packetReader.ReadString();
 
@@ -23,6 +22,7 @@ namespace LiteNetwork.Sample.Echo.Server
         protected override void OnConnected()
         {
             Console.WriteLine($"New client connected with id: {Id}");
+
             SendMessage($"Hello {Id}!");
         }
 
@@ -33,12 +33,11 @@ namespace LiteNetwork.Sample.Echo.Server
 
         private void SendMessage(string message)
         {
-            using var outgoingPacketStream = new MemoryStream();
-            using var packetWriter = new BinaryWriter(outgoingPacketStream);
+            using var packetWriter = new CustomPacketWriter();
 
-            packetWriter.Write(message);
+            packetWriter.WriteString(message);
 
-            Send(packetWriter.BaseStream);
+            Send(packetWriter);
         }
     }
 }

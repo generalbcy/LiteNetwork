@@ -1,8 +1,6 @@
 ﻿using LiteNetwork.Client;
-using LiteNetwork.Protocol;
 using System;
 using System.IO;
-using System.Net.Sockets;
 using System.Threading.Tasks;
 
 namespace Sample.Echo.Client
