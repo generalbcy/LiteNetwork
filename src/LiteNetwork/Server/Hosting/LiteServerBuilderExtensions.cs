@@ -45,7 +45,8 @@ namespace LiteNetwork.Server.Hosting
                 throw new ArgumentNullException(nameof(builder));
             }
 
-            builder.Services.AddSingleton<TLiteServer, TLiteServerImplementation>(serviceProvider => ConfigureServer<TLiteServerImplementation>(serviceProvider, configure));
+            builder.Services.AddSingleton<TLiteServerImplementation>(serviceProvider => ConfigureServer<TLiteServerImplementation>(serviceProvider, configure));
+            builder.Services.AddSingleton<TLiteServer, TLiteServerImplementation>(serviceProvider => serviceProvider.GetRequiredService<TLiteServerImplementation>());
             builder.Services.AddLiteServerHostedService<TLiteServerImplementation>();
 
             return builder;
