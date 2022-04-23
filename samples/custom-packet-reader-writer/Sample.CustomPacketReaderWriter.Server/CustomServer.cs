@@ -1,11 +1,11 @@
 ﻿using LiteNetwork.Server;
 using System;
 
-namespace LiteNetwork.Sample.Echo.Server
+namespace Sample.CustomPacketReaderWriter.Server
 {
-    public class EchoServer : LiteServer<EchoUser>
+    public class CustomServer : LiteServer<CustomServerUser>
     {
-        public EchoServer(LiteServerOptions options)
+        public CustomServer(LiteServerOptions options)
             : base(options)
         {
         }

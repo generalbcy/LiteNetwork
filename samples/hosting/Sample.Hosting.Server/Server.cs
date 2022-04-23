@@ -3,14 +3,9 @@ using System;
 
 namespace LiteNetwork.Samples.Hosting.Server
 {
-    public interface ICustomServer
+    public class Server : LiteServer<ServerUser>
     {
-        void DoSomething();
-    }
-
-    public class CustomServer : LiteServer<ServerUser>, ICustomServer
-    {
-        public CustomServer(LiteServerOptions options, IServiceProvider serviceProvider)
+        public Server(LiteServerOptions options, IServiceProvider serviceProvider)
             : base(options, serviceProvider)
         {
         }
@@ -23,11 +18,6 @@ namespace LiteNetwork.Samples.Hosting.Server
         protected override void OnAfterStart()
         {
             Console.WriteLine($"Server listening on port {Options.Port}.");
-        }
-
-        public void DoSomething()
-        {
-            throw new NotImplementedException();
         }
     }
 }

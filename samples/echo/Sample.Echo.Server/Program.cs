@@ -1,11 +1,12 @@
 ﻿using LiteNetwork.Server;
 using System;
+using System.Threading.Tasks;
 
 namespace LiteNetwork.Sample.Echo.Server
 {
     class Program
     {
-        static void Main(string[] args)
+        static async Task Main(string[] args)
         {
             Console.WriteLine("=== ECHO SERVER ===");
             
@@ -17,7 +18,7 @@ namespace LiteNetwork.Sample.Echo.Server
             };
             using var server = new EchoServer(configuration);
 
-            server.Start();
+            await server.StartAsync();
             Console.ReadKey();
         }
     }

@@ -8,125 +8,65 @@ namespace LiteNetwork.Server.Hosting
     public static class LiteServerBuilderExtensions
     {
         /// <summary>
-        /// Initializes a basic <see cref="LiteServer{TUser}"/> with the specified <typeparamref name="TLiteServerUser"/>.
-        /// </summary>
-        /// <typeparam name="TLiteServerUser">Server's user type.</typeparam>
-        /// <param name="builder">A <see cref="ILiteBuilder"/> to add server.</param>
-        /// <param name="configure">Delegate to configure a <see cref="LiteServerOptions"/>.</param>
-        /// <returns>The <see cref="ILiteBuilder"/>.</returns>
-        public static ILiteBuilder AddLiteServer<TLiteServerUser>(this ILiteBuilder builder, Action<LiteServerOptions> configure) 
-            where TLiteServerUser : LiteServerUser
-        {
-            if (builder is null)
-            {
-                throw new ArgumentNullException(nameof(builder));
-            }
-
-            builder.Services.AddSingleton<ILiteServer<TLiteServerUser>, LiteServer<TLiteServerUser>>(serviceProvider =>
-            {
-                var liteServerOptions = new LiteServerOptions();
-                configure(liteServerOptions);
-
-                var server = new LiteServer<TLiteServerUser>(liteServerOptions, serviceProvider);
-                return server;
-            });
-
-
-            builder.Services.AddHostedService(serviceProvider =>
-            {
-                var serverInstance = serviceProvider.GetRequiredService<ILiteServer<TLiteServerUser>>();
-                return new LiteServerHostedService<TLiteServerUser>(serverInstance);
-            });
-            return builder;
-        }
-
-        /// <summary>
-        /// Initializes a <typeparamref name="TLiteServer"/> with the specified <typeparamref name="TLiteServerUser"/>.
+        /// Registers and initializes a <typeparamref name="TLiteServer"/> instance.
         /// </summary>
         /// <typeparam name="TLiteServer">Server type.</typeparam>
-        /// <typeparam name="TLiteServerUser">Server's user type.</typeparam>
         /// <param name="builder">A <see cref="ILiteBuilder"/> to add server.</param>
         /// <param name="configure">Delegate to configure a <see cref="LiteServerOptions"/>.</param>
         /// <returns>The <see cref="ILiteBuilder"/>.</returns>
-        public static ILiteBuilder AddLiteServer<TLiteServer, TLiteServerUser>(this ILiteBuilder builder, Action<LiteServerOptions> configure)
-            where TLiteServer : class, ILiteServer<TLiteServerUser>
-            where TLiteServerUser : LiteServerUser
+        public static ILiteBuilder AddLiteServer<TLiteServer>(this ILiteBuilder builder, Action<LiteServerOptions> configure)
+            where TLiteServer : class, ILiteServer
         {
             if (builder is null)
             {
                 throw new ArgumentNullException(nameof(builder));
             }
 
-            builder.Services.AddSingleton(serviceProvider =>
-            {
-                var liteServerOptions = new LiteServerOptions();
-                configure(liteServerOptions);
-                
-                TLiteServer server = ActivatorUtilities.CreateInstance<TLiteServer>(serviceProvider, liteServerOptions);
-
-                if (server is LiteServer<TLiteServerUser> serverInstance)
-                {
-                    serverInstance.SetServiceProvider(serviceProvider);
-                }
-
-                return server;
-            });
-
-            builder.Services.AddHostedService(serviceProvider =>
-            {
-                var serverInstance = serviceProvider.GetRequiredService<TLiteServer>();
-                return new LiteServerHostedService<TLiteServerUser>(serverInstance);
-            });
+            builder.Services.AddSingleton<TLiteServer>(serviceProvider => ConfigureServer<TLiteServer>(serviceProvider, configure));
+            builder.Services.AddLiteServerHostedService<TLiteServer>();
 
             return builder;
         }
 
         /// <summary>
-        /// Initializes a <typeparamref name="TLiteServerImplementation"/> with the specified <typeparamref name="TLiteServerUser"/>.
+        /// Registers and initializes a <typeparamref name="TLiteServerImplementation"/> instance.
         /// </summary>
         /// <typeparam name="TLiteServer">LiteServer abstraction.</typeparam>
         /// <typeparam name="TLiteServerImplementation">LiteServer implementation.</typeparam>
-        /// <typeparam name="TLiteServerUser">LiteServer user.</typeparam>
         /// <param name="builder">A <see cref="ILiteBuilder"/> to add server.</param>
         /// <param name="configure">Delegate to configure a <see cref="LiteServerOptions"/>.</param>
         /// <returns>The <see cref="ILiteBuilder"/>.</returns>
-        public static ILiteBuilder AddLiteServer<TLiteServer, TLiteServerImplementation, TLiteServerUser>(this ILiteBuilder builder, Action<LiteServerOptions> configure)
+        public static ILiteBuilder AddLiteServer<TLiteServer, TLiteServerImplementation>(this ILiteBuilder builder, Action<LiteServerOptions> configure)
             where TLiteServer : class
-            where TLiteServerImplementation : class, TLiteServer, ILiteServer<TLiteServerUser>
-            where TLiteServerUser : LiteServerUser
+            where TLiteServerImplementation : class, TLiteServer, ILiteServer
         {
             if (builder is null)
             {
                 throw new ArgumentNullException(nameof(builder));
             }
 
-            builder.Services.AddSingleton<TLiteServer, TLiteServerImplementation>(serviceProvider =>
-            {
-                var liteServerOptions = new LiteServerOptions();
-                configure(liteServerOptions);
-
-                var server = ActivatorUtilities.CreateInstance<TLiteServerImplementation>(serviceProvider, liteServerOptions);
-
-                if (server is LiteServer<TLiteServerUser> serverInstance)
-                {
-                    serverInstance.SetServiceProvider(serviceProvider);
-                }
-
-                return server;
-            });
-
-            builder.Services.AddSingleton<ILiteServer<TLiteServerUser>, TLiteServerImplementation>(serviceProvider =>
-            {
-                return (TLiteServerImplementation)serviceProvider.GetRequiredService<TLiteServer>();
-            });
-
-            builder.Services.AddHostedService(serviceProvider =>
-            {
-                var serverInstance = serviceProvider.GetRequiredService<ILiteServer<TLiteServerUser>>();
-                return new LiteServerHostedService<TLiteServerUser>(serverInstance);
-            });
+            builder.Services.AddSingleton<TLiteServer, TLiteServerImplementation>(serviceProvider => ConfigureServer<TLiteServerImplementation>(serviceProvider, configure));
+            builder.Services.AddLiteServerHostedService<TLiteServerImplementation>();
 
             return builder;
+        }
+
+        private static TLiteServer ConfigureServer<TLiteServer>(IServiceProvider serviceProvider, Action<LiteServerOptions> configure)
+            where TLiteServer : class, ILiteServer
+        {
+            LiteServerOptions options = new();
+            configure(options);
+
+            return ActivatorUtilities.CreateInstance<TLiteServer>(serviceProvider, options);
+        }
+
+        private static void AddLiteServerHostedService<TLiteServer>(this IServiceCollection services)
+            where TLiteServer : class, ILiteServer
+        {
+            services.AddHostedService(serviceProvider =>
+            {
+                return new LiteServerHostedService(serviceProvider.GetRequiredService<TLiteServer>());
+            });
         }
     }
 }

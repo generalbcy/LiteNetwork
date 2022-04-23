@@ -1,21 +1,20 @@
 ﻿using LiteNetwork.Client;
+using Sample.CustomPacketReaderWriter.Protocol;
 using System;
-using System.IO;
 using System.Threading.Tasks;
 
-namespace Sample.Echo.Client
+namespace Sample.CustomPacketReaderWriter.Client
 {
-    public class EchoClient : LiteClient
+    public class CustomClient : LiteClient
     {
-        public EchoClient(LiteClientOptions options, IServiceProvider serviceProvider = null) 
+        public CustomClient(LiteClientOptions options, IServiceProvider serviceProvider = null)
             : base(options, serviceProvider)
         {
         }
 
         public override Task HandleMessageAsync(byte[] packetBuffer)
         {
-            using var incomingPacketStream = new MemoryStream(packetBuffer);
-            using var packetReader = new BinaryReader(incomingPacketStream);
+            using var packetReader = new CustomPacketReader(packetBuffer);
 
             string message = packetReader.ReadString();
 

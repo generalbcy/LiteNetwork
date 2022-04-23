@@ -20,9 +20,7 @@ namespace LiteNetwork.Protocol
                 : buffer.Take(HeaderSize).Reverse().ToArray(), 0);
         }
 
-        public virtual ILitePacketStream CreatePacket(byte[] buffer) => new LitePacket(buffer);
-
-        public virtual bool ParseHeader(LiteDataToken token, byte[] buffer, int bytesTransfered)
+        public virtual bool ReadHeader(LiteDataToken token, byte[] buffer, int bytesTransfered)
         {
             if (token.HeaderData is null)
             {
@@ -45,8 +43,7 @@ namespace LiteNetwork.Protocol
             return token.ReceivedHeaderBytesCount == HeaderSize;
         }
 
-        /// <inheritdoc />
-        public virtual void ParseContent(LiteDataToken token, byte[] buffer, int bytesTransfered)
+        public virtual void ReadContent(LiteDataToken token, byte[] buffer, int bytesTransfered)
         {
             if (token.HeaderData is null)
             {
@@ -79,6 +76,18 @@ namespace LiteNetwork.Protocol
                 token.ReceivedMessageBytesCount += bytesToRead;
                 token.DataStartOffset += bytesToRead;
             }
+        }
+
+        public byte[] AppendHeander(byte[] buffer)
+        {
+            int contentLength = buffer.Length;
+            byte[] contentLengthBuffer = BitConverter.GetBytes(contentLength);
+            byte[] packetBuffer = new byte[HeaderSize + buffer.Length];
+
+            Array.Copy(contentLengthBuffer, 0, packetBuffer, 0, HeaderSize);
+            Array.Copy(buffer, 0, packetBuffer, HeaderSize, contentLength);
+
+            return packetBuffer;
         }
     }
 }

@@ -10,40 +10,36 @@ namespace LiteNetwork.Internal.Tokens
     /// </summary>
     internal class LiteDefaultConnectionToken : ILiteConnectionToken
     {
-        private readonly Action<ILiteConnection, byte[]> _handlerAction;
+        private readonly Func<LiteConnection, byte[], Task> _handlerAction;
 
-        /// <inheritdoc />
-        public ILiteConnection Connection { get; }
+        public LiteConnection Connection { get; }
 
-        /// <inheritdoc />
         public LiteDataToken DataToken { get; }
 
         /// <summary>
-        /// Creates a new <see cref="LiteDefaultConnectionToken"/> instance with a <see cref="ILiteConnection"/>.
+        /// Creates a new <see cref="LiteDefaultConnectionToken"/> instance with a <see cref="LiteConnection"/>.
         /// </summary>
         /// <param name="connection">Current connection.</param>
-        /// <param name="handlerAction">Action to execute when a packet message is being processed.</param>
-        public LiteDefaultConnectionToken(ILiteConnection connection, Action<ILiteConnection, byte[]> handlerAction)
+        /// <param name="handlerAction">Asynchronous action to execute when a packet message is being processed.</param>
+        public LiteDefaultConnectionToken(LiteConnection connection, Func<LiteConnection, byte[], Task> handlerAction)
         {
             Connection = connection;
             _handlerAction = handlerAction;
             DataToken = new LiteDataToken(Connection);
         }
 
-        /// <inheritdoc />
         public void Dispose()
         {
             // nothing to do
         }
 
-        /// <inheritdoc />
         public void ProcessReceivedMessages(IEnumerable<byte[]> messages)
         {
-            Task.Run(() =>
+            Task.Run(async () =>
             {
                 foreach (var messageBuffer in messages)
                 {
-                    _handlerAction(Connection, messageBuffer);
+                    await _handlerAction(Connection, messageBuffer).ConfigureAwait(false);
                 }
             });
         }

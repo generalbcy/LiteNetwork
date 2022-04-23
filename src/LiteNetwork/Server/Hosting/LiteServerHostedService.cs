@@ -1,5 +1,6 @@
 ﻿using LiteNetwork.Server.Abstractions;
 using Microsoft.Extensions.Hosting;
+using System;
 using System.Threading;
 using System.Threading.Tasks;
 
@@ -9,30 +10,21 @@ namespace LiteNetwork.Server.Hosting
     /// Define a basic <see cref="IHostedService"/> to use with <see cref="LiteServer{TUser}"/>.
     /// </summary>
     /// <typeparam name="TLiteServerUser">The user that will be use by the sever.</typeparam>
-    internal class LiteServerHostedService<TLiteServerUser> : IHostedService
-        where TLiteServerUser : LiteServerUser
+    internal class LiteServerHostedService: IHostedService
     {
-        private readonly ILiteServer<TLiteServerUser> _server;
+        private readonly ILiteServer _server;
 
         /// <summary>
-        /// Creates a new <see cref="LiteServerHostedService{TLiteServerUser}"/> with the given server.
+        /// Creates a new <see cref="LiteServerHostedService"/> with the given server to host.
         /// </summary>
         /// <param name="server">Server to host.</param>
-        public LiteServerHostedService(ILiteServer<TLiteServerUser> server)
+        public LiteServerHostedService(ILiteServer server)
         {
-            _server = server;
+            _server = server ?? throw new ArgumentNullException(nameof(server), $"Failed to inject server.");
         }
 
-        /// <inheritdoc />
-        public Task StartAsync(CancellationToken cancellationToken)
-        {
-            return _server.StartAsync(cancellationToken);
-        }
+        public async Task StartAsync(CancellationToken cancellationToken) => await _server.StartAsync(cancellationToken);
 
-        /// <inheritdoc />
-        public Task StopAsync(CancellationToken cancellationToken)
-        {
-            return _server.StopAsync(cancellationToken);
-        }
+        public async Task StopAsync(CancellationToken _) => await _server.StopAsync();
     }
 }

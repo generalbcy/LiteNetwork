@@ -16,34 +16,34 @@
         bool IncludeHeader { get; }
 
         /// <summary>
-        /// Gets the packet message length with the given buffer/>.
+        /// Gets the packet message length with the given buffer.
         /// </summary>
         /// <param name="buffer">Header buffer.</param>
         /// <returns>Packet message data length.</returns>
         int GetMessageLength(byte[] buffer);
 
         /// <summary>
-        /// Creates a new <see cref="ILitePacketStream"/> packet instance with the given buffer.
-        /// </summary>
-        /// <param name="buffer">Input buffer.</param>
-        /// <returns>New <see cref="ILitePacketStream"/> instance in read-only mode.</returns>
-        ILitePacketStream CreatePacket(byte[] buffer);
-
-        /// <summary>
-        /// Parses the packet header based on the given data token information..
+        /// Reads the packet header based on the given data token information.
         /// </summary>
         /// <param name="token">Current data token.</param>
         /// <param name="buffer">Current buffer from socket receive operation.</param>
         /// <param name="bytesTransfered">Number of bytes transfered by the socket.</param>
         /// <returns>True if the header is complete; otherwise, false.</returns>
-        bool ParseHeader(LiteDataToken token, byte[] buffer, int bytesTransfered);
+        bool ReadHeader(LiteDataToken token, byte[] buffer, int bytesTransfered);
 
         /// <summary>
-        /// Parses the packet content based on the given data token information.
+        /// Reads the packet content based on the given data token information.
         /// </summary>
         /// <param name="token">Current data token.</param>
         /// <param name="buffer">Current buffer from socket receive operation.</param>
         /// <param name="bytesTransfered">Number of bytes transfered by the socket.</param>
-        void ParseContent(LiteDataToken token, byte[] buffer, int bytesTransfered);
+        void ReadContent(LiteDataToken token, byte[] buffer, int bytesTransfered);
+
+        /// <summary>
+        /// Append the packet header to the given buffer.
+        /// </summary>
+        /// <param name="buffer">Current packet buffer content.</param>
+        /// <returns>The buffer with the packet header.</returns>
+        byte[] AppendHeander(byte[] buffer);
     }
 }

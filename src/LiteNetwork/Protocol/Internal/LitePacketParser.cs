@@ -35,12 +35,12 @@ namespace LiteNetwork.Protocol.Internal
             {
                 if (!token.IsHeaderComplete)
                 {
-                    token.IsHeaderComplete = _packetProcessor.ParseHeader(token, buffer, bytesTransfered);
+                    token.IsHeaderComplete = _packetProcessor.ReadHeader(token, buffer, bytesTransfered);
                 }
 
                 if (token.IsHeaderComplete && token.HeaderData is not null)
                 {
-                    _packetProcessor.ParseContent(token, buffer, bytesTransfered);
+                    _packetProcessor.ReadContent(token, buffer, bytesTransfered);
                 }
 
                 if (token.IsMessageComplete)
@@ -67,11 +67,21 @@ namespace LiteNetwork.Protocol.Internal
                 throw new ArgumentNullException("An error occurred: Message size cannot be null.");
             }
 
+            if (token.MessageData is null)
+            {
+                throw new ArgumentNullException("An error occured: Message data buffer is null.");
+            }
+
             var bufferSize = _packetProcessor.IncludeHeader ? _packetProcessor.HeaderSize + token.MessageSize.Value : token.MessageSize.Value;
             var buffer = new byte[bufferSize];
 
             if (_packetProcessor.IncludeHeader)
             {
+                if (token.HeaderData is null)
+                {
+                    throw new ArgumentNullException("An error occureed: Header data cannot be null when including it in the final message buffer.");
+                }
+
                 Array.Copy(token.HeaderData, 0, buffer, 0, _packetProcessor.HeaderSize);
                 Array.Copy(token.MessageData, 0, buffer, _packetProcessor.HeaderSize, token.MessageSize.Value);
             }

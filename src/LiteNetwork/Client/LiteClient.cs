@@ -1,7 +1,4 @@
-﻿using LiteNetwork.Client.Abstractions;
-using LiteNetwork.Client.Internal;
-using LiteNetwork.Internal;
-using LiteNetwork.Protocol.Abstractions;
+﻿using LiteNetwork.Client.Internal;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using System;
@@ -10,7 +7,7 @@ using System.Threading.Tasks;
 
 namespace LiteNetwork.Client
 {
-    public class LiteClient : ILiteClient
+    public class LiteClient : LiteConnection
     {
         /// <summary>
         /// The event used when the client has been connected.
@@ -27,15 +24,10 @@ namespace LiteNetwork.Client
         /// </summary>
         public event EventHandler<Exception>? Error;
 
-        private readonly IServiceProvider _serviceProvider = null!;
+        private readonly IServiceProvider? _serviceProvider;
         private readonly ILogger<LiteClient>? _logger;
         private readonly LiteClientConnector _connector;
-        private readonly LiteSender _sender;
         private readonly LiteClientReceiver _receiver;
-
-        public Guid Id { get; }
-
-        public Socket Socket { get; }
 
         public LiteClientOptions Options { get; }
 
@@ -44,19 +36,18 @@ namespace LiteNetwork.Client
         /// </summary>
         /// <param name="options">A client configuration options.</param>
         /// <param name="serviceProvider">Service provider to use.</param>
-        public LiteClient(LiteClientOptions options, IServiceProvider serviceProvider = null!)
+        public LiteClient(LiteClientOptions options, IServiceProvider? serviceProvider = null)
         {
             if (options is null)
             {
                 throw new ArgumentNullException(nameof(options));
             }
 
-            Id = Guid.NewGuid();
-            Options = options;
-            _serviceProvider = serviceProvider;
             Socket = new Socket(AddressFamily.InterNetwork, SocketType.Stream, ProtocolType.Tcp);
+            Options = options;
+
+            _serviceProvider = serviceProvider;
             _connector = new LiteClientConnector(Socket, Options.Host, Options.Port);
-            _sender = new LiteSender(this);
             _receiver = new LiteClientReceiver(options.PacketProcessor, options.ReceiveStrategy, options.BufferSize);
             _receiver.Error += (s, e) => OnError(e);
 
@@ -66,14 +57,7 @@ namespace LiteNetwork.Client
             }
         }
 
-        public virtual Task HandleMessageAsync(ILitePacketStream incomingPacketStream)
-        {
-            return Task.CompletedTask;
-        }
-
-        public virtual void Send(ILitePacketStream packet) => _sender.Send(packet.Buffer);
-
-        public virtual void Send(byte[] packetBuffer) => _sender.Send(packetBuffer);
+        public override Task HandleMessageAsync(byte[] packetBuffer) => Task.CompletedTask;
 
         public async Task ConnectAsync()
         {
@@ -82,7 +66,7 @@ namespace LiteNetwork.Client
 
             if (isConnected)
             {
-                _sender.Start();
+                InitializeSender(Options.PacketProcessor);
                 _receiver.StartReceiving(this);
                 OnConnected();
                 _logger?.LogTrace($"Connected to {Options.Host}:{Options.Port}.");
@@ -96,7 +80,7 @@ namespace LiteNetwork.Client
 
             if (isDisconnected)
             {
-                _sender.Stop();
+                StopSender();
                 OnDisconnected();
                 _logger?.LogTrace($"Disconnected from {Options.Host}:{Options.Port}.");
             }
@@ -107,7 +91,7 @@ namespace LiteNetwork.Client
         /// </summary>
         protected virtual void OnConnected()
         {
-            Connected?.Invoke(this, null);
+            Connected?.Invoke(this, EventArgs.Empty);
         }
 
         /// <summary>
@@ -115,7 +99,7 @@ namespace LiteNetwork.Client
         /// </summary>
         protected virtual void OnDisconnected()
         {
-            Disconnected?.Invoke(this, null);
+            Disconnected?.Invoke(this, EventArgs.Empty);
         }
 
         /// <summary>
@@ -127,15 +111,17 @@ namespace LiteNetwork.Client
             Error?.Invoke(this, exception);
         }
 
-        /// <summary>
-        /// Dispose the client resources.
-        /// </summary>
-        public void Dispose()
+        protected override void Dispose(bool disposing)
         {
-            _connector.Dispose();
-            _sender.Dispose();
-            _receiver.Dispose();
-            GC.SuppressFinalize(this);
+            if (disposing)
+            {
+                _connector.Dispose();
+
+                _receiver.Error -= OnError;
+                _receiver.Dispose();
+            }
+
+            base.Dispose(disposing);
         }
     }
 }

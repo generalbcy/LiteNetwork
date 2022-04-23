@@ -7,7 +7,6 @@ namespace LiteNetwork.Hosting
     /// </summary>
     internal class LiteBuilder : ILiteBuilder
     {
-        /// <inheritdoc />
         public IServiceCollection Services { get; }
 
         /// <summary>

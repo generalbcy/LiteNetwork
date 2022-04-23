@@ -50,14 +50,14 @@ namespace LiteNetwork.Protocol
         /// <summary>
         /// Gets the connection attached to the current data token.
         /// </summary>
-        public ILiteConnection Connection { get; }
+        public LiteConnection Connection { get; }
 
         /// <summary>
         /// Creates a new <see cref="LiteDataToken"/> instance.
         /// </summary>
         /// <param name="connection">Current connection attached to this data token.</param>
         /// <exception cref="ArgumentNullException">Thrown when the given connection is null.</exception>
-        public LiteDataToken(ILiteConnection connection)
+        public LiteDataToken(LiteConnection connection)
         {
             Connection = connection ?? throw new ArgumentNullException(nameof(connection));
         }
@@ -65,7 +65,7 @@ namespace LiteNetwork.Protocol
         /// <summary>
         /// Reset the token data properties.
         /// </summary>
-        public void Reset()
+        internal void Reset()
         {
             IsHeaderComplete = false;
             ReceivedHeaderBytesCount = 0;
