@@ -78,7 +78,7 @@ namespace LiteNetwork.Protocol
             }
         }
 
-        public byte[] AppendHeander(byte[] buffer)
+        public virtual byte[] AppendHeader(byte[] buffer)
         {
             int contentLength = buffer.Length;
             byte[] contentLengthBuffer = BitConverter.GetBytes(contentLength);

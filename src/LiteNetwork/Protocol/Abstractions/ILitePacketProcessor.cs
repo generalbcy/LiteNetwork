@@ -44,6 +44,6 @@
         /// </summary>
         /// <param name="buffer">Current packet buffer content.</param>
         /// <returns>The buffer with the packet header.</returns>
-        byte[] AppendHeander(byte[] buffer);
+        byte[] AppendHeader(byte[] buffer);
     }
 }

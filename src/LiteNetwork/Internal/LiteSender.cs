@@ -88,7 +88,7 @@ namespace LiteNetwork.Internal
                 try
                 {
                     byte[] message = _sendingCollection.Take(_cancellationToken);
-                    message = _packetProcessor.AppendHeander(message);
+                    message = _packetProcessor.AppendHeader(message);
 
                     _socketAsyncEvent.SetBuffer(message, 0, message.Length);
 
