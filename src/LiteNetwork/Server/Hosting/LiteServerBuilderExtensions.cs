@@ -1,6 +1,7 @@
 ﻿using LiteNetwork.Hosting;
 using LiteNetwork.Server.Abstractions;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Hosting;
 using System;
 
 namespace LiteNetwork.Server.Hosting
@@ -64,7 +65,7 @@ namespace LiteNetwork.Server.Hosting
         private static void AddLiteServerHostedService<TLiteServer>(this IServiceCollection services)
             where TLiteServer : class, ILiteServer
         {
-            services.AddHostedService(serviceProvider =>
+            services.AddSingleton<IHostedService>(serviceProvider =>
             {
                 return new LiteServerHostedService(serviceProvider.GetRequiredService<TLiteServer>());
             });
