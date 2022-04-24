@@ -22,14 +22,7 @@ namespace LiteNetwork.Client.Hosting
                 throw new ArgumentNullException(nameof(builder));
             }
 
-            builder.Services.AddSingleton(serviceProvider =>
-            {
-                LiteClientOptions options = new();
-                configure(options);
-
-                return ActivatorUtilities.CreateInstance<TLiteClient>(serviceProvider, options);
-            });
-
+            builder.Services.AddSingleton<TLiteClient>(serviceProvider => ConfigureClient<TLiteClient>(serviceProvider, configure));
             builder.Services.AddLiteClientHostedService<TLiteClient>();
 
             return builder;
@@ -52,17 +45,20 @@ namespace LiteNetwork.Client.Hosting
                 throw new ArgumentNullException(nameof(builder));
             }
 
-            builder.Services.AddSingleton<TLiteClient, TLiteClientImplementation>(serviceProvider =>
-            {
-                LiteClientOptions options = new();
-                configure(options);
-
-                return ActivatorUtilities.CreateInstance<TLiteClientImplementation>(serviceProvider, options);
-            });
-
+            builder.Services.AddSingleton<TLiteClientImplementation>(serviceProvider => ConfigureClient<TLiteClientImplementation>(serviceProvider, configure));
+            builder.Services.AddSingleton<TLiteClient, TLiteClientImplementation>(serviceProvider => serviceProvider.GetRequiredService<TLiteClientImplementation>());
             builder.Services.AddLiteClientHostedService<TLiteClientImplementation>();
 
             return builder;
+        }
+
+        private static TLiteClient ConfigureClient<TLiteClient>(IServiceProvider serviceProvider, Action<LiteClientOptions> configure)
+            where TLiteClient : LiteClient
+        {
+            LiteClientOptions options = new();
+            configure(options);
+
+            return ActivatorUtilities.CreateInstance<TLiteClient>(serviceProvider, options);
         }
 
         private static void AddLiteClientHostedService<TLiteClient>(this IServiceCollection services)
