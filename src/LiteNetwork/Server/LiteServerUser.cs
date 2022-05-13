@@ -8,9 +8,14 @@ namespace LiteNetwork.Server
     public class LiteServerUser : LiteConnection
     {
         /// <summary>
+        /// Gets the server context.
+        /// </summary>
+        protected internal LiteServerContext? Context { get; internal set; }
+
+        /// <summary>
         /// Creates a new <see cref="LiteServerUser"/> instance.
         /// </summary>
-        public LiteServerUser()
+        protected LiteServerUser()
         {
         }
 
