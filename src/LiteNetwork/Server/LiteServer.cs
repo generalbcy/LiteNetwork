@@ -32,10 +32,7 @@ namespace LiteNetwork.Server
 
         public LiteServerOptions Options { get; }
 
-        /// <summary>
-        /// Gets a collection that contains all the connected <typeparamref name="TUser"/>.
-        /// </summary>
-        public IEnumerable<TUser> ConnectedUsers => _connectedUsers.Values;
+        public IEnumerable<LiteConnection> Users => _connectedUsers.Values;
 
         /// <summary>
         /// Creates a new <see cref="LiteServer{TUser}"/> instance with a server configuration 
@@ -130,10 +127,6 @@ namespace LiteNetwork.Server
             return Task.CompletedTask;
         }
 
-        /// <summary>
-        /// Disconnects an <typeparamref name="TUser"/> with the specified user id.
-        /// </summary>
-        /// <param name="userId">User id to disconnect.</param>
         public void DisconnectUser(Guid userId)
         {
             if (!_connectedUsers.TryRemove(userId, out TUser? user))
@@ -147,36 +140,16 @@ namespace LiteNetwork.Server
             user.Dispose();
         }
 
-        /// <summary>
-        /// Send a packet to the given <typeparamref name="TUser"/>.
-        /// </summary>
-        /// <param name="user">Target user.</param>
-        /// <param name="packet">Packet message to send.</param>
-        public void SendTo(TUser user, byte[] packet)
+        public void DisconnectUser(LiteConnection connection)
         {
-            if (user is null)
-            {
-                throw new ArgumentNullException(nameof(user));
-            }
-
-            if (packet is null)
-            {
-                throw new ArgumentNullException(nameof(packet));
-            }
-
-            user.Send(packet);
+            DisconnectUser(connection.Id);
         }
 
-        /// <summary>
-        /// Send a packet to a given collection of <typeparamref name="TUser"/>.
-        /// </summary>
-        /// <param name="users">Collection of <typeparamref name="TUser"/>.</param>
-        /// <param name="packet">Packet message to send.</param>
-        public void SendTo(IEnumerable<TUser> users, byte[] packet)
+        public void SendTo(LiteConnection connection, byte[] packet)
         {
-            if (users is null)
+            if (connection is null)
             {
-                throw new ArgumentNullException(nameof(users));
+                throw new ArgumentNullException(nameof(connection));
             }
 
             if (packet is null)
@@ -184,16 +157,27 @@ namespace LiteNetwork.Server
                 throw new ArgumentNullException(nameof(packet));
             }
 
-            foreach (TUser connection in users)
+            connection.Send(packet);
+        }
+
+        public void SendTo(IEnumerable<LiteConnection> connections, byte[] packet)
+        {
+            if (connections is null)
+            {
+                throw new ArgumentNullException(nameof(connections));
+            }
+
+            if (packet is null)
+            {
+                throw new ArgumentNullException(nameof(packet));
+            }
+
+            foreach (TUser connection in connections)
             {
                 SendTo(connection, packet);
             }
         }
 
-        /// <summary>
-        /// Send a packet to all connected <typeparamref name="TUser"/>.
-        /// </summary>
-        /// <param name="packet">Packet message data to send.</param>
         public void SendToAll(byte[] packet) => SendTo(_connectedUsers.Values, packet);
 
         /// <summary>
@@ -263,6 +247,7 @@ namespace LiteNetwork.Server
             }
 
             user.Socket = e.AcceptSocket;
+            user.Context = new LiteServerContext(this);
             user.InitializeSender(Options.PacketProcessor);
             _logger?.LogInformation($"New user connected from '{user.Socket.RemoteEndPoint}' with id '{user.Id}'.");
             user.OnConnected();
@@ -271,22 +256,16 @@ namespace LiteNetwork.Server
 
         private void OnAcceptorError(object? sender, Exception e)
         {
-            OnError(null, e);
+            OnError(sender as LiteConnection, e);
         }
 
         private void OnReceiverError(object? sender, Exception e)
         {
-            if (e is LiteReceiverException receiveException)
-            {
-                OnError(receiveException.Connection, receiveException);
-            }
-            else
-            {
-                _logger?.LogError(e, "Receiver error.");
-            }
+            _logger?.LogError(e, "Receiver error.");
+            OnError(sender as LiteConnection, e);
         }
 
-        private void OnDisconnected(object? sender, LiteConnection e)
+        private void OnDisconnected(object? _, LiteConnection e)
         {
             DisconnectUser(e.Id);
         }
