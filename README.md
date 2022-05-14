@@ -97,7 +97,7 @@ The server has some hooks that allows you to control its life time, such as:
 Now that the server and user classes are built, you can now instanciate your server and call the `Start()` method to start the server.
 
 ```csharp
-// Using minimal API
+// Using top-level statement
 using LiteNetwork.Server;
 using System;
 
@@ -122,7 +122,7 @@ Console.ReadKey();
 For this example, you will need to install the [`Microsoft.Extensions.Hosting`](https://www.nuget.org/packages/Microsoft.Extensions.Hosting/) package from nuget in order to build a [.NET Generic Host](https://docs.microsoft.com/en-us/aspnet/core/fundamentals/host/generic-host).
 
 ```csharp
-// Using minimal API
+// Using top-level statement
 using Microsoft.Extensions.Hosting;
 using System;
 
@@ -136,7 +136,7 @@ return host.RunAsync();
 Then, once your host is setup and running, you can configure the `LiteServer` service using the `ConfigureLiteNetwork()` method located in the `LiteNetwork.Hosting` namespace:
 
 ```csharp
-// Using minimal API
+// Using top-level statement
 using LiteNetwork.Hosting;
 using LiteNetwork.Server.Hosting;
 using Microsoft.Extensions.Hosting;
