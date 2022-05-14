@@ -1,8 +1,8 @@
 # LiteNetwork
 
-[![.NET](https://github.com/Eastrall/LiteNetwork/actions/workflows/dotnet.yml/badge.svg)](https://github.com/Eastrall/LiteNetwork/actions/workflows/dotnet.yml)
-[![Codacy Badge](https://app.codacy.com/project/badge/Grade/0865f75d0fa2498e936a6853c1117b97)](https://www.codacy.com/gh/Eastrall/LiteNetwork/dashboard?utm_source=github.com&amp;utm_medium=referral&amp;utm_content=Eastrall/LiteNetwork&amp;utm_campaign=Badge_Grade)
+[![Build](https://github.com/Eastrall/LiteNetwork/actions/workflows/build.yml/badge.svg)](https://github.com/Eastrall/LiteNetwork/actions/workflows/build.yml)
 [![NuGet](https://img.shields.io/nuget/v/LiteNetwork.svg)](https://www.nuget.org/packages/LiteNetwork/)
+[![Nuget Downloads](https://img.shields.io/nuget/dt/LiteNetwork)](https://www.nuget.org/packages/LiteNetwork/)
 
 `LiteNetwork` is a simple and fast networking library built with C# and compatible with .NET Standard 2, .NET 5 and .NET 6. Its main goal is to simply the creation of basic socket servers over the TCP/IP protocol.
 
