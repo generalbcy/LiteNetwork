@@ -206,12 +206,12 @@ Using the previously created client, you can now create a new instance of the `M
 using LiteNetwork.Client;
 using System;
 
-LiteClientOptions options = new()
+var options = new LiteClientOptions()
 {
     Host = "127.0.0.1",
     Port = 4444
 };
-CustomClient client = new(options);
+var client = new CustomClient(options);
 Console.WriteLine("Press any key to connect to server.");
 Console.ReadKey();
 
