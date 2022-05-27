@@ -195,7 +195,7 @@ Just like a LiteNetwork server, the client has some hooks that allows you to con
 | `HandleMessageAsync()` | Called when the client receives a message from the server. |
 | `OnConnected()` | Called when the client is connected to the remote server. |
 | `OnDisconnected()` | Called when the client is disconnected from the remote server. |
-| `OnError(ILiteConnection, Exception)` | Called when there is an unhandled error within the client process. |
+| `OnError(Exception)` | Called when there is an unhandled error within the client process. |
 
 #### Create the client via instance
 
