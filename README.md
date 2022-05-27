@@ -130,7 +130,7 @@ var host = new HostBuilder()
     .UseConsoleLifetime()
     .Build();
 
-return host.RunAsync();
+await host.RunAsync();
 ```
 
 Then, once your host is setup and running, you can configure the `LiteServer` service using the `ConfigureLiteNetwork()` method located in the `LiteNetwork.Hosting` namespace:
@@ -158,7 +158,7 @@ var host = new HostBuilder()
     .UseConsoleLifetime()
     .Build();
 
-return host.RunAsync();
+await host.RunAsync();
 ```
 
 Your server is now listening on "127.0.0.1" and port "4444".
@@ -168,7 +168,87 @@ Also, since you are using a .NET generic host, it also provides dependency injec
 
 ### Create a client
 
-TBA.
+There is two ways of building a TCP client with `LiteNetwork`:
+* The instance way: by creating a `LiteClient` instance and then connect to the remote server manually.
+* The service way
+    * In fact, `LiteNetwork` provides an extension to the `ServiceCollection` object, and can be integrated in a [.NET Generic Host](https://docs.microsoft.com/en-us/aspnet/core/fundamentals/host/generic-host) (used by ASP.NET Core, MAUI).
+
+#### Common code
+
+First of all, you will ned to create a new `class` that inherit from the `LiteClient` class.
+
+```csharp
+using LiteNetwork.Client;
+
+public class MyTcpClient : LiteClient
+{
+    public EchoClient(LiteClientOptions options, IServiceProvider serviceProvider = null) 
+        : base(options, serviceProvider)
+    {
+    }
+}
+```
+Just like a LiteNetwork server, the client has some hooks that allows you to control the client lifetime, such as:
+
+| Method | Description |
+|--------|-------------|
+| `HandleMessageAsync()` | Called when the client receives a message from the server. |
+| `OnConnected()` | Called when the client is connected to the remote server. |
+| `OnDisconnected()` | Called when the client is disconnected from the remote server. |
+| `OnError(ILiteConnection, Exception)` | Called when there is an unhandled error within the client process. |
+
+#### Create the client via instance
+
+Using the previously created client, you can now create a new instance of the `MyTcpClient` class, set the correct options to connect to the remote server and then, call the `ConnectAsync()` method.
+
+```csharp
+// Using top-level statement
+using LiteNetwork.Client;
+using System;
+
+LiteClientOptions options = new()
+{
+    Host = "127.0.0.1",
+    Port = 4444
+};
+CustomClient client = new(options);
+Console.WriteLine("Press any key to connect to server.");
+Console.ReadKey();
+
+await client.ConnectAsync();
+
+// Do something while client is connected.
+```
+
+#### Create the client via service
+
+For this example, you will need to install the [`Microsoft.Extensions.Hosting`](https://www.nuget.org/packages/Microsoft.Extensions.Hosting/) package from nuget in order to build a [.NET Generic Host](https://docs.microsoft.com/en-us/aspnet/core/fundamentals/host/generic-host).
+
+```csharp
+// Using top-level statement
+using LiteNetwork.Client.Hosting;
+using LiteNetwork.Hosting;
+using Microsoft.Extensions.Hosting;
+
+var host = new HostBuilder()
+    .ConfigureLiteNetwork((context, builder) =>
+    {
+        builder.AddLiteClient<MyTcpClient>(options =>
+        {
+            options.Host = "127.0.0.1";
+            options.Port = 4444;
+        });
+    })
+    .UseConsoleLifetime()
+    .Build();
+
+// At this point, the client will connect automatically once the host starts running.
+await host.RunAsync(); 
+```
+
+Once your program starts, your `MyTcpClient` will try to connect to the remote server ("127.0.0.1" and port 4444). Also, since you are using the .NET generic host, it also provides the dependency injection mechanism into the client. Hence, you can inject services, configuration (`IOptions<T>` if configured), logger, etc...
+
+> Note: You can also add as many clients you want into a single .NET generic host by calling the `builder.AddLiteClient<>() method with different parameters.
 
 ## Protocol
 
