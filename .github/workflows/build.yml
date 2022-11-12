@@ -10,12 +10,17 @@ jobs:
   build-library:
     runs-on: ubuntu-latest
     steps:
-    - uses: actions/checkout@v2
+    - name: Checkout repository
+      uses: actions/checkout@v3
 
-    - name: Setup .NET
-      uses: actions/setup-dotnet@v1
+    - name: Setup .NET Core
+      uses: actions/setup-dotnet@v3
       with:
-        dotnet-version: 6.0.x
+        dotnet-version: | 
+          3.1.x
+          5.0.x
+          6.0.x
+          7.0.x
 
     - name: Restore dependencies
       run: dotnet restore
@@ -31,16 +36,19 @@ jobs:
     needs: build-library
     steps:
     - name: Checkout repository
-      uses: actions/checkout@v2
-    
-    - name: Setup .NET
-      uses: actions/setup-dotnet@v1
+      uses: actions/checkout@v3
+
+    - name: Setup .NET Core
+      uses: actions/setup-dotnet@v3
       with:
-        dotnet-version: 6.0.x
+        dotnet-version: | 
+          3.1.x
+          5.0.x
+          6.0.x
+          7.0.x
 
     - name: Build samples
       run: |
         dotnet build samples/echo/LiteNetwork.Sample.Echo.sln -c Release
         dotnet build samples/hosting/LiteNetwork.Sample.Hosting.sln -c Release
         dotnet build samples/custom-packet-reader-writer/LiteNetwork.Sample.CustomPacketReaderWriter.sln -c Release
-
