@@ -1,23 +1,22 @@
-﻿namespace LiteNetwork.Client
+﻿namespace LiteNetwork.Client;
+
+/// <summary>
+/// Defines the client connection states.
+/// </summary>
+public enum LiteClientStateType
 {
     /// <summary>
-    /// Defines the client connection states.
+    /// The client is not connected to a remote host.
     /// </summary>
-    public enum LiteClientStateType
-    {
-        /// <summary>
-        /// The client is not connected to a remote host.
-        /// </summary>
-        Disconnected,
+    Disconnected,
 
-        /// <summary>
-        /// The client is in connection process.
-        /// </summary>
-        Connecting,
+    /// <summary>
+    /// The client is in connection process.
+    /// </summary>
+    Connecting,
 
-        /// <summary>
-        /// The client is connected to a remote host.
-        /// </summary>
-        Connected
-    }
+    /// <summary>
+    /// The client is connected to a remote host.
+    /// </summary>
+    Connected
 }

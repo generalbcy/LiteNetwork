@@ -2,27 +2,26 @@
 using System;
 using System.Collections.Generic;
 
-namespace LiteNetwork.Internal
+namespace LiteNetwork.Internal;
+
+/// <summary>
+/// Provides a structure to used in receiver process.
+/// </summary>
+internal interface ILiteConnectionToken : IDisposable
 {
     /// <summary>
-    /// Provides a structure to used in receiver process.
+    /// Gets the connection attached to the current token.
     /// </summary>
-    internal interface ILiteConnectionToken : IDisposable
-    {
-        /// <summary>
-        /// Gets the connection attached to the current token.
-        /// </summary>
-        LiteConnection Connection { get; }
+    LiteConnection Connection { get; }
 
-        /// <summary>
-        /// Gets the data token.
-        /// </summary>
-        LiteDataToken DataToken { get; }
+    /// <summary>
+    /// Gets the data token.
+    /// </summary>
+    LiteDataToken DataToken { get; }
 
-        /// <summary>
-        /// Process a received messages.
-        /// </summary>
-        /// <param name="messages">Collection of message data buffers.</param>
-        void ProcessReceivedMessages(IEnumerable<byte[]> messages);
-    }
+    /// <summary>
+    /// Process a received messages.
+    /// </summary>
+    /// <param name="messages">Collection of message data buffers.</param>
+    void ProcessReceivedMessages(IEnumerable<byte[]> messages);
 }
