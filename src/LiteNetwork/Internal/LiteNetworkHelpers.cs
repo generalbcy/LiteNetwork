@@ -20,9 +20,11 @@ namespace LiteNetwork.Internal
         /// The result returns a <see cref="IPEndPoint"/> with the specified IP or host and port number.></returns>
         public static async Task<IPEndPoint> CreateIpEndPointAsync(string ipOrHost, int port)
         {
-            IPAddress[] addresses = await Dns.GetHostAddressesAsync(ipOrHost).ConfigureAwait(false);
+            IPAddress address = ipOrHost == IPAddress.Any.ToString() ?
+                IPAddress.Any :
+                (await Dns.GetHostAddressesAsync(ipOrHost).ConfigureAwait(false)).First(x => x.AddressFamily == AddressFamily.InterNetwork);
 
-            return new IPEndPoint(addresses.First(x => x.AddressFamily == AddressFamily.InterNetwork), port);
+            return new IPEndPoint(address, port);
         }
     }
 }
