@@ -179,7 +179,7 @@ public class LiteServer<TUser> : ILiteServer
             throw new ArgumentNullException(nameof(packet));
         }
 
-        foreach (TUser connection in connections)
+        foreach (LiteConnection connection in connections)
         {
             SendTo(connection, packet);
         }
@@ -228,7 +228,7 @@ public class LiteServer<TUser> : ILiteServer
     /// </summary>
     /// <param name="connection">Connection where the error occured.</param>
     /// <param name="exception">Error exception.</param>
-    protected virtual void OnError(LiteConnection? connection, Exception exception)
+    protected virtual void OnError(TUser? connection, Exception exception)
     {
         if (connection is null)
         {
@@ -264,13 +264,12 @@ public class LiteServer<TUser> : ILiteServer
 
     private void OnAcceptorError(object? sender, Exception e)
     {
-        OnError(sender as LiteConnection, e);
+        OnError(sender as TUser, e);
     }
 
     private void OnReceiverError(object? sender, Exception e)
     {
-        _logger?.LogError(e, "Receiver error.");
-        OnError(sender as LiteConnection, e);
+        OnError(sender as TUser, e);
     }
 
     private void OnDisconnected(object? _, LiteConnection e)
