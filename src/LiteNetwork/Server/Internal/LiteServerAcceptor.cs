@@ -45,6 +45,7 @@ internal class LiteServerAcceptor : IDisposable
 
         if (!_listeningSocket.AcceptAsync(_socketEvent))
         {
+            Console.WriteLine($"{GetType().Name} Start to Accept Socket Event");
             ProcessAccept(_socketEvent);
         }
     }

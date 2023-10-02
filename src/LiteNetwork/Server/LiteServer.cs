@@ -112,6 +112,7 @@ public class LiteServer<TUser> : ILiteServer
         IsRunning = true;
 
         OnAfterStart();
+        Console.WriteLine($"Server is Running. Listen Host : {Options.Host}, Port :{Options.Port}");
     }
 
     /// <summary>
