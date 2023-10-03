@@ -24,7 +24,7 @@ public class LiteServer<TUser> : ILiteServer
     private readonly ILogger<LiteServer<TUser>>? _logger;
     private readonly IServiceProvider? _serviceProvider;
     private readonly ConcurrentDictionary<Guid, TUser> _connectedUsers;
-    private readonly Socket _socket;
+    protected readonly Socket _socket;
     private readonly LiteServerAcceptor _acceptor;
     private readonly LiteServerReceiver _receiver;
 
